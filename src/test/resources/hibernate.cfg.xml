@@ -2,6 +2,14 @@
 <!DOCTYPE hibernate-configuration PUBLIC
           "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
           "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<!-- 
+          
+      TEST Configuration
+      
+      This Hibernate configuration is used during testing - it uses a different test
+      database (ordstest) which is set to be dropped and recreated each session.   
+          
+-->
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost/ordstest</property>
