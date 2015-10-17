@@ -32,10 +32,4 @@ public class HibernateUtils
 		if (sessionFactory == null) init();
 		return sessionFactory;
 	} 
-	
-	public static void closeSessionFactory(){
-		if (sessionFactory != null){
-			sessionFactory.close();
-		}
-	}
 }

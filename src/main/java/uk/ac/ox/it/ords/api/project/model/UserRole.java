@@ -15,12 +15,14 @@ public class UserRole implements Serializable {
     @Id
     @GeneratedValue
     private int id;
-    private String principalName;
-    private String role;
+    
+    
+    public int getId() {
+		return id;
+	}
 
-    public enum ProjectRoleValue {
-        OWNER, PROJECT_ADMINISTRATOR, CONTRIBUTOR, VIEWER, DELETED
-    };
+	private String principalName;
+    private String role;
 
     public UserRole() {
     }
@@ -38,7 +40,7 @@ public class UserRole implements Serializable {
 	}
 
 	public void setRole(String role) {
-		this.role = role;
+		if (role != null) this.role = role.toLowerCase();
 	}
     
 }

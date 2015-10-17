@@ -30,9 +30,6 @@ public class Project {
 	public Project() {
 	}
 
-	//@Context  //injected response proxy supporting multiple threads
-	//private HttpServletResponse response;
-
 	@Path("/project/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

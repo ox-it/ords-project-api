@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.lifecycle.ResourceProvider;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.transport.local.LocalConduit;
 import org.apache.shiro.SecurityUtils;
@@ -127,12 +128,23 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		SecurityUtils.setSecurityManager(securityManager);
 		
 		//
-		// Start an embedded server
+		// Create an embedded server with JSON processing
 		//
 		JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
 		sf.setResourceClasses(Project.class);
 		sf.setProvider(new JacksonJsonProvider());
-		sf.setResourceProvider(Project.class, new SingletonResourceProvider(new Project(), true));
+		
+		//
+		// Add our REST resources to the server
+		//
+		ArrayList<ResourceProvider> resources = new ArrayList<ResourceProvider>();
+		resources.add(new SingletonResourceProvider(new Project(), true));
+		resources.add(new SingletonResourceProvider(new ProjectRole(), true));
+		sf.setResourceProviders(resources);
+		
+		//
+		// Start the server at the endpoint
+		//
 		sf.setAddress(ENDPOINT_ADDRESS);
 		server = sf.create(); 
 		startServer();
@@ -142,8 +154,6 @@ public class AbstractResourceTest extends AbstractShiroTest {
 	public static void destroy() throws Exception {
 		server.stop();
 		server.destroy();
-		
-		HibernateUtils.closeSessionFactory();
 	}
 
 	@After

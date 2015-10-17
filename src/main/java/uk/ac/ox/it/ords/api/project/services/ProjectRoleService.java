@@ -2,13 +2,22 @@ package uk.ac.ox.it.ords.api.project.services;
 
 import java.util.ServiceLoader;
 
+import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectRoleServiceImpl;
 
 public interface ProjectRoleService {
 	
 	public void createInitialPermissions(int projectId) throws Exception;
 	public void deletePermissions(int projectId) throws Exception;
-	public void addUserRoleToProject(int projectid, String principalName, String role) throws Exception;
+	
+	public UserRole getUserRole(int roleId) throws Exception;
+	public UserRole addUserRoleToProject(int projectid, UserRole userRole) throws Exception;
+	public void removeUserFromRoleInProject(int projectid, int roleId) throws Exception;
+	
+
+    public enum ProjectRole {
+        owner, projectadministrator, contributor, viewer, deleted
+    };
 	
 	/**
 	 * Factory for obtaining implementations

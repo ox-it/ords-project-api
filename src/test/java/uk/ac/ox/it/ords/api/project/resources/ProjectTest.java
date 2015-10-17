@@ -65,7 +65,10 @@ public class ProjectTest extends AbstractResourceTest {
 		client.path("project/"+id);
 		response = client.get();
 		assertEquals(410, response.getStatus());
+		
+		logout();
 	}
+	
 
 
 

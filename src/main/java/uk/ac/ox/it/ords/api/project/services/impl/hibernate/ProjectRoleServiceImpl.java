@@ -15,15 +15,15 @@ import uk.ac.ox.it.ords.api.project.model.Permission;
 import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 
-public class ProjectRoleServiceImpl implements ProjectRoleService {
-	
-	private static Logger log = LoggerFactory.getLogger(ProjectRoleServiceImpl.class);
-	
-    private SessionFactory sessionFactory;
+public class ProjectRoleServiceImpl extends AbstractProjectRoleService implements ProjectRoleService {
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+	private static Logger log = LoggerFactory.getLogger(ProjectRoleServiceImpl.class);
+
+	private SessionFactory sessionFactory;
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
 	public ProjectRoleServiceImpl() {
 		setSessionFactory (HibernateUtils.getSessionFactory());
@@ -46,9 +46,8 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 			// Create the permissions for roles associated with the project
 			//
 			createPermissionsForProject(projectId);
-			
+
 		} catch (HibernateException e) {
-			System.out.println("Error!!!!!"+e.getCause());
 			log.error("Error creating Project", e);
 			transaction.rollback();
 			throw new Exception("Cannot create project",e);
@@ -70,7 +69,7 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 					.add(Restrictions.eq("role", "contributor_"+projectId)).list();	
 			List<UserRole> viewers = session.createCriteria(UserRole.class)
 					.add(Restrictions.eq("role", "viewer_"+projectId)).list();
-			
+
 			//
 			// Delete all the permissions for each role, and then each role
 			//
@@ -87,15 +86,15 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 				session.delete(viewer);
 			}
 			session.getTransaction().commit();
-			
+
 		} catch (HibernateException e) {
 			log.error("Error removing roles and permissions", e);
 			session.getTransaction().rollback();
 			throw new Exception("Cannot revoke project permissions",e);
 		}
-		
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void deletePermissionsForRole(Session session, UserRole role){
 		List<Permission> permissions = session.createCriteria(Permission.class)
@@ -124,20 +123,20 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 		//
 		String ownerRole = "owner_"+projectId;
 		createPermission(ownerRole, "project:*:"+projectId);
-		
+
 		//
 		// Contributor
 		//
 		String contributorRole = "contributor_"+projectId;
 		createPermission(contributorRole, "project:view:"+projectId);
-		
+
 		//
 		// Viewer
 		//
 		String viewerRole = "viewer_"+projectId;
 		createPermission(viewerRole, "project:view:"+projectId);
 	}
-	
+
 	private void createPermission(String role, String permissionString) throws Exception{
 		Session session = this.sessionFactory.getCurrentSession();
 		Transaction transaction = session.beginTransaction();
@@ -154,23 +153,56 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 		}
 	}
 
-	public void addUserRoleToProject(int projectId, String principalName,
-			String role) throws Exception {
+	public UserRole addUserRoleToProject(int projectId, UserRole userRole) throws Exception {
+		if (userRole == null) throw new Exception("Invalid role");
+		if (userRole.getPrincipalName() == null) throw new Exception("No user principal set for role");
+		if (userRole.getRole() == null) throw new Exception("No role set");
+		if (!isValidRole(userRole.getRole())) throw new Exception("Invalid role type");
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
-			UserRole userRole = new UserRole();
-			userRole.setPrincipalName(principalName);
-			String projectRole = role+"_"+projectId;
+			String projectRole = userRole.getRole()+"_"+projectId;
 			userRole.setRole(projectRole);
 			session.save(userRole);
 			session.getTransaction().commit();
+			return userRole;
 		} catch (HibernateException e) {
 			log.error("Error creating user role", e);
 			session.getTransaction().rollback();
-			throw new Exception("Cannot create project",e);
+			throw new Exception("Cannot create user role",e);
 		}
-		
+
+	}
+
+	public void removeUserFromRoleInProject(int projectid, int roleId)
+			throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+			UserRole userRole = (UserRole) session.get(UserRole.class, roleId);
+			if (userRole == null) throw new Exception("Cannot find user role");
+			//
+			// Lets check that the role contains the project id
+			//
+			if(!userRole.getRole().endsWith(String.valueOf(projectid))){
+				session.getTransaction().rollback();
+				throw new Exception("Attempt to remove role via another project");
+			}
+			session.delete(userRole);
+			session.getTransaction().commit();
+		} catch (HibernateException e) {
+			log.error("Cannot find user role", e);
+			throw new Exception("Cannot find user role",e);
+		}
+
+	}
+
+	public UserRole getUserRole(int roleId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		UserRole userRole = (UserRole) session.get(UserRole.class, roleId);
+		session.getTransaction().commit();
+		return userRole;
 	}
 
 }
