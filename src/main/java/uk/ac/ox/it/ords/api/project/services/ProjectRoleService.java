@@ -1,5 +1,6 @@
 package uk.ac.ox.it.ords.api.project.services;
 
+import java.util.List;
 import java.util.ServiceLoader;
 
 import uk.ac.ox.it.ords.api.project.model.UserRole;
@@ -9,6 +10,14 @@ public interface ProjectRoleService {
 	
 	public void createInitialPermissions(int projectId) throws Exception;
 	public void deletePermissions(int projectId) throws Exception;
+	
+	/**
+	 * Return all the UserRoles that match the pattern of the project
+	 * @param projectId
+	 * @return
+	 * @throws Exception
+	 */
+	public List<UserRole> getUserRolesForProject(int projectId) throws Exception;
 	
 	public UserRole getUserRole(int roleId) throws Exception;
 	public UserRole addUserRoleToProject(int projectid, UserRole userRole) throws Exception;
