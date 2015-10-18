@@ -23,6 +23,32 @@ import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 public class ProjectRole {
+	
+	@Path("/project/{id}/role")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getRoles(
+			@PathParam("id") final int projectId
+			){
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+		
+		if (project == null){
+			throw new NotFoundException();
+		}
+		
+		if (project.isPrivateProject()){
+			if (!SecurityUtils.getSubject().isPermitted("project:view:" + projectId)){
+				throw new ForbiddenException();
+			}
+		}
+		
+		try {
+			return Response.ok(ProjectRoleService.Factory.getInstance().getUserRolesForProject(projectId)).build();
+		} catch (Exception e) {
+			return Response.serverError().build();
+		}
+	}
 
 	@Path("/project/{id}/role")
 	@POST
