@@ -69,9 +69,9 @@ public class Project implements Serializable {
 
     public Project() {
         Date date = new Date();
-        dateCreated = date.toString();
-        startDate = date.toString();
-        projectUuid = UUID.randomUUID().toString();
+        this.setDateCreated(date.toString());
+        this.setStartDate(startDate = date.toString());
+        this.setProjectUuid(UUID.randomUUID().toString());
     }
 
     public int getProjectId() {
@@ -220,7 +220,6 @@ public class Project implements Serializable {
         return trialProject;
     }
 
-    @JsonIgnore
     public void setTrialProject(boolean trialProject) {
         this.trialProject = trialProject;
     }
