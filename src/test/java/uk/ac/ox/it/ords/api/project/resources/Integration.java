@@ -2,8 +2,9 @@ package uk.ac.ox.it.ords.api.project.resources;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.URI;
+import java.util.List;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -17,11 +18,8 @@ public class Integration  extends AbstractResourceTest {
 	public void integrationTest(){
 		
 		// Set up a new project
-		
 		// Add a contributor
-		
 		// Add a viewer
-		
 		// Delete the project
 		
 		//
@@ -54,6 +52,7 @@ public class Integration  extends AbstractResourceTest {
 		//
 		// Pingu adds Pinga as Viewer to Project 
 		//
+		loginUsingSSO("pingu", "pingu");
 		client = getClient();
 		client.path("project/"+project2+"/role");
 		role = new UserRole();
@@ -63,8 +62,21 @@ public class Integration  extends AbstractResourceTest {
 		assertEquals(201, response.getStatus());
 		
 		//
+		// If we now get the project list as Pinga...
+		//
+		loginUsingSSO("pinga", "pinga");
+		client = getClient();
+		client.path("project/");
+		response = client.get();
+		List<uk.ac.ox.it.ords.api.project.model.Project> projects = response.readEntity(
+				new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
+				);
+		assertEquals(1, projects.size());
+		
+		//
 		// Finally we'll delete the project
 		//
+		loginUsingSSO("pingu", "pingu");
 		client = getClient();
 		client.path("/project/"+project2);
 		response = client.delete();

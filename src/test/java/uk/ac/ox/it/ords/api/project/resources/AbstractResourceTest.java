@@ -81,12 +81,25 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		//
 		
 		//
-		// Anyone with the "User" role can create new projects
+		// Anyone with the "User" role can create new trial projects
 		//
 		Permission createProject = new Permission();
 		createProject.setRole("user");
 		createProject.setPermission("project:create");
 		session.save(createProject);
+		
+		//
+		// Anyone with the "Administrator" role can create new full
+		// projects and upgrade projects to full.
+		//
+		Permission createFullProject = new Permission();
+		createFullProject.setRole("administrator");
+		createFullProject.setPermission("project:create-full");
+		session.save(createFullProject);
+		Permission upgradeProject = new Permission();
+		upgradeProject.setRole("administrator");
+		upgradeProject.setPermission("project:upgrade");
+		session.save(upgradeProject);
 		
 		//
 		// "Anonymous" or "User" can View public projects
@@ -100,11 +113,16 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		viewPublicProjectUser.setRole("user");
 		viewPublicProjectUser.setPermission("view:project:public");
 		session.save(viewPublicProjectUser);
-
-		
+	
 		//
 		// Add users to roles
 		//
+		
+		UserRole admin = new UserRole();
+		admin.setPrincipalName("admin");
+		admin.setRole("administrator");
+		session.save(admin);
+		
 		UserRole pingu = new UserRole();
 		pingu.setPrincipalName("pingu");
 		pingu.setRole("user");

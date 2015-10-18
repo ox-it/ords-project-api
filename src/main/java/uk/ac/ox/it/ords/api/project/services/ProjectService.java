@@ -1,5 +1,6 @@
 package uk.ac.ox.it.ords.api.project.services;
 
+import java.util.List;
 import java.util.ServiceLoader;
 
 import uk.ac.ox.it.ords.api.project.model.Project;
@@ -8,8 +9,16 @@ import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectServiceImpl;
 public interface ProjectService {
 	
 	public Project getProject(int id);
+	
+	public List<Project> getProjects();
+	public List<Project> getFullProjects();
+	public List<Project> getOpenProjects();
+	
 	public void createProject(Project project) throws Exception;
 	public void deleteProject(int id) throws Exception;
+	
+	public Project upgradeProject(int projectId) throws Exception;
+	public Project updateProject(Project project) throws Exception;
 	
 	/**
 	 * Factory for obtaining implementations
