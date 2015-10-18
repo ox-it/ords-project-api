@@ -1,5 +1,9 @@
 package uk.ac.ox.it.ords.api.project.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 
 import uk.ac.ox.it.ords.api.project.model.UserRole;
@@ -7,6 +11,46 @@ import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 
 public class ProjectRoleServiceTest {
 
+
+	@Test
+	public void testExceptionHandlingForGet() throws Exception{
+		ProjectRoleService service = ProjectRoleService.Factory.getInstance();
+		UserRole role = service.getUserRole(-1);
+		assertNull(role);
+	}
+	
+	@Test (expected = Exception.class)
+	public void testExceptionHandlingForGet2() throws Exception{
+			try {
+				ProjectRoleService service = ProjectRoleService.Factory.getInstance();
+				HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+				service.getUserRole(999999);
+				service.getUserRole(-1);
+				fail();
+			} catch (Exception e) {
+				HibernateUtils.closeSession();
+				throw e;
+			}
+	}
+	
+	@Test
+	public void testExceptionHandlingForGetList() throws Exception{
+			ProjectRoleService service = ProjectRoleService.Factory.getInstance();
+			assertEquals(0, service.getUserRolesForProject(9999).size());
+	}
+	
+	@Test (expected = Exception.class)
+	public void testExceptionHandlingForGetList2() throws Exception{
+			try {
+				ProjectRoleService service = ProjectRoleService.Factory.getInstance();
+				HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+				service.getUserRolesForProject(9999);
+				fail();
+			} catch (Exception e) {
+				HibernateUtils.closeSession();
+				throw e;
+			}
+	}
 	
 	@Test (expected = Exception.class)
 	public void testExceptionHandlingForCreate() throws Exception{
@@ -70,6 +114,7 @@ public class ProjectRoleServiceTest {
 			userRole.setRole("viewer");
 			service.addUserRoleToProject(1, userRole);
 		} catch (Exception e) {
+			HibernateUtils.closeSession();
 			ProjectRoleService service = ProjectRoleService.Factory.getInstance();
 			UserRole userRole = new UserRole();
 			userRole.setPrincipalName("bob");
@@ -96,13 +141,13 @@ public class ProjectRoleServiceTest {
 	@Test (expected = Exception.class)
 	public void testExceptionHandlingForRemove2() throws Exception{
 		ProjectRoleService service = ProjectRoleService.Factory.getInstance();
-		service.removeUserFromRoleInProject(1,1);
+		service.removeUserFromRoleInProject(1,9999);
 	}
 	
 	//
 	// Force hibernate exception
 	//
-	@Test (expected = Exception.class)
+	@Test
 	public void testExceptionHandlingForRemove3() throws Exception{
 		try {
 			ProjectRoleService service = ProjectRoleService.Factory.getInstance();
@@ -113,6 +158,7 @@ public class ProjectRoleServiceTest {
 			service.addUserRoleToProject(1, userRole);		
 			service.removeUserFromRoleInProject(1,userRole.getId());
 		} catch (Exception e) {
+			HibernateUtils.closeSession();
 			ProjectRoleService service = ProjectRoleService.Factory.getInstance();
 			UserRole userRole = new UserRole();
 			userRole.setPrincipalName("bob");

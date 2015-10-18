@@ -3,7 +3,9 @@ package uk.ac.ox.it.ords.api.project.resources;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
+import java.util.List;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -75,6 +77,19 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		assertEquals(403, response.getStatus());
 		
 		//
+		// Get a list of UserRoles - we should have 1
+		//
+		loginUsingSSO("pingu", "test");
+		client = getClient();
+		client.path("project/"+projectId+"/role");
+		response = client.get();
+		assertEquals(200, response.getStatus());
+		List<UserRole> roles = response.readEntity(
+				new GenericType<List<UserRole>>() {});
+		logout();
+		assertEquals(1, roles.size());
+		
+		//
 		// Add Pinga as a viewer
 		//
 		logout();
@@ -85,7 +100,6 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		role.setPrincipalName("pinga");
 		role.setRole("viewer");;
 		response = client.post(role);
-		
 		//
 		// This is the role URI
 		//
@@ -93,9 +107,21 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		assertEquals(201, response.getStatus());
 		
 		//
+		// Get a list of UserRoles - we should have 2
+		//
+		loginUsingSSO("pingu", "test");
+		client = getClient();
+		client.path("project/"+projectId+"/role");
+		response = client.get();
+		assertEquals(200, response.getStatus());
+		roles = response.readEntity(
+				new GenericType<List<UserRole>>() {});
+		logout();
+		assertEquals(2, roles.size());
+		
+		//
 		// Can she view OK?
 		//
-		logout();
 		loginUsingSSO("pinga", "test");
 		client = getClient();
 		client.path("project/"+projectId);
@@ -106,13 +132,25 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		//
 		// Remove Pinga as a viewer
 		//
-		logout();
 		loginUsingSSO("pingu", "test");
 		client = getClient();
 		client.path(roleURI.getPath());
 		response = client.delete();
 		assertEquals(200, response.getStatus());
 		logout();
+		
+		//
+		// Get a list of UserRoles - we should have 1
+		//
+		loginUsingSSO("pingu", "test");
+		client = getClient();
+		client.path("project/"+projectId+"/role");
+		response = client.get();
+		assertEquals(200, response.getStatus());
+		roles = response.readEntity(
+				new GenericType<List<UserRole>>() {});
+		logout();
+		assertEquals(1, roles.size());
 	}
 
 	@Test
@@ -209,11 +247,11 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		client.path("project/"+projectId);
 		Response response = client.get();
 		assertEquals(403, response.getStatus());
+		logout();
 		
 		//
 		// Add Pinga as a viewer
 		//
-		logout();
 		loginUsingSSO("pingu", "test");
 		client = getClient();
 		client.path("project/"+projectId+"/role");
@@ -222,11 +260,12 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		role.setRole("viewer");;
 		response = client.post(role);
 		assertEquals(201, response.getStatus());
+		logout();
 		
 		//
 		// Can she view OK?
 		//
-		logout();
+
 		loginUsingSSO("pinga", "test");
 		client = getClient();
 		client.path("project/"+projectId);
@@ -234,6 +273,18 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		assertEquals(200, response.getStatus());
 		logout();
 		
+		//
+		// Get a list of UserRoles - we should have 2
+		//
+		loginUsingSSO("pingu", "test");
+		client = getClient();
+		client.path("project/"+projectId+"/role");
+		response = client.get();
+		assertEquals(200, response.getStatus());
+		List<UserRole> roles = response.readEntity(
+				new GenericType<List<UserRole>>() {});
+		logout();
+		assertEquals(2, roles.size());
 	}
 	
 	@Test
