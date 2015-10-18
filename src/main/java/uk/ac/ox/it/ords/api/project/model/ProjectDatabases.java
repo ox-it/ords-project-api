@@ -9,14 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- * This should be no longer needed. A project database object maps a physical database to
- * a project. However, a physical database refers to a logical database and that references 
- * a project so it can all be worked out without this.
- *
- * @author dave
- */
-
 @Entity
 @Table(name = "projectdatabases")
 public class ProjectDatabases {
