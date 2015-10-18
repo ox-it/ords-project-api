@@ -37,10 +37,14 @@ public class Project {
 			@PathParam("id") final int id, 
 			@Context HttpServletResponse response
 			) throws IOException{
+		
+		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
+		
 		if (project == null){
 			throw new NotFoundException();
 		}
+		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted("project:view:"+id)){
 				throw new ForbiddenException();
@@ -99,6 +103,7 @@ public class Project {
 			ProjectService.Factory.getInstance().createProject(project);
 			return project;
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new BadRequestException();
 		}
 	}
