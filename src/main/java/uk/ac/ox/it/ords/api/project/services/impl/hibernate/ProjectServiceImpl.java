@@ -1,6 +1,5 @@
 package uk.ac.ox.it.ords.api.project.services.impl.hibernate;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -32,30 +31,38 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			session.beginTransaction();
 			project = (Project) session.get(Project.class, id);
 			session.getTransaction().commit();
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			log.error("Error obtaining Project with id "+id, e);
 			session.getTransaction().rollback();
+			throw e;
+		} finally {
+			  HibernateUtils.closeSession();
 		}
 		return project;
 	} 
 	
 	public void createProject(Project project) throws Exception{
+		
+		if (project == null) throw new Exception("Cannot create project: null");
+		
 		Session session = this.sessionFactory.getCurrentSession();
 		Transaction transaction = session.beginTransaction();
 		try {
 			project = configureProject(project);
 			session.save(project);
 			transaction.commit();
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			log.error("Error creating Project", e);
 			transaction.rollback();
 			throw new Exception("Cannot create project",e);
+		} finally {
+			  HibernateUtils.closeSession();
 		}
-		transaction = null;
 		//
 		// Also create the owner role and permissions
 		//
 		ProjectRoleService.Factory.getInstance().createInitialPermissions(project.getProjectId());
+
 	}
 
 	public void deleteProject(int id) throws Exception {
@@ -73,10 +80,12 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			//
 			ProjectRoleService.Factory.getInstance().deletePermissions(id);
 			
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			log.error("Error creating Project", e);
 			session.getTransaction().rollback();
 			throw new Exception("Cannot create project",e);
+		} finally {
+			  HibernateUtils.closeSession();
 		}
 	}
 }
