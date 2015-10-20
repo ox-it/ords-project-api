@@ -116,6 +116,10 @@ public class Project {
 			throw new NotFoundException();
 		} 
 		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
 		if (!SecurityUtils.getSubject().isPermitted("project:delete:"+id)){
 			throw new ForbiddenException();
 		}
@@ -137,6 +141,19 @@ public class Project {
 			@PathParam("id") final int id 
 			) throws IOException {
 		
+		uk.ac.ox.it.ords.api.project.model.Project oldProject = ProjectService.Factory.getInstance().getProject(id);
+		
+		if (project == null){
+			throw new NotFoundException();
+		}
+		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
+		//
+		// Prevent side-modification hacks
+		//
 		if (id != project.getProjectId()){
 			throw new BadRequestException();
 		}
@@ -144,8 +161,6 @@ public class Project {
 		//
 		// Is this an upgrade request?
 		//
-		uk.ac.ox.it.ords.api.project.model.Project oldProject = ProjectService.Factory.getInstance().getProject(id);
-
 		if (oldProject.isTrialProject() == true && project.isTrialProject() == false){
 			if (!SecurityUtils.getSubject().isPermitted("project:upgrade")){
 				throw new ForbiddenException();
