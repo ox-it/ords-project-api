@@ -145,11 +145,15 @@ public class Project {
 		
 		uk.ac.ox.it.ords.api.project.model.Project oldProject = ProjectService.Factory.getInstance().getProject(id);
 		
-		if (project == null){
+		if (oldProject == null){
 			throw new NotFoundException();
 		}
 		
-		if (project.isDeleted()){
+		if (project == null){
+			throw new BadRequestException();
+		}
+		
+		if (oldProject.isDeleted()){
 			return Response.status(Status.GONE).build();
 		}
 		

@@ -25,6 +25,52 @@ import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 public class ProjectRole {
 	
+	@Path("/project/{projectId}/role/{roleId}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getProjectRole(
+				@PathParam("projectId") final int projectId,
+				@PathParam("roleId") final int roleId
+			){
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+		
+		if (project == null){
+			throw new NotFoundException();
+		}
+		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
+		if (project.isPrivateProject()){
+			if (!SecurityUtils.getSubject().isPermitted("project:view:" + projectId)){
+				throw new ForbiddenException();
+			}
+		}
+		
+		UserRole userRole;
+		try {
+			userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
+		} catch (Exception e) {
+			return Response.serverError().build();
+		}
+		
+		if (userRole == null){
+			throw new NotFoundException();		
+		}
+		
+		//
+		// Prevent cross-resource attack
+		//
+		if(!userRole.getRole().endsWith(String.valueOf(projectId))){
+			throw new BadRequestException();
+		}
+		
+		return Response.ok(userRole).build();
+		
+	}
+	
 	@Path("/project/{id}/role")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -67,16 +113,16 @@ public class ProjectRole {
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		
-		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
-			throw new ForbiddenException();
-		}
-		
 		if (project == null) {
 			throw new NotFoundException();
 		}
 		
 		if (project.isDeleted()){
 			return Response.status(Status.GONE).build();
+		}
+		
+		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
+			throw new ForbiddenException();
 		}
 		
 		try {

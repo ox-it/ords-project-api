@@ -102,6 +102,24 @@ public class ProjectTest extends AbstractResourceTest {
 		Response response = client.post(project);
 		assertEquals(403, response.getStatus());
 	}
+
+	
+	@Test
+	public void createFullProject() throws IOException {
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project J");
+		project.setDescription("createFullProject");
+		project.setTrialProject(false);
+		
+		loginUsingSSO("pingu", "pingu");
+		assertEquals(403, getClient().path("project/").post(project).getStatus());
+		logout();
+		
+		loginUsingSSO("admin","admin");
+		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		logout();
+	}
 	
 	@Test
 	public void createProjectAuthenticated() throws IOException {
@@ -363,6 +381,26 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setDescription("updateProject - updated BADLY");
 		response = client.put(project);
 		assertEquals(403, response.getStatus());
+		
+		//
+		// PUT - no old project
+		//
+		loginUsingSSO("pingu", "pingu");
+		client = getClient();
+		client.path("project/9999");
+		response = client.put(project);
+		assertEquals(404, response.getStatus());
+		logout();
+		
+		//
+		// PUT - no new project
+		//
+		loginUsingSSO("pingu", "pingu");
+		client = getClient();
+		client.path("project/"+id);
+		response = client.put(null);
+		assertEquals(400, response.getStatus());
+		logout();
 
 		//
 		// PUT - using the wrong entity
@@ -375,6 +413,7 @@ public class ProjectTest extends AbstractResourceTest {
 		response = client.put(project);
 		assertEquals(400, response.getStatus());
 		logout();
+
 		
 		//
 		// Check none of the previous efforts actually updated it
@@ -416,6 +455,14 @@ public class ProjectTest extends AbstractResourceTest {
 		assertEquals("updateProject - updated", project.getDescription());
 		assertEquals("2000 BC", project.getStartDate());
 		assertEquals("THE END OF THE WORLD", project.getEndDate());
+		logout();
+		
+		//
+		// DELETE the project and try to modify it
+		//
+		loginUsingSSO("pingu", "pingu");
+		assertEquals(200, getClient().path("project/"+id).delete().getStatus());
+		assertEquals(410, getClient().path("project/"+id).put(project).getStatus());
 		logout();
 	}
 	
