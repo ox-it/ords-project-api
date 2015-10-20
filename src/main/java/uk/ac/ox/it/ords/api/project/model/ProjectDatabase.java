@@ -10,23 +10,20 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "projectdatabases")
-public class ProjectDatabases {
+@Table(name = "projectdatabase")
+public class ProjectDatabase {
     @Id
 	@GeneratedValue
-	private int projectDatabasesId;
+	private int projectDatabaseId;
     private int projectId;
     private String dbName;
-    
-    
-    
 
-    public int getProjectDatabasesId() {
-        return projectDatabasesId;
+    public int getProjectDatabaseId() {
+        return projectDatabaseId;
     }
 
-    public void setProjectDatabasesId(int projectDatabasesId) {
-        this.projectDatabasesId = projectDatabasesId;
+    public void setProjectDatabaseId(int projectDatabaseId) {
+        this.projectDatabaseId = projectDatabaseId;
     }
 
     public int getProjectId() {

@@ -36,7 +36,8 @@
 		  <param-name>jaxrs.serviceClasses</param-name>
 		  <param-value>
 		    uk.ac.ox.it.ords.api.project.resources.Project,
-		    uk.ac.ox.it.ords.api.project.resources.ProjectRole         
+		    uk.ac.ox.it.ords.api.project.resources.ProjectRole,
+		    uk.ac.ox.it.ords.api.project.resources.ProjectDatabase         
 		  </param-value>
 		   		</init-param>
 		   	         <init-param>	

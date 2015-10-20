@@ -158,6 +158,7 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		ArrayList<ResourceProvider> resources = new ArrayList<ResourceProvider>();
 		resources.add(new SingletonResourceProvider(new Project(), true));
 		resources.add(new SingletonResourceProvider(new ProjectRole(), true));
+		resources.add(new SingletonResourceProvider(new ProjectDatabase(), true));
 		sf.setResourceProviders(resources);
 		
 		//

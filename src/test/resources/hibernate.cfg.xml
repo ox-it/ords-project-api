@@ -30,6 +30,6 @@
         <mapping class="uk.ac.ox.it.ords.api.project.model.Project"/>
         <mapping class="uk.ac.ox.it.ords.api.project.model.UserRole"/>
         <mapping class="uk.ac.ox.it.ords.api.project.model.Permission"/>
-        <mapping class="uk.ac.ox.it.ords.api.project.model.ProjectDatabases"/>
+        <mapping class="uk.ac.ox.it.ords.api.project.model.ProjectDatabase"/>
     </session-factory>
 </hibernate-configuration>
