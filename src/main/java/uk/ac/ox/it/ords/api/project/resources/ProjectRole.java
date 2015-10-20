@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
 
@@ -35,6 +36,10 @@ public class ProjectRole {
 		
 		if (project == null){
 			throw new NotFoundException();
+		}
+		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
 		}
 		
 		if (project.isPrivateProject()){
@@ -60,12 +65,18 @@ public class ProjectRole {
 				@Context UriInfo uriInfo
 			){
 		
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+		
 		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
 			throw new ForbiddenException();
 		}
 		
-		if (ProjectService.Factory.getInstance().getProject(projectId) == null) {
+		if (project == null) {
 			throw new NotFoundException();
+		}
+		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
 		}
 		
 		try {
@@ -86,12 +97,20 @@ public class ProjectRole {
 				@PathParam("roleId") final int roleId
 			){
 		
-		if (ProjectService.Factory.getInstance().getProject(projectId) == null) {
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+
+		if (project == null) {
 			throw new NotFoundException();
 		}
+		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
 		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
 			throw new ForbiddenException();
 		}
+		
 		try {
 			UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
 			if (userRole == null){
@@ -104,7 +123,6 @@ public class ProjectRole {
 			ProjectRoleService.Factory.getInstance().removeUserFromRoleInProject(projectId, roleId);
 			return Response.ok().build();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new BadRequestException();
 		}
 		
