@@ -20,6 +20,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
@@ -199,8 +201,9 @@ public class Project {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public uk.ac.ox.it.ords.api.project.model.Project createProject(
-			uk.ac.ox.it.ords.api.project.model.Project project
+	public Response createProject(
+			uk.ac.ox.it.ords.api.project.model.Project project,
+			@Context UriInfo uriInfo
 			) throws IOException {
 
 		if (!SecurityUtils.getSubject().isPermitted("project:create") && !SecurityUtils.getSubject().isPermitted("project:create-full")){
@@ -217,7 +220,10 @@ public class Project {
 
 		try {
 			ProjectService.Factory.getInstance().createProject(project);
-			return project;
+			
+	        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+	        builder.path(Integer.toString(project.getProjectId()));
+	        return Response.created(builder.build()).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BadRequestException();

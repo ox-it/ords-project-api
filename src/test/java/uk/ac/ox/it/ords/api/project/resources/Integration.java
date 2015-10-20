@@ -33,7 +33,8 @@ public class Integration  extends AbstractResourceTest {
 		project.setDescription("Test Project C");
 		project.setPrivateProject(true);
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 		assertEquals("Test Project C", project.getName());
 		int project2 = project.getProjectId();

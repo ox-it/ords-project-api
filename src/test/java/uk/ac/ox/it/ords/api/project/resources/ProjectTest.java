@@ -37,8 +37,11 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setName("Test Project X");
 		project.setDescription("deleteProjectUnauthenticated");
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+		
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		
 		assertEquals("Test Project X", project.getName());
 		int id = project.getProjectId();
 		
@@ -113,7 +116,8 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setName("Test Project F");
 		project.setDescription("createProjectAuthenticated");
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 		assertEquals("Test Project F", project.getName());
 		int id = project.getProjectId();
@@ -162,8 +166,11 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setPrivateProject(false);
 		project.setTrialProject(false);
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		
 		assertEquals("Apple", project.getName());
 		
 		project.setName("Orange");
@@ -171,8 +178,11 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setPrivateProject(true);
 		project.setTrialProject(false);
 		response = client.post(project);
-		assertEquals(200, response.getStatus());
+		
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		
 		assertEquals("Orange", project.getName());
 		
 		project.setName("Banana");
@@ -180,8 +190,11 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setPrivateProject(false);
 		project.setTrialProject(false);
 		response = client.post(project);
-		assertEquals(200, response.getStatus());
+		
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		
 		assertEquals("Banana", project.getName());
 		
 		//
@@ -272,7 +285,8 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setName("Test Project U");
 		project.setDescription("upgradeProject");
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 		assertEquals("Test Project U", project.getName());
 		assertEquals(true, project.isTrialProject());
@@ -330,8 +344,11 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setName("Test Project V");
 		project.setDescription("updateProject");
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+		
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		
 		assertEquals("Test Project V", project.getName());
 		assertEquals(true, project.isTrialProject());
 		int id = project.getProjectId();

@@ -27,7 +27,8 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		project.setName("Test Project N");
 		project.setDescription("addDatabasesToProject");
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 		assertEquals("Test Project N", project.getName());
 		int id = project.getProjectId();
@@ -82,7 +83,42 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		assertEquals(400, response.getStatus());
 
 	}
+
 	
+
+	@Test
+	public void addDatabasesToNoProject(){
+		loginUsingSSO("pingu","pingu");
+		
+		//
+		// Create database for non-existing project
+		//
+		WebClient client = getClient();
+		client.path("project/9999/database");		
+		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
+		projectDatabase.setDbName("Test DB 1");
+		projectDatabase.setProjectId(9999);
+		Response response = client.post(projectDatabase);
+		assertEquals(404, response.getStatus());
+		
+		//
+		// create a project and delete it
+		//
+		client = getClient();
+		client.path("project/");
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project G");
+		project.setDescription("addDatabasesToNoProject");
+		response = client.post(project);
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
+		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project G", project.getName());
+		int id = project.getProjectId();
+		
+		
+	}
+		
 	
 
 	@Test
@@ -97,7 +133,8 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		project.setName("Test Project N");
 		project.setDescription("addDatabasesToProject");
 		Response response = client.post(project);
-		assertEquals(200, response.getStatus());
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 		assertEquals("Test Project N", project.getName());
 		int id = project.getProjectId();
