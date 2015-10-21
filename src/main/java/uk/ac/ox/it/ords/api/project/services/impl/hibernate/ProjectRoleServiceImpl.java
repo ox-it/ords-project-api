@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Permission;
 import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectRoleService;
@@ -143,19 +144,25 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		// Owner
 		//
 		String ownerRole = "owner_"+projectId;
-		createPermission(ownerRole, "project:*:"+projectId);
+		for (String permission : ProjectPermissionSets.getPermissionsForOwner(projectId)){
+			createPermission(ownerRole, permission);			
+		}
 
 		//
 		// Contributor
 		//
 		String contributorRole = "contributor_"+projectId;
-		createPermission(contributorRole, "project:view:"+projectId);
+		for (String permission : ProjectPermissionSets.getPermissionsForContributor(projectId)){
+			createPermission(contributorRole, permission);			
+		}
 
 		//
 		// Viewer
 		//
 		String viewerRole = "viewer_"+projectId;
-		createPermission(viewerRole, "project:view:"+projectId);
+		for (String permission : ProjectPermissionSets.getPermissionsForViewer(projectId)){
+			createPermission(viewerRole, permission);			
+		}
 	}
 
 	private void createPermission(String role, String permissionString) throws Exception{
