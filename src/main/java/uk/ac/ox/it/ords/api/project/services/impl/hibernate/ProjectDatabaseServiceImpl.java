@@ -53,6 +53,7 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 			session.getTransaction().commit();
 			return projectDatabase;
 		} catch (Exception e) {
+			log.debug(e.getMessage());
 			session.getTransaction().rollback();
 			throw e;
 		} finally {
@@ -76,6 +77,7 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 			session.getTransaction().commit();
 			return projectDatabases;
 		} catch (Exception e) {
+			log.debug(e.getMessage());
 			session.getTransaction().rollback();
 			throw e;
 		} finally {
@@ -95,6 +97,7 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 			session.getTransaction().commit();
 			return projectDatabase;
 		} catch (Exception e) {
+			log.debug(e.getMessage());
 			session.getTransaction().rollback();
 			throw e;
 		} finally {
@@ -115,6 +118,7 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 			session.delete(projectDatabase);
 			session.getTransaction().commit();
 		} catch (Exception e) {
+			log.debug(e.getMessage());
 			session.getTransaction().rollback();
 			throw e;
 		} finally {
