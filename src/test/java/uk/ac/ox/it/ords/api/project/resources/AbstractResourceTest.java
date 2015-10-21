@@ -39,6 +39,8 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import uk.ac.ox.it.ords.api.project.model.Permission;
 import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
+import uk.ac.ox.it.ords.api.project.server.UnrecognizedPropertyExceptionMapper;
+import uk.ac.ox.it.ords.api.project.server.ValidationExceptionMapper;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 import uk.ac.ox.it.ords.security.AbstractShiroTest;
 
@@ -148,8 +150,12 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		// Create an embedded server with JSON processing
 		//
 		JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
-		sf.setResourceClasses(Project.class);
-		sf.setProvider(new JacksonJsonProvider());
+		
+		ArrayList<Object> providers = new ArrayList<Object>();
+		providers.add(new JacksonJsonProvider());
+		providers.add(new UnrecognizedPropertyExceptionMapper());
+		providers.add(new ValidationExceptionMapper());
+		sf.setProviders(providers);
 		
 		//
 		// Add our REST resources to the server
@@ -158,6 +164,7 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		resources.add(new SingletonResourceProvider(new Project(), true));
 		resources.add(new SingletonResourceProvider(new ProjectRole(), true));
 		resources.add(new SingletonResourceProvider(new ProjectDatabase(), true));
+		resources.add(new SingletonResourceProvider(new ProjectInvitation(), true));
 		sf.setResourceProviders(resources);
 		
 		//
