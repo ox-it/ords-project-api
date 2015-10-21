@@ -10,6 +10,13 @@ public interface ProjectService {
 	
 	public static final String METADATA_TOKEN = "___";
 	
+	/**
+	 * Validates the project fields against the business rules for creating and updating projects
+	 * @param project
+	 * @throws Exception if any of the properties of the project violate a validation rule
+	 */
+	public void validate(Project project) throws Exception;
+	
 	public List<Project> getProjects();
 	public List<Project> getFullProjects();
 	public List<Project> getOpenProjects();

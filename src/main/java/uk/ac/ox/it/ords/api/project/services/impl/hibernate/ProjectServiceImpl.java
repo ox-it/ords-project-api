@@ -63,7 +63,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		Transaction transaction = session.beginTransaction();
 		try {
 			configureProject(project);
-			validateProject(project);
+			validate(project);
 			session.save(project);
 			transaction.commit();
 		} catch (Exception e) {
@@ -215,7 +215,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
-			validateProject(project);
+			validate(project);
 			session.update(project);
 			session.getTransaction().commit();
 			return project;
