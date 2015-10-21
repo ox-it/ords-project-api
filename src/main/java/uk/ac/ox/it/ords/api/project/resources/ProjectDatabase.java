@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
 
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
@@ -62,7 +63,7 @@ public class ProjectDatabase {
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted("project:view:"+id)){
+		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 			throw new ForbiddenException();
 		}
@@ -99,7 +100,7 @@ public class ProjectDatabase {
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted("project:view:"+id)){
+		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 			throw new ForbiddenException();
 		}
@@ -132,7 +133,7 @@ public class ProjectDatabase {
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+id)){
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
 			throw new ForbiddenException();
 		}
@@ -174,7 +175,7 @@ public class ProjectDatabase {
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+id)){
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
 			throw new ForbiddenException();
 		}

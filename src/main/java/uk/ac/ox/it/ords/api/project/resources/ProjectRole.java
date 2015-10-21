@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.shiro.SecurityUtils;
 
 import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
@@ -60,7 +61,7 @@ public class ProjectRole {
 		}
 		
 		if (project.isPrivateProject()){
-			if (!SecurityUtils.getSubject().isPermitted("project:view:" + projectId)){
+			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(projectId))){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
 				throw new ForbiddenException();
 			}
@@ -106,7 +107,7 @@ public class ProjectRole {
 		}
 		
 		if (project.isPrivateProject()){
-			if (!SecurityUtils.getSubject().isPermitted("project:view:" + projectId)){
+			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(projectId))){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
 				throw new ForbiddenException();
 			}
@@ -139,8 +140,8 @@ public class ProjectRole {
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
 			throw new ForbiddenException();
 		}
 		
@@ -172,7 +173,7 @@ public class ProjectRole {
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
 			throw new ForbiddenException();
 		}

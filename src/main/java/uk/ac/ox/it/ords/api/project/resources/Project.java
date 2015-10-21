@@ -42,6 +42,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.shiro.SecurityUtils;
 
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
@@ -109,7 +110,7 @@ public class Project {
 		}
 		
 		if (project.isPrivateProject()){
-			if (!SecurityUtils.getSubject().isPermitted("project:view:"+id)){
+			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 				throw new ForbiddenException();
 			}
@@ -139,7 +140,7 @@ public class Project {
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (!SecurityUtils.getSubject().isPermitted("project:delete:"+id)){
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_DELETE(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:delete", id);
 			throw new ForbiddenException();
 		}
@@ -186,16 +187,14 @@ public class Project {
 		// Is this an upgrade request? If so check if the user has the project:upgrade permission.
 		//
 		if (oldProject.isTrialProject() == true && project.isTrialProject() == false){
-			if (!SecurityUtils.getSubject().isPermitted("project:upgrade")){
+			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_UPGRADE)){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:upgrade", id);
-
 				throw new ForbiddenException();
 			}
 		}
 
-
-		if (!SecurityUtils.getSubject().isPermitted("project:update:"+id)){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:update", id);
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:update", id);			
 			throw new ForbiddenException();
 		}
 		
@@ -220,7 +219,7 @@ public class Project {
 			@Context UriInfo uriInfo
 			) throws IOException {
 
-		if (!SecurityUtils.getSubject().isPermitted("project:create") && !SecurityUtils.getSubject().isPermitted("project:create-full")){
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE) && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE_FULL)){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:create", -1);
 			throw new ForbiddenException();
 		}
@@ -232,7 +231,7 @@ public class Project {
 		//
 		// Only users with the project:create-full permission can create a new project that has TrialProject set to False
 		//
-		if (project.isTrialProject() == false && !SecurityUtils.getSubject().isPermitted("project:create-full")){
+		if (project.isTrialProject() == false && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE_FULL)){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:create-full", -1);
 			throw new ForbiddenException();
 		}
