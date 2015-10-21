@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import uk.ac.ox.it.ords.api.project.model.Project;
+import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectServiceImpl;
 
 public interface ProjectService {
@@ -37,7 +38,7 @@ public interface ProjectService {
 	public List<Project> getOpenProjects();
 	
 	public Project getProject(int id);
-	public void createProject(Project project) throws Exception;
+	public void createProject(Project project) throws ValidationException, Exception;
 	public void deleteProject(int id) throws Exception;	
 	public Project updateProject(Project project) throws Exception;
 	

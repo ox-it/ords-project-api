@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.shiro.SecurityUtils;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Project;
+import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
@@ -72,7 +74,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#createProject(uk.ac.ox.it.ords.api.project.model.Project)
 	 */
-	public void createProject(Project project) throws Exception{
+	public void createProject(Project project) throws ValidationException, Exception{
 		
 		if (project == null) throw new Exception("Cannot create project: null");
 		
@@ -84,7 +86,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			session.save(project);
 			transaction.commit();
 			AuditService.Factory.getInstance().createProject(project.getName(), project.getProjectId());
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			log.error("Error creating Project", e);
 			transaction.rollback();
 			throw new Exception("Cannot create project",e);
