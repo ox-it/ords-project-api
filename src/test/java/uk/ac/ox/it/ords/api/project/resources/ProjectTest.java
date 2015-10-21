@@ -108,6 +108,26 @@ public class ProjectTest extends AbstractResourceTest {
 	
 	
 	@Test
+	public void createInvalidProject() throws IOException {
+		loginUsingSSO("pingu","test");
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("createInvalidProject");
+		assertEquals(400, getClient().path("project/").post(project).getStatus());
+		
+		project.setName("createInvalidProject___");
+		project.setDescription("createInvalidProject");
+		assertEquals(400, getClient().path("project/").post(project).getStatus());
+		
+		project.setName("createInvalidProject");
+		project.setDescription("createInvalidProject___");
+		assertEquals(400, getClient().path("project/").post(project).getStatus());
+		
+		logout();
+	}
+	
+	
+	@Test
 	public void createProjectUnauthenticated() throws IOException {
 		WebClient client = getClient();
 		client.path("project/");
