@@ -3,6 +3,9 @@ package uk.ac.ox.it.ords.api.project.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Standard permission sets for roles used in the Project API
+ */
 public class ProjectPermissionSets {
 	
 	public static List<String> getPermissionsForAnonymous(){

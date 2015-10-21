@@ -1,5 +1,8 @@
 package uk.ac.ox.it.ords.api.project.permissions;
 
+/**
+ * Standard permission definitions used by the Project API.
+ */
 public class ProjectPermissions {
 
 	//
