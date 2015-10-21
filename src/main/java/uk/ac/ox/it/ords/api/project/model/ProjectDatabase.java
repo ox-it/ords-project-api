@@ -16,8 +16,17 @@ public class ProjectDatabase {
 	@GeneratedValue
 	private int projectDatabaseId;
     private int projectId;
+    private int databaseId;
 
-    public int getProjectDatabaseId() {
+    public int getDatabaseId() {
+		return databaseId;
+	}
+
+	public void setDatabaseId(int databaseId) {
+		this.databaseId = databaseId;
+	}
+
+	public int getProjectDatabaseId() {
         return projectDatabaseId;
     }
 
