@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Project;
+import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
@@ -66,6 +67,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			validate(project);
 			session.save(project);
 			transaction.commit();
+			AuditService.Factory.getInstance().createProject(project.getName(), project.getProjectId());
 		} catch (Exception e) {
 			log.error("Error creating Project", e);
 			transaction.rollback();
@@ -93,6 +95,8 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			project.setDeleted(true);
 			session.update(project);
 			session.getTransaction().commit();
+			AuditService.Factory.getInstance().deleteProject(project.getName(), project.getProjectId());
+
 			//
 			// delete the owner role and permissions
 			//
@@ -218,6 +222,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			validate(project);
 			session.update(project);
 			session.getTransaction().commit();
+			AuditService.Factory.getInstance().updateProject(project.getName(), project.getProjectId());
 			return project;
 		} catch (Exception e) {
 			log.error("Error updating project", e);

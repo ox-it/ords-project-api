@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Permission;
 import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 
 public class ProjectRoleServiceImpl extends AbstractProjectRoleService implements ProjectRoleService {
@@ -172,6 +173,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 			userRole.setRole(projectRole);
 			session.save(userRole);
 			session.getTransaction().commit();
+			AuditService.Factory.getInstance().createProjectUser(userRole, projectId);
 			return userRole;
 		} catch (Exception e) {
 			log.error("Error creating user role", e);
@@ -183,7 +185,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 
 	}
 
-	public void removeUserFromRoleInProject(int projectid, int roleId)
+	public void removeUserFromRoleInProject(int projectId, int roleId)
 			throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -193,12 +195,13 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 			//
 			// Lets check that the role contains the project id
 			//
-			if(!userRole.getRole().endsWith(String.valueOf(projectid))){
+			if(!userRole.getRole().endsWith(String.valueOf(projectId))){
 				session.getTransaction().rollback();
 				throw new Exception("Attempt to remove role via another project");
 			}
 			session.delete(userRole);
 			session.getTransaction().commit();
+			AuditService.Factory.getInstance().deleteProjectRole(userRole, projectId);
 		} catch (Exception e) {
 			session.getTransaction().rollback();
 			log.error("Cannot find user role", e);
