@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.ox.it.ords.api.project.model.Permission;
 import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
+import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectRoleService;
@@ -183,22 +184,18 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		}
 	}
 
-	public UserRole addUserRoleToProject(int projectId, UserRole userRole) throws Exception {
-		if (userRole == null) throw new Exception("Invalid role");
-		if (userRole.getPrincipalName() == null) throw new Exception("No user principal set for role");
-		if (userRole.getRole() == null) throw new Exception("No role set");
-		if (!isValidRole(userRole.getRole())) throw new Exception("Invalid role type");
-		
+	public UserRole addUserRoleToProject(int projectId, UserRole userRole) throws ValidationException, Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
+			validate(userRole);
 			String projectRole = userRole.getRole()+"_"+projectId;
 			userRole.setRole(projectRole);
 			session.save(userRole);
 			session.getTransaction().commit();
 			AuditService.Factory.getInstance().createProjectUser(userRole, projectId);
 			return userRole;
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			log.error("Error creating user role", e);
 			session.getTransaction().rollback();
 			throw new Exception("Cannot create user role",e);
@@ -209,19 +206,23 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	}
 
 	public void removeUserFromRoleInProject(int projectId, int roleId)
-			throws Exception {
+			throws ValidationException, Exception {
+		
+		//
+		// First, obtain the UserRole
+		//
+		UserRole userRole = getUserRole(roleId);
+		if (userRole == null) throw new Exception("Cannot find user role");
+		//
+		// Lets check that the role contains the project id
+		//
+		if(!userRole.getRole().endsWith(String.valueOf(projectId))){
+			throw new ValidationException("Attempt to remove role via another project");
+		}
+
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
-			UserRole userRole = (UserRole) session.get(UserRole.class, roleId);
-			if (userRole == null) throw new Exception("Cannot find user role");
-			//
-			// Lets check that the role contains the project id
-			//
-			if(!userRole.getRole().endsWith(String.valueOf(projectId))){
-				session.getTransaction().rollback();
-				throw new Exception("Attempt to remove role via another project");
-			}
 			session.delete(userRole);
 			session.getTransaction().commit();
 			AuditService.Factory.getInstance().deleteProjectRole(userRole, projectId);

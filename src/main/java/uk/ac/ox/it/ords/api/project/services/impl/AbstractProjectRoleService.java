@@ -15,11 +15,21 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl;
 
+import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 
 public abstract class AbstractProjectRoleService implements ProjectRoleService {
+	
+	public boolean validate(UserRole userRole) throws ValidationException{
+		if (userRole == null) throw new ValidationException("Invalid role");
+		if (userRole.getPrincipalName() == null) throw new ValidationException("No user principal set for role");
+		if (userRole.getRole() == null) throw new ValidationException("No role set");
+		if (!isValidRole(userRole.getRole())) throw new ValidationException("Invalid role type");
+		return true;
+	}
 
-	public static boolean isValidRole(String role){
+	private boolean isValidRole(String role){
 		for (ProjectRole projectRole : ProjectRole.values()){
 			if (projectRole.name().equals(role)) return true;
 		}
