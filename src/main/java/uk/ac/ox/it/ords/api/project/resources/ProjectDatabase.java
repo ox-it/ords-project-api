@@ -182,7 +182,6 @@ public class ProjectDatabase {
 			ProjectDatabaseService.Factory.getInstance().removeDatabaseFromProject(id, db);
 			return Response.ok().build();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new InternalServerErrorException();
 		}
 		
