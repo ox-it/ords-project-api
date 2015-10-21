@@ -15,6 +15,9 @@ import uk.ac.ox.it.ords.api.project.model.Project;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
+/**
+ * Hibernate implementation of the ProjectService
+ */
 public class ProjectServiceImpl extends AbstractProjectServiceImpl implements ProjectService{
 
 	private static Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
@@ -29,6 +32,9 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		setSessionFactory (HibernateUtils.getSessionFactory());
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#getProject(int)
+	 */
 	public Project getProject(int id) {
 		Session session = this.sessionFactory.getCurrentSession();
 		Project project = null;
@@ -46,6 +52,9 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		return project;
 	} 
 	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#createProject(uk.ac.ox.it.ords.api.project.model.Project)
+	 */
 	public void createProject(Project project) throws Exception{
 		
 		if (project == null) throw new Exception("Cannot create project: null");
@@ -53,7 +62,8 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		Session session = this.sessionFactory.getCurrentSession();
 		Transaction transaction = session.beginTransaction();
 		try {
-			project = configureProject(project);
+			configureProject(project);
+			validateProject(project);
 			session.save(project);
 			transaction.commit();
 		} catch (Exception e) {
@@ -70,6 +80,9 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#deleteProject(int)
+	 */
 	public void deleteProject(int id) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -94,6 +107,9 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#getProjects()
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Project> getProjects() {
@@ -127,6 +143,9 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		return myProjects;
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#getFullProjects()
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Project> getFullProjects() {
@@ -162,6 +181,9 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		return visibleProjects;
 	}
 	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#getOpenProjects()
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Project> getOpenProjects() {
@@ -185,30 +207,15 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		return projects;
 	}
 
-	@Override
-	public Project upgradeProject(int projectId) throws Exception {
-		Project project = this.getProject(projectId);
-			Session session = this.sessionFactory.getCurrentSession();
-			try {
-				session.beginTransaction();
-				project.setTrialProject(false);
-				session.update(project);
-				session.getTransaction().commit();
-				return project;
-			} catch (Exception e) {
-				log.error("Error upgrading project", e);
-				session.getTransaction().rollback();
-				throw e;
-			} finally {
-				  HibernateUtils.closeSession();
-			}
-	}
-
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#updateProject(uk.ac.ox.it.ords.api.project.model.Project)
+	 */
 	@Override
 	public Project updateProject(Project project) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
+			validateProject(project);
 			session.update(project);
 			session.getTransaction().commit();
 			return project;

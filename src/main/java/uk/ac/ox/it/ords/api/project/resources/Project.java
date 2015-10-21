@@ -165,39 +165,28 @@ public class Project {
 		}
 		
 		//
-		// Is this an upgrade request?
+		// Is this an upgrade request? If so check if the user has the project:upgrade permission.
 		//
 		if (oldProject.isTrialProject() == true && project.isTrialProject() == false){
 			if (!SecurityUtils.getSubject().isPermitted("project:upgrade")){
 				throw new ForbiddenException();
 			}
-			try {
-				ProjectService.Factory.getInstance().upgradeProject(id);
-				uk.ac.ox.it.ords.api.project.model.Project upgradedProject = ProjectService.Factory.getInstance().getProject(id);
-				System.out.println("returning project "+id);
-				System.out.println(upgradedProject.isTrialProject());
-				return Response.ok(upgradedProject).build();
-			} catch (Exception e) {
-				throw new InternalServerErrorException();
-			}
+		}
 
-		//
-		// This is an update request
-		//
-		} else {
-			if (!SecurityUtils.getSubject().isPermitted("project:update:"+id)){
-				throw new ForbiddenException();
-			}
-			try {
-				uk.ac.ox.it.ords.api.project.model.Project updatedProject = ProjectService.Factory.getInstance().updateProject(project);
-				return Response.ok(updatedProject).build();
-			} catch (Exception e) {
-				throw new InternalServerErrorException();
-			}
+
+		if (!SecurityUtils.getSubject().isPermitted("project:update:"+id)){
+			throw new ForbiddenException();
 		}
 		
-
-		
+		//
+		// Fulfill update request
+		//
+		try {
+			uk.ac.ox.it.ords.api.project.model.Project updatedProject = ProjectService.Factory.getInstance().updateProject(project);
+			return Response.ok(updatedProject).build();
+		} catch (Exception e) {
+			throw new InternalServerErrorException();
+		}	
 		
 	}
 
@@ -218,6 +207,9 @@ public class Project {
 			throw new BadRequestException();
 		}
 		
+		//
+		// Only users with the project:create-full permission can create a new project that has TrialProject set to False
+		//
 		if (project.isTrialProject() == false && !SecurityUtils.getSubject().isPermitted("project:create-full")){
 			throw new ForbiddenException();
 		}
