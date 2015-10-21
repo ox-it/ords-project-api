@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
-import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 
 public class ProjectInvitationServiceImpl implements ProjectInvitationService {
@@ -65,6 +64,7 @@ public class ProjectInvitationServiceImpl implements ProjectInvitationService {
 		Session session = this.sessionFactory.getCurrentSession();
 		Transaction transaction = session.beginTransaction();
 		try {
+			@SuppressWarnings("unchecked")
 			List<Invitation> invitations = session.createCriteria(Invitation.class).add(Restrictions.eq("projectId", projectId)).list();
 			transaction.commit();
 			return invitations; 
