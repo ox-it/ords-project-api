@@ -17,37 +17,97 @@ package uk.ac.ox.it.ords.api.project.services.impl.hibernate;
 
 import java.util.List;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.ox.it.ords.api.project.model.Invitation;
+import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 
 public class ProjectInvitationServiceImpl implements ProjectInvitationService {
+	
+	private static Logger log = LoggerFactory.getLogger(ProjectInvitationServiceImpl.class);
+	
+    private SessionFactory sessionFactory;
+
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
 	public ProjectInvitationServiceImpl() {
+		setSessionFactory (HibernateUtils.getSessionFactory());
 	}
 
 	@Override
 	public Invitation createInvitation(Invitation invitation)
 			throws Exception {
-		
-	
-		return null;
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction transaction = session.beginTransaction();
+		try {
+			session.save(invitation);
+			transaction.commit();
+			return invitation;
+		} catch (Exception e) {
+			log.error("Error creating invitation", e);
+			transaction.rollback();
+			throw new Exception("Cannot create invitation",e);
+		} finally {
+			  HibernateUtils.closeSession();
+		}
 	}
 
 	@Override
-	public List<Invitation> getInvitations(int projectId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Invitation> getInvitations(int projectId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction transaction = session.beginTransaction();
+		try {
+			List<Invitation> invitations = session.createCriteria(Invitation.class).add(Restrictions.eq("projectId", projectId)).list();
+			transaction.commit();
+			return invitations; 
+		} catch (Exception e) {
+			log.error("Error listing invitations", e);
+			transaction.rollback();
+			throw new Exception("Cannot list invitations",e);
+		} finally {
+			  HibernateUtils.closeSession();
+		}
 	}
 
 	@Override
 	public Invitation getInvitation(int invitationId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction transaction = session.beginTransaction();
+		try {
+			Invitation invitation = (Invitation) session.get(Invitation.class, invitationId);
+			transaction.commit();
+			return invitation; 
+		} catch (Exception e) {
+			log.error("Error getting invitation", e);
+			transaction.rollback();
+			throw new Exception("Cannot get invitation",e);
+		} finally {
+			  HibernateUtils.closeSession();
+		}
 	}
 
 	@Override
 	public void deleteInvitation(Invitation invitation) throws Exception {
-		// TODO Auto-generated method stub
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction transaction = session.beginTransaction();
+		try {
+			session.delete(invitation);
+			transaction.commit();
+		} catch (Exception e) {
+			log.error("Error getting invitation", e);
+			transaction.rollback();
+			throw new Exception("Cannot get invitation",e);
+		} finally {
+			  HibernateUtils.closeSession();
+		}
 		
 	}
 

@@ -23,7 +23,7 @@ import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectInvitationSer
 
 public interface ProjectInvitationService {
 
-	public List<Invitation> getInvitations(int projectId);
+	public List<Invitation> getInvitations(int projectId) throws Exception;
 	public Invitation getInvitation(int invitationId) throws Exception;
 	public void deleteInvitation(Invitation invitation) throws Exception;
 	public Invitation createInvitation(Invitation invitation) throws Exception;
