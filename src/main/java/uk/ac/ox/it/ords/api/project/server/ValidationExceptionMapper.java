@@ -18,6 +18,9 @@ package uk.ac.ox.it.ords.api.project.server;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+/**
+ * Maps ValidationException to 400 Bad Request
+ */
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException>{
 
 	@Override

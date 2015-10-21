@@ -15,7 +15,12 @@
  */
 package uk.ac.ox.it.ords.api.project.server;
 
+/**
+ * Exception thrown when a service request fails validation checks
+ */
 public class ValidationException extends Exception {
+
+	private static final long serialVersionUID = 2411830430228398243L;
 
 	public ValidationException(String message) {
 		super(message);
