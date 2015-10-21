@@ -15,6 +15,7 @@
  */
 package uk.ac.ox.it.ords.api.project.services;
 
+import java.util.List;
 import java.util.ServiceLoader;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
@@ -22,6 +23,9 @@ import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectInvitationSer
 
 public interface ProjectInvitationService {
 
+	public List<Invitation> getInvitations(int projectId);
+	public Invitation getInvitation(int invitationId) throws Exception;
+	public void deleteInvitation(Invitation invitation) throws Exception;
 	public Invitation createInvitation(Invitation invitation) throws Exception;
 	
 
