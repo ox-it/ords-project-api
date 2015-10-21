@@ -38,6 +38,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import uk.ac.ox.it.ords.api.project.model.Permission;
 import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 import uk.ac.ox.it.ords.security.AbstractShiroTest;
 
@@ -83,44 +84,37 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		//
 		// Anyone with the "User" role can create new trial projects
 		//
-		Permission createProject = new Permission();
-		createProject.setRole("user");
-		createProject.setPermission("project:create");
-		session.save(createProject);
+		for (String permission : ProjectPermissionSets.getPermissionsForUser()){
+			Permission permissionObject = new Permission();
+			permissionObject.setRole("user");
+			permissionObject.setPermission(permission);
+			session.save(permissionObject);
+		}
 		
 		//
 		// Anyone with the "Administrator" role can create new full
 		// projects and upgrade projects to full, and update any
 		// user projects
 		//
-		Permission createFullProject = new Permission();
-		createFullProject.setRole("administrator");
-		createFullProject.setPermission("project:create-full");
-		session.save(createFullProject);
-		Permission upgradeProject = new Permission();
-		upgradeProject.setRole("administrator");
-		upgradeProject.setPermission("project:upgrade");
-		session.save(upgradeProject);
-		Permission modifyProject = new Permission();
-		modifyProject.setRole("administrator");
-		modifyProject.setPermission("project:update:*");
-		session.save(modifyProject);
-		
+		for (String permission : ProjectPermissionSets.getPermissionsForSysadmin()){
+			Permission permissionObject = new Permission();
+			permissionObject.setRole("administrator");
+			permissionObject.setPermission(permission);
+			session.save(permissionObject);
+		}
+
 		//
-		// "Anonymous" or "User" can View public projects
+		// "Anonymous" can View public projects
 		//
-		Permission viewPublicProject = new Permission();
-		viewPublicProject.setRole("anonymous");
-		viewPublicProject.setPermission("view:project:public");
-		session.save(viewPublicProject);
-		
-		Permission viewPublicProjectUser = new Permission();
-		viewPublicProjectUser.setRole("user");
-		viewPublicProjectUser.setPermission("view:project:public");
-		session.save(viewPublicProjectUser);
+		for (String permission : ProjectPermissionSets.getPermissionsForAnonymous()){
+			Permission permissionObject = new Permission();
+			permissionObject.setRole("anonymous");
+			permissionObject.setPermission(permission);
+			session.save(permissionObject);
+		}
 	
 		//
-		// Add users to roles
+		// Add test users to roles
 		//
 		
 		UserRole admin = new UserRole();
