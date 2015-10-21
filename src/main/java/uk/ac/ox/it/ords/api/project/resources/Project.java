@@ -24,7 +24,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -127,8 +126,7 @@ public class Project {
 	public Response deleteProject(
 			@PathParam("id") final int id, 
 			@Context SecurityContext securityContext
-			) throws IOException{
-		
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
@@ -144,12 +142,8 @@ public class Project {
 			AuditService.Factory.getInstance().createNotAuthRecord("project:delete", id);
 			throw new ForbiddenException();
 		}
-		
-		try {
-			ProjectService.Factory.getInstance().deleteProject(id);
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}
+
+		ProjectService.Factory.getInstance().deleteProject(id);
 		return Response.ok().build();
 	}
 	
@@ -160,7 +154,7 @@ public class Project {
 	public Response updateProject(
 			uk.ac.ox.it.ords.api.project.model.Project project,
 			@PathParam("id") final int id 
-			) throws IOException {
+			) throws Exception {
 		
 		uk.ac.ox.it.ords.api.project.model.Project oldProject = ProjectService.Factory.getInstance().getProject(id);
 		
@@ -201,13 +195,8 @@ public class Project {
 		//
 		// Fulfill update request
 		//
-		try {
-			uk.ac.ox.it.ords.api.project.model.Project updatedProject = ProjectService.Factory.getInstance().updateProject(project);
-			return Response.ok(updatedProject).build();
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}	
-		
+		uk.ac.ox.it.ords.api.project.model.Project updatedProject = ProjectService.Factory.getInstance().updateProject(project);
+		return Response.ok(updatedProject).build();
 	}
 
 	@Path("/project/")
@@ -217,7 +206,7 @@ public class Project {
 	public Response createProject(
 			uk.ac.ox.it.ords.api.project.model.Project project,
 			@Context UriInfo uriInfo
-			) throws IOException {
+			) throws Exception {
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE) && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE_FULL)){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:create", -1);
@@ -236,16 +225,10 @@ public class Project {
 			throw new ForbiddenException();
 		}
 
-		try {
-			ProjectService.Factory.getInstance().createProject(project);
-			
-	        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-	        builder.path(Integer.toString(project.getProjectId()));
-	        return Response.created(builder.build()).build();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BadRequestException();
-		}
+		ProjectService.Factory.getInstance().createProject(project);		
+	    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+	    builder.path(Integer.toString(project.getProjectId()));
+	    return Response.created(builder.build()).build();
 	}
 
 

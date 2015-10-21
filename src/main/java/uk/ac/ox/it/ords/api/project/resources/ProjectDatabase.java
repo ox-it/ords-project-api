@@ -22,7 +22,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -51,7 +50,7 @@ public class ProjectDatabase {
 	public Response getDatabaseForProject(
 			@PathParam("id") final int id,
 			@PathParam("db") final int db
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
@@ -70,12 +69,8 @@ public class ProjectDatabase {
 		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase database;
 		
-		try {
-			database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}	
-		
+		database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
+
 		if (database == null){
 			throw new NotFoundException();
 		}
@@ -88,7 +83,7 @@ public class ProjectDatabase {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDatabasesForProject(
 			@PathParam("id") final int id
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
@@ -105,12 +100,8 @@ public class ProjectDatabase {
 			throw new ForbiddenException();
 		}
 		
-		try {
-			List<uk.ac.ox.it.ords.api.project.model.ProjectDatabase> databases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(id);
-			return Response.ok(databases).build();
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}		
+		List<uk.ac.ox.it.ords.api.project.model.ProjectDatabase> databases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(id);
+		return Response.ok(databases).build();		
 	}
 	
 	@Path("/project/{id}/database")
@@ -121,7 +112,7 @@ public class ProjectDatabase {
 			@PathParam("id") final int id,
 			uk.ac.ox.it.ords.api.project.model.ProjectDatabase database,
 			@Context UriInfo uriInfo
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
@@ -145,17 +136,12 @@ public class ProjectDatabase {
 			throw new BadRequestException();
 		}
 		
-		try {
-			
-			database = ProjectDatabaseService.Factory.getInstance().addDatabaseToProject(id, database);
-			
-	        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-	        builder.path(Integer.toString(database.getProjectDatabaseId()));
-	        return Response.created(builder.build()).build();
-			
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}
+		database = ProjectDatabaseService.Factory.getInstance().addDatabaseToProject(id, database);
+
+		UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+		builder.path(Integer.toString(database.getProjectDatabaseId()));
+		return Response.created(builder.build()).build();
+
 	}
 	
 	@Path("/project/{id}/database/{db}")
@@ -163,7 +149,7 @@ public class ProjectDatabase {
 	public Response removeDatabaseFromProject(
 			@PathParam("id") final int id,
 			@PathParam("db") final int db
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
@@ -182,11 +168,7 @@ public class ProjectDatabase {
 		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase database = null; 
 		
-		try {
-			database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
-		} catch (Exception e1) {
-			throw new InternalServerErrorException();
-		}
+		database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
 		
 		if (database == null){
 			throw new NotFoundException();
@@ -199,12 +181,8 @@ public class ProjectDatabase {
 			throw new BadRequestException();
 		}
 		
-		try {
-			ProjectDatabaseService.Factory.getInstance().removeDatabaseFromProject(id, db);
-			return Response.ok().build();
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}
+		ProjectDatabaseService.Factory.getInstance().removeDatabaseFromProject(id, db);
+		return Response.ok().build();
 		
 	}
 

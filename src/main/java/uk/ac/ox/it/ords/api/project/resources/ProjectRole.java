@@ -48,7 +48,7 @@ public class ProjectRole {
 	public Response getProjectRole(
 				@PathParam("projectId") final int projectId,
 				@PathParam("roleId") final int roleId
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		
@@ -67,12 +67,7 @@ public class ProjectRole {
 			}
 		}
 		
-		UserRole userRole;
-		try {
-			userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
-		} catch (Exception e) {
-			return Response.serverError().build();
-		}
+		UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
 		
 		if (userRole == null){
 			throw new NotFoundException();		
@@ -94,7 +89,7 @@ public class ProjectRole {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getRoles(
 			@PathParam("id") final int projectId
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		
@@ -113,11 +108,7 @@ public class ProjectRole {
 			}
 		}
 		
-		try {
-			return Response.ok(ProjectRoleService.Factory.getInstance().getUserRolesForProject(projectId)).build();
-		} catch (Exception e) {
-			return Response.serverError().build();
-		}
+		return Response.ok(ProjectRoleService.Factory.getInstance().getUserRolesForProject(projectId)).build();
 	}
 
 	@Path("/project/{id}/role")
@@ -128,7 +119,7 @@ public class ProjectRole {
 				UserRole role,
 				@PathParam("id") final int projectId,
 				@Context UriInfo uriInfo
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		
@@ -145,15 +136,11 @@ public class ProjectRole {
 			throw new ForbiddenException();
 		}
 		
-		try {
-			role = ProjectRoleService.Factory.getInstance().addUserRoleToProject(projectId, role);
+		role = ProjectRoleService.Factory.getInstance().addUserRoleToProject(projectId, role);
 			
-	        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-	        builder.path(Integer.toString(role.getId()));
-	        return Response.created(builder.build()).build();
-		} catch (Exception e) {
-			throw new BadRequestException();
-		}
+	    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+	    builder.path(Integer.toString(role.getId()));
+	    return Response.created(builder.build()).build();
 	}
 	
 	@Path("/project/{projectId}/role/{roleId}")
@@ -161,7 +148,7 @@ public class ProjectRole {
 	public Response deleteRoleFromProject(
 				@PathParam("projectId") final int projectId,
 				@PathParam("roleId") final int roleId
-			){
+			) throws Exception{
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 
@@ -178,23 +165,14 @@ public class ProjectRole {
 			throw new ForbiddenException();
 		}
 		
-		try {
-			UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
-			if (userRole == null){
-				throw new NotFoundException();				
-			}
-		} catch (Exception e1) {
-			throw new NotFoundException();
-		}
-		try {
-			ProjectRoleService.Factory.getInstance().removeUserFromRoleInProject(projectId, roleId);
-			return Response.ok().build();
-		} catch (Exception e) {
-			throw new BadRequestException();
+		UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
+		
+		if (userRole == null){
+			throw new NotFoundException();				
 		}
 		
-		
-		
+		ProjectRoleService.Factory.getInstance().removeUserFromRoleInProject(projectId, roleId);
+		return Response.ok().build();
 	}
 
 }

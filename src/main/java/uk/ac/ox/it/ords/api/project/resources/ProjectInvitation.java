@@ -22,7 +22,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -47,99 +46,133 @@ public class ProjectInvitation {
 	@Path("/project/{id}/invitation/{invitationid}")
 	@DELETE
 	public Response deleteInvitation(
-		@PathParam("id") final int projectId,
-		@PathParam("invitationid") final int invitationId
-		) throws Exception{
-		
+			@PathParam("id") final int projectId,
+			@PathParam("invitationid") final int invitationId
+			) throws Exception{
+
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		uk.ac.ox.it.ords.api.project.model.Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitation(invitationId);
-
-		if (project == null || invitation == null){
-			throw new NotFoundException();
-		}
-		
-		if (project.isDeleted()){
-			return Response.status(Status.GONE).build();
-		}
-		
-		if (project.getProjectId() != invitation.getProjectId()){
-			throw new BadRequestException();
-		}
-		
-		try {
-			ProjectInvitationService.Factory.getInstance().deleteInvitation(invitation);
-			return Response.ok().build();
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}
-	}
-	
-	@Path("/project/{id}/invitation")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getInvitations(
-			@PathParam("id") final int projectId){
-		
-		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 
 		if (project == null){
 			throw new NotFoundException();
 		}
-		
+
 		if (project.isDeleted()){
 			return Response.status(Status.GONE).build();
 		}
 		
-		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW_INVITATIONS(projectId))){
-			throw new ForbiddenException();
-		}
-		
-		try {
-			List<Invitation> invitations = ProjectInvitationService.Factory.getInstance().getInvitations(projectId);
-			return Response.ok(invitations).build();
-		} catch (Exception e) {
-			throw new InternalServerErrorException();
-		}
-	}
-	
-	
-	
-	@Path("/project/{id}/invitation")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response createInvitation(
-			    Invitation invitation,
-				@PathParam("id") final int projectId,
-				@Context UriInfo uriInfo
-			){
-		
-		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
-		
-		if (project == null) {
+		if (invitation == null){
 			throw new NotFoundException();
-		}
-		
-		if (project.isDeleted()){
-			return Response.status(Status.GONE).build();
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
 			throw new ForbiddenException();
 		}
-		
+
 		if (project.getProjectId() != invitation.getProjectId()){
 			throw new BadRequestException();
 		}
+
+		ProjectInvitationService.Factory.getInstance().deleteInvitation(invitation);
+		return Response.ok().build();
+	}
+
+	@Path("/project/{id}/invitation")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getInvitations(
+			@PathParam("id") final int projectId) throws Exception{
+
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+
+		if (project == null){
+			throw new NotFoundException();
+		}
+
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW_INVITATIONS(projectId))){
+			throw new ForbiddenException();
+		}
+
+		List<Invitation> invitations = ProjectInvitationService.Factory.getInstance().getInvitations(projectId);
+		return Response.ok(invitations).build();
+	}
+
+	@Path("/project/{id}/invitation/{invitationid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getInvitations(
+			@PathParam("id") final int projectId,
+			@PathParam("invitationid") final int invitationId
+			) throws Exception{
+
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+		Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitation(invitationId);
 		
-		try {
-			invitation = ProjectInvitationService.Factory.getInstance().createInvitation(invitation);
-	        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-	        builder.path(Integer.toString(invitation.getId()));
-	        return Response.created(builder.build()).build();
-		} catch (Exception e) {
+		if (project == null){
+			throw new NotFoundException();
+		}
+
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
+		if (invitation == null){
+			throw new NotFoundException();
+		}
+
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW_INVITATIONS(projectId))){
+			throw new ForbiddenException();
+		}
+
+		//
+		// Check for cross-resource attack
+		//
+		if (invitation.getProjectId() != projectId){
 			throw new BadRequestException();
 		}
+
+		return Response.ok(invitation).build();
+
+	}
+
+
+
+	@Path("/project/{id}/invitation")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createInvitation(
+			Invitation invitation,
+			@PathParam("id") final int projectId,
+			@Context UriInfo uriInfo
+			) throws Exception{
+
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+
+		if (project == null) {
+			throw new NotFoundException();
+		}
+
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
+			throw new ForbiddenException();
+		}
+
+		if (project.getProjectId() != invitation.getProjectId()){
+			throw new BadRequestException();
+		}
+
+			invitation = ProjectInvitationService.Factory.getInstance().createInvitation(invitation);
+			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+			builder.path(Integer.toString(invitation.getId()));
+			return Response.created(builder.build()).build();
 	}
 
 }
