@@ -2,7 +2,6 @@ package uk.ac.ox.it.ords.api.project.services;
 
 import static org.junit.Assert.*;
 
-import org.hibernate.LockOptions;
 import org.junit.Test;
 
 import uk.ac.ox.it.ords.api.project.model.Project;
@@ -57,17 +56,6 @@ public class ProjectServiceTest {
 			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
 			ProjectService.Factory.getInstance().deleteProject(9999);
 		} catch (Exception e) {
-			HibernateUtils.closeSession();			
-			throw e;
-		}
-	}
-	
-	@Test (expected = Exception.class)
-	public void testUpgradeProjectException() throws Exception{	
-		try {
-			ProjectService.Factory.getInstance().upgradeProject(9999);
-		} catch (Exception e) {
-			e.printStackTrace();
 			HibernateUtils.closeSession();			
 			throw e;
 		}

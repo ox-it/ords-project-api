@@ -90,7 +90,8 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		
 		//
 		// Anyone with the "Administrator" role can create new full
-		// projects and upgrade projects to full.
+		// projects and upgrade projects to full, and update any
+		// user projects
 		//
 		Permission createFullProject = new Permission();
 		createFullProject.setRole("administrator");
@@ -100,6 +101,10 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		upgradeProject.setRole("administrator");
 		upgradeProject.setPermission("project:upgrade");
 		session.save(upgradeProject);
+		Permission modifyProject = new Permission();
+		modifyProject.setRole("administrator");
+		modifyProject.setPermission("project:update:*");
+		session.save(modifyProject);
 		
 		//
 		// "Anonymous" or "User" can View public projects

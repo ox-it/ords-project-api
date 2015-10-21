@@ -3,7 +3,6 @@ package uk.ac.ox.it.ords.api.project.resources;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.GenericType;
@@ -11,6 +10,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Test;
+
+import uk.ac.ox.it.ords.api.project.model.UserRole;
 
 public class ProjectTest extends AbstractResourceTest {
 
@@ -118,6 +119,40 @@ public class ProjectTest extends AbstractResourceTest {
 		
 		loginUsingSSO("admin","admin");
 		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		logout();
+	}
+	
+	@Test
+	public void updateFullProject(){
+		//
+		// Full project
+		//
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project J");
+		project.setDescription("createFullProject");
+		project.setTrialProject(false);
+		
+		//
+		// Admin will create it, and add Pingu to owner role
+		//
+		loginUsingSSO("admin","admin");
+		
+		String projectPath = getClient().path("project/").post(project).getLocation().getPath();
+	
+		UserRole role = new UserRole();
+		role.setPrincipalName("pingu");
+		role.setRole("owner");
+		getClient().path(projectPath+"/role").post(role);
+		
+		logout();
+		
+		//
+		// Lets check our Owner can still update the project
+		//
+		loginUsingSSO("pingu", "pingu");
+		project = getClient().path(projectPath).get().readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		project.setDescription("createFullProject - edited");
+		assertEquals(200, getClient().path(projectPath).put(project).getStatus());
 		logout();
 	}
 	
