@@ -14,6 +14,7 @@ import uk.ac.ox.it.ords.api.project.model.Permission;
 import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
+import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectRoleService;
 
 public class ProjectRoleServiceImpl extends AbstractProjectRoleService implements ProjectRoleService {
 

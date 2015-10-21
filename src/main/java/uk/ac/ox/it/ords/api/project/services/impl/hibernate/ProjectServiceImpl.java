@@ -15,6 +15,7 @@ import uk.ac.ox.it.ords.api.project.model.Project;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectServiceImpl;
 
 /**
  * Hibernate implementation of the ProjectService

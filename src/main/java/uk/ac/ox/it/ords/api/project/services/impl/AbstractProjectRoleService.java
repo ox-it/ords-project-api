@@ -1,4 +1,4 @@
-package uk.ac.ox.it.ords.api.project.services.impl.hibernate;
+package uk.ac.ox.it.ords.api.project.services.impl;
 
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 
