@@ -25,6 +25,9 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 		setSessionFactory (HibernateUtils.getSessionFactory());
 	}
 	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#getDatabaseForProject(int)
+	 */
 	@Override
 	public ProjectDatabase getDatabaseForProject(int id) throws Exception {
 		
@@ -42,6 +45,9 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#getDatabasesForProject(int)
+	 */
 	@Override
 	public List<ProjectDatabase> getDatabasesForProject(int id) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -62,6 +68,9 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#addDatabaseToProject(int, uk.ac.ox.it.ords.api.project.model.ProjectDatabase)
+	 */
 	@Override
 	public ProjectDatabase addDatabaseToProject(int projectId, ProjectDatabase projectDatabase) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -78,6 +87,9 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#removeDatabaseFromProject(int, int)
+	 */
 	@Override
 	public void removeDatabaseFromProject(int projectId, int databaseId)
 			throws Exception {

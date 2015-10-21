@@ -16,7 +16,6 @@ public class ProjectDatabase {
 	@GeneratedValue
 	private int projectDatabaseId;
     private int projectId;
-    private String dbName;
 
     public int getProjectDatabaseId() {
         return projectDatabaseId;
@@ -33,13 +32,4 @@ public class ProjectDatabase {
     public void setProjectId(int projectId) {
         this.projectId = projectId;
     }
-
-    public String getDbName() {
-        return dbName;
-    }
-
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-    
 }

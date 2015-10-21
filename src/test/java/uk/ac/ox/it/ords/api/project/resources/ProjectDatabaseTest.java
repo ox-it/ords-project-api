@@ -41,7 +41,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path(projectURI.getPath()+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase.setDbName("Test DB 1");
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
@@ -89,7 +88,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path("project/"+id+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase.setDbName("Test DB 1");
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
@@ -129,7 +127,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path("project/"+id1+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase1 = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase1.setDbName("Test DB 1");
 		projectDatabase1.setProjectId(id1);
 		response = client.post(projectDatabase1);
 		assertEquals(201, response.getStatus());
@@ -155,7 +152,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path("project/"+id2+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase2 = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase2.setDbName("Test DB 2");
 		projectDatabase2.setProjectId(id1);
 		response = client.post(projectDatabase2);
 		assertEquals(400, response.getStatus());
@@ -223,7 +219,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path("project/"+id+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase.setDbName("Test DB 1");
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
@@ -234,7 +229,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path("project/"+id+"/database");		
 		projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase.setDbName("Test DB 2");
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(403, response.getStatus());
@@ -263,7 +257,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path("project/"+id+"/database");		
 		projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase.setDbName("Test DB 2");
 		projectDatabase.setProjectId(9999);
 		response = client.post(projectDatabase);
 		assertEquals(400, response.getStatus());
@@ -308,7 +301,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		WebClient client = getClient();
 		client.path("project/9999/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase.setDbName("Test DB 1");
 		projectDatabase.setProjectId(9999);
 		Response response = client.post(projectDatabase);
 		assertEquals(404, response.getStatus());
@@ -365,14 +357,12 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client = getClient();
 		client.path("project/"+id+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
-		projectDatabase.setDbName("Test DB 1");
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
 		
 		client = getClient();
 		client.path("project/"+id+"/database");
-		projectDatabase.setDbName("Test DB 2");
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
