@@ -27,6 +27,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.shiro.SecurityUtils;
 
+import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 
@@ -94,6 +95,7 @@ public class Project {
 		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted("project:view:"+id)){
+				AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 				throw new ForbiddenException();
 			}
 		}
@@ -123,6 +125,7 @@ public class Project {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted("project:delete:"+id)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:delete", id);
 			throw new ForbiddenException();
 		}
 		
@@ -169,12 +172,15 @@ public class Project {
 		//
 		if (oldProject.isTrialProject() == true && project.isTrialProject() == false){
 			if (!SecurityUtils.getSubject().isPermitted("project:upgrade")){
+				AuditService.Factory.getInstance().createNotAuthRecord("project:upgrade", id);
+
 				throw new ForbiddenException();
 			}
 		}
 
 
 		if (!SecurityUtils.getSubject().isPermitted("project:update:"+id)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:update", id);
 			throw new ForbiddenException();
 		}
 		
@@ -200,6 +206,7 @@ public class Project {
 			) throws IOException {
 
 		if (!SecurityUtils.getSubject().isPermitted("project:create") && !SecurityUtils.getSubject().isPermitted("project:create-full")){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:create", -1);
 			throw new ForbiddenException();
 		}
 
@@ -211,6 +218,7 @@ public class Project {
 		// Only users with the project:create-full permission can create a new project that has TrialProject set to False
 		//
 		if (project.isTrialProject() == false && !SecurityUtils.getSubject().isPermitted("project:create-full")){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:create-full", -1);
 			throw new ForbiddenException();
 		}
 

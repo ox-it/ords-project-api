@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.shiro.SecurityUtils;
 
 import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
@@ -45,6 +46,7 @@ public class ProjectRole {
 		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted("project:view:" + projectId)){
+				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
 				throw new ForbiddenException();
 			}
 		}
@@ -90,6 +92,7 @@ public class ProjectRole {
 		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted("project:view:" + projectId)){
+				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
 				throw new ForbiddenException();
 			}
 		}
@@ -122,6 +125,7 @@ public class ProjectRole {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
 			throw new ForbiddenException();
 		}
 		
@@ -154,6 +158,7 @@ public class ProjectRole {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+projectId)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
 			throw new ForbiddenException();
 		}
 		

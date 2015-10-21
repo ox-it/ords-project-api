@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
 
+import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
@@ -47,6 +48,7 @@ public class ProjectDatabase {
 		}
 		
 		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted("project:view:"+id)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 			throw new ForbiddenException();
 		}
 		
@@ -83,6 +85,7 @@ public class ProjectDatabase {
 		}
 		
 		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted("project:view:"+id)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 			throw new ForbiddenException();
 		}
 		
@@ -115,6 +118,7 @@ public class ProjectDatabase {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+id)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
 			throw new ForbiddenException();
 		}
 		
@@ -156,6 +160,7 @@ public class ProjectDatabase {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted("project:modify:"+id)){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
 			throw new ForbiddenException();
 		}
 		
