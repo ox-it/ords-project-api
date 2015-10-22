@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
-import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectInvitationsTest extends AbstractResourceTest {
 	
@@ -32,11 +32,12 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 			client.path("project/");
 			uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 			project.setName("Test Project B");
-			project.setDescription("Test Project B");
+			project.setDescription("ProjectInvitationsTest");
 			project.setPrivateProject(true);
 			Response response = client.post(project);
 			assertEquals(201, response.getStatus());
-			response = getClient().path(response.getLocation().getPath()).get();
+			response = getClient().path(response.getLocation().getPath()).get();			
+			assertEquals(200, response.getStatus());
 			project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 			assertEquals("Test Project B", project.getName());
 			this.projectId = project.getProjectId();

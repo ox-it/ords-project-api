@@ -17,8 +17,8 @@ package uk.ac.ox.it.ords.api.project.services;
 
 import java.util.ServiceLoader;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.services.impl.ipc.AuditServiceImpl;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public interface AuditService {
 	

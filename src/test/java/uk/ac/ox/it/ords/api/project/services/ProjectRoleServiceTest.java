@@ -21,8 +21,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectRoleServiceTest {
 

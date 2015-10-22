@@ -34,11 +34,11 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectRole {
 	

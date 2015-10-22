@@ -15,9 +15,9 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public abstract class AbstractProjectRoleService implements ProjectRoleService {
 	

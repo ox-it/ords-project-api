@@ -25,13 +25,13 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ox.it.ords.api.project.model.Permission;
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectRoleService;
+import uk.ac.ox.it.ords.security.model.Permission;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectRoleServiceImpl extends AbstractProjectRoleService implements ProjectRoleService {
 

@@ -36,18 +36,19 @@ import org.junit.BeforeClass;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
-import uk.ac.ox.it.ords.api.project.model.Permission;
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.server.UnrecognizedPropertyExceptionMapper;
 import uk.ac.ox.it.ords.api.project.server.ValidationExceptionMapper;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 import uk.ac.ox.it.ords.security.AbstractShiroTest;
+import uk.ac.ox.it.ords.security.model.Permission;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class AbstractResourceTest extends AbstractShiroTest {
 
 	protected final static String ENDPOINT_ADDRESS = "local://project-api";
 	protected static Server server;
+	private static boolean dbCreated = false;
 
 	protected static void startServer() throws Exception {
 
@@ -62,14 +63,8 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		WebClient.getConfig(client).getRequestContext().put(LocalConduit.DIRECT_DISPATCH, Boolean.TRUE);
 		return client;
 	}
-
-	/**
-	 * Configure Shiro and start the server
-	 * @throws Exception
-	 */
-	@BeforeClass
-	public static void initialize() throws Exception {
-		
+	
+	public static void createTestUsersAndRoles(){
 		//
 		// Set up the database
 		//
@@ -118,7 +113,6 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		//
 		// Add test users to roles
 		//
-		
 		UserRole admin = new UserRole();
 		admin.setPrincipalName("admin");
 		admin.setRole("administrator");
@@ -138,6 +132,22 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		// Commit our changes
 		//
 		transaction.commit();
+		HibernateUtils.closeSession();
+		
+		dbCreated = true;
+	}
+
+	/**
+	 * Configure Shiro and start the server
+	 * @throws Exception
+	 */
+	@BeforeClass
+	public static void initialize() throws Exception {
+	
+		//
+		// Set up roles
+		//
+		if (!dbCreated) createTestUsersAndRoles();
 		
 		//
 		// This is for unit testing only and uses the test.shiro.ini configuration

@@ -27,7 +27,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectRoleTest extends AbstractResourceTest {
 	

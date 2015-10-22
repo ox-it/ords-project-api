@@ -17,8 +17,8 @@ package uk.ac.ox.it.ords.api.project.services.impl.ipc;
 
 import org.apache.shiro.SecurityUtils;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 /**
  * TODO Implements the Audit service interface. Calls Audit Service via REST using

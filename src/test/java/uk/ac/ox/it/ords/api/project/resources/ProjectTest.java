@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Test;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectTest extends AbstractResourceTest {
 

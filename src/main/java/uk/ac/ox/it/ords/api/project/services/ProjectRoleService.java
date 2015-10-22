@@ -18,8 +18,8 @@ package uk.ac.ox.it.ords.api.project.services;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import uk.ac.ox.it.ords.api.project.model.UserRole;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectRoleServiceImpl;
+import uk.ac.ox.it.ords.security.model.UserRole;
 
 public interface ProjectRoleService {
 	
