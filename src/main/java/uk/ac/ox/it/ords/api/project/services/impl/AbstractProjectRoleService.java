@@ -15,6 +15,8 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl;
 
+import java.util.List;
+
 import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.security.model.UserRole;
@@ -34,6 +36,15 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 			if (projectRole.name().equals(role)) return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public UserRole getProjectOwner(int projectId) throws Exception {
+		List<UserRole> userRoles = getUserRolesForProject(projectId);
+		for (UserRole userRole : userRoles){
+			if (userRole.getRole().startsWith("owner_")) return userRole;
+		}
+		return null;
 	}
 
 }

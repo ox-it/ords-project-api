@@ -57,7 +57,8 @@ public class Project {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProjects(
 			@QueryParam("open") final boolean open,
-			@QueryParam("full") final boolean full
+			@QueryParam("full") final boolean full,
+			@QueryParam("q") final String q
 			) {
 		
 		List<uk.ac.ox.it.ords.api.project.model.Project> projects;
@@ -71,21 +72,31 @@ public class Project {
 			
 		} else {
 			
-			if (full){
+			if (full){	
 				
-			//
-			// To get the list of FULL projects, including private,
-			// requires a security check. This is carried out by
-			// the service implementation.
-			//
-			projects = ProjectService.Factory.getInstance().getFullProjects();
-			
+				//
+				// To get the list of FULL projects, including private,
+				// requires a security check. This is carried out by
+				// the service implementation.
+				//
+				projects = ProjectService.Factory.getInstance().getFullProjects();
+				
 			} else {
-			
-				//
-				// The projects the user is involved in as a member.
-				//
-				projects = ProjectService.Factory.getInstance().getProjects();
+				
+				if (q != null){
+					
+					//
+					// Search projects. Only visible projects are included.
+					//
+					projects = ProjectService.Factory.getInstance().searchProjects(q);
+					
+				} else {
+					
+					//
+					// The projects the user is involved in as a member.
+					//
+					projects = ProjectService.Factory.getInstance().getProjects();
+				}
 			}
 		}
 		return Response.ok(projects).build();

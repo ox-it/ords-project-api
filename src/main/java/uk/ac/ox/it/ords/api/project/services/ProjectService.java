@@ -33,7 +33,20 @@ public interface ProjectService {
 	 */
 	public void validate(Project project) throws Exception;
 	
+	/**
+	 * Get the projects associated with the current user
+	 * @return
+	 */
 	public List<Project> getProjects();
+	
+	/**
+     * Find all projects that meet the criteria. Criteria are searched for in the project abstract.
+     *
+     * @param searchTerms a comma separated list of search terms or null, meaning get all projects
+     * @return a list of project objects that contain data that may be shown to the user
+     */
+	public List<Project> searchProjects(String searchTerms);
+	
 	public List<Project> getFullProjects();
 	public List<Project> getOpenProjects();
 	

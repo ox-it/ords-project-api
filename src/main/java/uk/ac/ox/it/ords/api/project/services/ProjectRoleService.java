@@ -24,6 +24,11 @@ import uk.ac.ox.it.ords.security.model.UserRole;
 public interface ProjectRoleService {
 	
 	/**
+	 * Gets the project owner, if any
+	 */
+	public UserRole getProjectOwner(int projectId) throws Exception;
+	
+	/**
 	 * Create the Owner role and their permissions; called once when a new project is created
 	 * @param projectId
 	 * @throws Exception

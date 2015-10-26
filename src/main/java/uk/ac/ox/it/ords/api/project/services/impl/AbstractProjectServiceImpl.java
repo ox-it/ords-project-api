@@ -15,6 +15,10 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +31,24 @@ public abstract class AbstractProjectServiceImpl implements ProjectService{
 
 	private static Logger log = LoggerFactory.getLogger(AbstractProjectServiceImpl.class);
 
+	/**
+	 * Filter a list of projects to only include those the current user is permitted
+	 * to see.
+	 * @param projects
+	 * @return the filtered list of projects
+	 */
+	protected List<Project> filterProjectsForVisible(List<Project> projects){	
+		
+		List<Project > visibleProjects = projects.stream()
+				.filter(p -> 
+						   !p.isPrivateProject() 
+						|| 
+							SecurityUtils.getSubject().isPermitted("project:view:"+p.getProjectId())
+						)
+				.collect(Collectors.toList());
+		
+		return visibleProjects;
+	}
 	
 	/**
 	 * Configures the project with internal system-set properties; this is called once on 

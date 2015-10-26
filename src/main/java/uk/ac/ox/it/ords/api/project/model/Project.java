@@ -26,6 +26,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
+import uk.ac.ox.it.ords.security.model.UserRole;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -269,5 +272,14 @@ public class Project implements Serializable {
 
     public void setFullProjectRequested(boolean fullProjectRequested) {
         this.fullProjectRequested = fullProjectRequested;
+    }
+    
+    public String getOwner(){
+    	try {
+			UserRole userRole = ProjectRoleService.Factory.getInstance().getProjectOwner(projectId);
+			return userRole.getPrincipalName();
+		} catch (Exception e) {
+			return null;
+		}
     }
 }

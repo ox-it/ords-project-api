@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.shiro.SecurityUtils;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -145,7 +146,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			session.getTransaction().commit();
 			
 			//
-			// 
+			// Filter for projects where the current user has a role
 			//
 			myProjects = projects.stream()
 					.filter(p -> 
@@ -184,14 +185,8 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			//
 			// We now need to filter out any projects that the
 			// current user isn't allowed to see
-			//			
-			visibleProjects = projects.stream()
-					.filter(p -> 
-							   !p.isPrivateProject() 
-							|| 
-								SecurityUtils.getSubject().isPermitted("project:view:"+p.getProjectId())
-							)
-					.collect(Collectors.toList());
+			//	
+			visibleProjects = filterProjectsForVisible(projects);
 			
 		} catch (Exception e) {
 			log.error("Error getting project list", e);
@@ -249,5 +244,74 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		} finally {
 			HibernateUtils.closeSession();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Project> searchProjects(String searchTerms) {
+		List<Project> projects;
+
+		//
+        // If the search has not specified any terms they will just get all open projects.
+		//
+		if ((searchTerms == null) || (searchTerms.trim().length() == 0)) {
+			return getOpenProjects();
+		}
+
+		/*
+	     * Since the user has specified search terms, we need to display all projects
+	     * that match the search terms along with all datasets that match the search terms.
+		 */
+		
+		//
+		// Get matching projects
+		//
+		Session session = this.sessionFactory.getCurrentSession();
+		projects = null;
+		try {
+			session.beginTransaction();
+			
+			Criteria searchCriteria = session.createCriteria(Project.class)
+					.add(Restrictions.eq("trialProject", Boolean.FALSE))
+					.add(Restrictions.eq("deleted", Boolean.FALSE));
+			String[] terms = searchTerms.split(",");
+			
+			for (String term : terms) {
+				searchCriteria.add(
+						Restrictions.and(
+								Restrictions.or(
+										Restrictions.ilike("name", "%"+term.trim()+"%"),
+										Restrictions.ilike("description", "%"+term.trim()+"%")
+										)
+								)
+						);		
+			}
+			
+			projects = searchCriteria.list();
+			session.getTransaction().commit();
+			
+		} catch (Exception e) {
+			log.error("Error getting project list", e);
+			session.getTransaction().rollback();
+			throw e;
+		} finally {
+			  HibernateUtils.closeSession();
+		}		
+		
+		//
+		// TODO get matching datasets
+		//
+
+		//
+		// TODO merge
+		//
+
+		//
+		// We now need to filter out any projects that the
+		// current user isn't allowed to see
+		//	
+		List<Project> visibleProjects = filterProjectsForVisible(projects);
+
+		return visibleProjects;
 	}
 }

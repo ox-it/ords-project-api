@@ -537,5 +537,44 @@ public class ProjectTest extends AbstractResourceTest {
 	}
 	
 
+	@Test
+	public void searchProjects(){
+		
+		loginUsingSSO("admin", "admin");
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setTrialProject(false);
+		
+		//
+		// POST projects
+		//
+		project.setName("Test Project searchProjects1");
+		project.setDescription("searchProjects Octopus");
+		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		
+		project.setName("Test Project searchProjects2");
+		project.setDescription("searchProjects Octopus");
+		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		
+		project.setName("Test Project searchProjects3");
+		project.setDescription("searchProjects Squid");
+		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		
+		//
+		// Baseline - all projects
+		//
+		int openProjects = getClient().path("project/").query("open", "true").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size();
 
+		
+		//
+		// Search projects
+		//
+		assertEquals(1, getClient().path("project/").query("q", "searchProjects1").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(2, getClient().path("project/").query("q", "octopus").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(1, getClient().path("project/").query("q", "squid").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(0, getClient().path("project/").query("q", "mussell").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(openProjects, getClient().path("project/").query("q", " ").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(openProjects, getClient().path("project/").query("q", "").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+
+	}
 }
