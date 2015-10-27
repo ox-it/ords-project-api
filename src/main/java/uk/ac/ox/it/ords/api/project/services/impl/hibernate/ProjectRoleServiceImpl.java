@@ -37,7 +37,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 
 	private static Logger log = LoggerFactory.getLogger(ProjectRoleServiceImpl.class);
 
-	private SessionFactory sessionFactory;
+	protected SessionFactory sessionFactory;
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
@@ -166,24 +166,33 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		}
 	}
 
-	private void createPermission(String role, String permissionString) throws Exception{
+	/**
+	 * @param role
+	 * @param permissionString
+	 * @throws Exception
+	 */
+	protected void createPermission(String role, String permissionString) throws Exception{
 		Session session = this.sessionFactory.getCurrentSession();
-		session.beginTransaction();
 		try {
+			session.beginTransaction();
 			Permission permission = new Permission();
 			permission.setRole(role);
 			permission.setPermission(permissionString);
 			session.save(permission);
 			session.getTransaction().commit();
+			System.out.println("OK!");
 		} catch (Exception e) {
 			log.error("Error creating permission", e);
 			session.getTransaction().rollback();
-			throw new Exception("Cannot create project",e);
+			throw new Exception("Cannot create permission",e);
 		} finally {
 			  HibernateUtils.closeSession();
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#addUserRoleToProject(int, uk.ac.ox.it.ords.security.model.UserRole)
+	 */
 	public UserRole addUserRoleToProject(int projectId, UserRole userRole) throws ValidationException, Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -205,9 +214,11 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#removeUserFromRoleInProject(int, int)
+	 */
 	public void removeUserFromRoleInProject(int projectId, int roleId)
 			throws ValidationException, Exception {
-		
 		//
 		// First, obtain the UserRole
 		//
@@ -219,7 +230,15 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		if(!userRole.getRole().endsWith(String.valueOf(projectId))){
 			throw new ValidationException("Attempt to remove role via another project");
 		}
-
+		removeUserRole(userRole, projectId);
+	}
+	
+	/**
+	 * @param userRole
+	 * @param projectId
+	 * @throws Exception
+	 */
+	protected void removeUserRole(UserRole userRole, int projectId) throws Exception{
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
@@ -233,9 +252,11 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		} finally {
 			  HibernateUtils.closeSession();
 		}
-
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getUserRole(int)
+	 */
 	public UserRole getUserRole(int roleId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -251,6 +272,9 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getUserRolesForProject(int)
+	 */
 	public List<UserRole> getUserRolesForProject(int projectId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		
