@@ -26,6 +26,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.shiro.SecurityUtils;
+
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
@@ -274,6 +277,12 @@ public class Project implements Serializable {
         this.fullProjectRequested = fullProjectRequested;
     }
     
+    /**
+     * Convenience method for including the owner identity for a project, allowing a UI
+     * to lookup the user and display additional information, e.g. to contact the owner
+     * and ask for access
+     * @return a principalname as a String
+     */
     public String getOwner(){
     	try {
 			UserRole userRole = ProjectRoleService.Factory.getInstance().getProjectOwner(projectId);
@@ -281,5 +290,25 @@ public class Project implements Serializable {
 		} catch (Exception e) {
 			return null;
 		}
+    }
+    
+    /**
+     * Convenience method that means a UI can choose whether to display an edit button.
+     * Do not use this for authorization; use SecurityUtils directly.
+     * @return true if the user had edit permission at the time the model was serialized
+     */
+    public boolean canEdit(){
+    	if ( SecurityUtils.getSubject() == null) return false;
+    	return SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(getProjectId()));
+    }
+    
+    /**
+     * Convenience method that means a UI can choose whether to display a delete button.
+     * Do not use this for authorization; use SecurityUtils directly.
+     * @return true if the user had delete permission at the time the model was serialized
+     */
+    public boolean canDelete(){
+    	if ( SecurityUtils.getSubject() == null) return false;
+    	return SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_DELETE(getProjectId()));
     }
 }
