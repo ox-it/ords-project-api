@@ -219,6 +219,8 @@ public class ProjectTest extends AbstractResourceTest {
 		assertEquals(200, response.getStatus());
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 		assertEquals("Test Project F", project.getName());
+		assertEquals(true, project.canEdit());
+		assertEquals(true, project.canDelete());
 		
 		//
 		// DELETE the project

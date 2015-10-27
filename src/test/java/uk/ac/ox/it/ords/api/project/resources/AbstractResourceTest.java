@@ -49,7 +49,6 @@ public class AbstractResourceTest extends AbstractShiroTest {
 	protected final static String ENDPOINT_ADDRESS = "local://project-api";
 	protected static Server server;
 	private static boolean dbCreated = false;
-
 	protected static void startServer() throws Exception {
 
 	}
