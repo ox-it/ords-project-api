@@ -180,7 +180,6 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 			permission.setPermission(permissionString);
 			session.save(permission);
 			session.getTransaction().commit();
-			System.out.println("OK!");
 		} catch (Exception e) {
 			log.error("Error creating permission", e);
 			session.getTransaction().rollback();
