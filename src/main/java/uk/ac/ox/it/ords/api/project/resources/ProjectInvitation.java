@@ -42,6 +42,43 @@ import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 public class ProjectInvitation {
+	
+	@Path("/invitation")
+	@POST
+	public Response confirmInvitation(
+			final String invitationCode
+			) throws Exception{
+		
+		Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitationByInviteCode(invitationCode);
+		
+		if (invitation == null){
+			throw new BadRequestException();
+		}
+
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(invitation.getProjectId());
+		
+		if (project == null){
+			throw new NotFoundException();
+		}
+		
+		//
+		// The project was deleted after the invitation went out.
+		//
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
+		//
+		// Try to convert the invite into an active role; if successful, return the project metadata
+		//
+		try {
+			ProjectInvitationService.Factory.getInstance().confirmInvitation(invitationCode);
+			return Response.ok(project).build();
+		} catch (Exception e) {
+			throw new BadRequestException();
+		}
+		
+	}
 
 	@Path("/project/{id}/invitation/{invitationid}")
 	@DELETE

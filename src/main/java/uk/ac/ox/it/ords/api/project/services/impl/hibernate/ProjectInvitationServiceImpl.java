@@ -26,8 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
 import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
+import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectInvitationService;
 
-public class ProjectInvitationServiceImpl implements ProjectInvitationService {
+public class ProjectInvitationServiceImpl extends AbstractProjectInvitationService implements ProjectInvitationService {
 	
 	private static Logger log = LoggerFactory.getLogger(ProjectInvitationServiceImpl.class);
 	
@@ -109,6 +110,27 @@ public class ProjectInvitationServiceImpl implements ProjectInvitationService {
 			  HibernateUtils.closeSession();
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectInvitationService#getInvitationByInviteCode(java.lang.String)
+	 */
+	@Override
+	public Invitation getInvitationByInviteCode(String code) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction transaction = session.beginTransaction();
+		try {
+			@SuppressWarnings("unchecked")
+			List<Invitation> invitations = session.createCriteria(Invitation.class).add(Restrictions.eq("uuid", code)).list();
+			transaction.commit();
+			return invitations.get(0); 
+		} catch (Exception e) {
+			log.error("Error listing invitations", e);
+			transaction.rollback();
+			throw new Exception("Cannot list invitations",e);
+		} finally {
+			HibernateUtils.closeSession();
+		}
 	}
 
 }

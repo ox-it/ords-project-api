@@ -25,9 +25,10 @@ public interface ProjectInvitationService {
 
 	public List<Invitation> getInvitations(int projectId) throws Exception;
 	public Invitation getInvitation(int invitationId) throws Exception;
+	public Invitation getInvitationByInviteCode(String code) throws Exception;
 	public void deleteInvitation(Invitation invitation) throws Exception;
 	public Invitation createInvitation(Invitation invitation) throws Exception;
-	
+	public void confirmInvitation(String code) throws Exception;
 
 	/**
 	 * Factory for obtaining implementations

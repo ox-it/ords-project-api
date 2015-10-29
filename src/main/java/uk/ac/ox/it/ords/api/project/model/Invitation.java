@@ -50,9 +50,17 @@ public class Invitation implements Serializable {
     
     private int userId;
     private String roleRequired;
+    private String principalName;
     
-    
-    public Invitation() {
+    public String getPrincipalName() {
+		return principalName;
+	}
+
+	public void setPrincipalName(String principalName) {
+		this.principalName = principalName;
+	}
+
+	public Invitation() {
     	uuid = UUID.randomUUID().toString();
     }
 
