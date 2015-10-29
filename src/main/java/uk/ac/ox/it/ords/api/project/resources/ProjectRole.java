@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
 
+import uk.ac.ox.it.ords.api.project.model.Member;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
@@ -80,7 +81,7 @@ public class ProjectRole {
 			throw new BadRequestException();
 		}
 		
-		return Response.ok(userRole).build();
+		return Response.ok(new Member(userRole)).build();
 		
 	}
 	
@@ -108,7 +109,7 @@ public class ProjectRole {
 			}
 		}
 		
-		return Response.ok(ProjectRoleService.Factory.getInstance().getUserRolesForProject(projectId)).build();
+		return Response.ok(ProjectRoleService.Factory.getInstance().getProjectMembers(projectId)).build();
 	}
 
 	@Path("/project/{id}/role")

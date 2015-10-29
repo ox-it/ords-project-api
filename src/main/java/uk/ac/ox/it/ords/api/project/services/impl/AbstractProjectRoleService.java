@@ -15,14 +15,43 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.ox.it.ords.api.project.model.Member;
 import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public abstract class AbstractProjectRoleService implements ProjectRoleService {
 	
+	
+	
+	
+	@Override
+	public List<Member> getProjectMembers(int projectId) throws Exception {
+		List<UserRole> userRoles = getUserRolesForProject(projectId);
+		ArrayList<Member> members = new ArrayList<Member>();
+		for (UserRole userRole : userRoles){
+			members.add(new Member(userRole));
+		}
+		return members;
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getPublicUserRole(java.lang.String)
+	 */
+	@Override
+	public String getPublicUserRole(String role) {
+		if (!role.contains("_")) return role;
+		return role.split("_")[0];
+	}
+
+	/**
+	 * @param userRole
+	 * @return
+	 * @throws ValidationException
+	 */
 	public boolean validate(UserRole userRole) throws ValidationException{
 		if (userRole == null) throw new ValidationException("Invalid role");
 		if (userRole.getPrincipalName() == null) throw new ValidationException("No user principal set for role");
@@ -31,6 +60,10 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 		return true;
 	}
 
+	/**
+	 * @param role
+	 * @return
+	 */
 	private boolean isValidRole(String role){
 		for (ProjectRole projectRole : ProjectRole.values()){
 			if (projectRole.name().equals(role)) return true;
@@ -38,6 +71,9 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getProjectOwner(int)
+	 */
 	@Override
 	public UserRole getProjectOwner(int projectId) throws Exception {
 		List<UserRole> userRoles = getUserRolesForProject(projectId);

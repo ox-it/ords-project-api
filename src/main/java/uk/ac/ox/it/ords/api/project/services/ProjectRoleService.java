@@ -18,10 +18,19 @@ package uk.ac.ox.it.ords.api.project.services;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import uk.ac.ox.it.ords.api.project.model.Member;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectRoleServiceImpl;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public interface ProjectRoleService {
+	
+	/**
+	 * Return the public representation of a role in a project, rather than
+	 * the internal role identity. For example, returns "Owner" rather than "owner_27".
+	 * @param role
+	 * @return the public role name
+	 */
+	public String getPublicUserRole(String role);
 	
 	/**
 	 * Gets the project owner, if any
@@ -49,6 +58,16 @@ public interface ProjectRoleService {
 	 * @throws Exception
 	 */
 	public List<UserRole> getUserRolesForProject(int projectId) throws Exception;
+	
+	/**
+	 * Returns the UserRoles that match the pattern of the project, but 
+	 * structured as Member object (outward-facing) rather than their
+	 * internal UserRole representations.
+	 * @param projectId
+	 * @return a List of Members
+	 * @throws Exception
+	 */
+	public List<Member> getProjectMembers(int projectId) throws Exception;
 	
 	/**
 	 * Return the specified UserRole instance
