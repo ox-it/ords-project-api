@@ -297,6 +297,7 @@ public class Project implements Serializable {
      * Do not use this for authorization; use SecurityUtils directly.
      * @return true if the user had edit permission at the time the model was serialized
      */
+    @JsonProperty
     public boolean canEdit(){
     	if ( SecurityUtils.getSubject() == null) return false;
     	return SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(getProjectId()));
@@ -307,6 +308,7 @@ public class Project implements Serializable {
      * Do not use this for authorization; use SecurityUtils directly.
      * @return true if the user had delete permission at the time the model was serialized
      */
+    @JsonProperty
     public boolean canDelete(){
     	if ( SecurityUtils.getSubject() == null) return false;
     	return SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_DELETE(getProjectId()));
