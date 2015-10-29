@@ -46,6 +46,14 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 		if (!role.contains("_")) return role;
 		return role.split("_")[0];
 	}
+	
+	
+
+	@Override
+	public String getPrivateUserRole(String role, int projectId) {
+		if (role.contains("_")) return role;
+		return role+"_"+projectId;
+	}
 
 	/**
 	 * @param userRole

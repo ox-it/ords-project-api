@@ -33,6 +33,21 @@ public interface ProjectRoleService {
 	public String getPublicUserRole(String role);
 	
 	/**
+	 * Return the private representation of a role in a project, rather than
+	 * the extertnal role identity. For example, returns "owner_27" rather than "owner".
+	 * @param role
+	 * @param projectId the project id
+	 * @return the private role name
+	 */
+	public String getPrivateUserRole(String role, int projectId);
+	
+	/**
+	 * Update a role
+	 * @param userRole
+	 */
+	public void updateProjectRole(UserRole userRole, int projectId) throws Exception;
+	
+	/**
 	 * Gets the project owner, if any
 	 */
 	public UserRole getProjectOwner(int projectId) throws Exception;

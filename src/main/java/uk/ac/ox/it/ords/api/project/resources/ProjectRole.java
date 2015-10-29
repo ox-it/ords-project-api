@@ -22,6 +22,7 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -42,6 +43,56 @@ import uk.ac.ox.it.ords.api.project.services.ProjectService;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectRole {
+
+	
+	@Path("/project/{projectId}/role/{roleId}")
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateProjectRole(
+			@PathParam("projectId") final int projectId,
+			@PathParam("roleId") final int roleId,
+			UserRole member
+			) throws Exception{
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+
+		if (project == null){
+			throw new NotFoundException();
+		}
+		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
+			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
+			throw new ForbiddenException();
+		}
+
+		
+		UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
+		
+		if (userRole == null){
+			throw new NotFoundException();		
+		}
+		
+		//
+		// Prevent cross-resource attack
+		//
+		if(!userRole.getRole().endsWith(String.valueOf(projectId))){
+			throw new BadRequestException();
+		}
+		
+		//
+		// The only property we can update is the role required
+		//
+		userRole.setRole(member.getRole());
+		
+		ProjectRoleService.Factory.getInstance().updateProjectRole(userRole, projectId);
+		
+		return Response.ok().build();
+	}
 	
 	@Path("/project/{projectId}/role/{roleId}")
 	@GET

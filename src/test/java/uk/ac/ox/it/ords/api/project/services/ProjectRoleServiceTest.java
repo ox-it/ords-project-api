@@ -48,6 +48,27 @@ public class ProjectRoleServiceTest {
 			}
 	}
 	
+	@Test (expected = Exception.class)
+	public void testExceptionHandlingForPut() throws Exception{
+
+		//
+		// Set up
+		//
+		UserRole userRole = new UserRole();
+		userRole.setPrincipalName("pinga");		
+		userRole.setRole("contributor");
+		try {
+			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+			ProjectRoleService.Factory.getInstance().updateProjectRole(userRole, 999);
+			fail();
+		} catch (Exception e) {
+			e.printStackTrace();
+			HibernateUtils.closeSession();
+			throw e;
+		}
+	}
+	
+	
 	@Test
 	public void testExceptionHandlingForGetList() throws Exception{
 			ProjectRoleService service = ProjectRoleService.Factory.getInstance();

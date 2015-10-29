@@ -46,6 +46,30 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	public ProjectRoleServiceImpl() {
 		setSessionFactory (HibernateUtils.getSessionFactory());
 	}
+	
+	
+
+	@Override
+	public void updateProjectRole(UserRole userRole, int projectId) throws Exception {
+		validate(userRole);
+		//
+		// We need to change "contributor" to "contributor_26" etc
+		//
+		userRole.setRole(getPrivateUserRole(userRole.getRole(), projectId));
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+			session.update(userRole);
+			session.getTransaction().commit();
+		} catch (HibernateException e) {
+			log.error("Error update UserRole", e);
+			session.getTransaction().rollback();
+			throw new Exception("Cannot update UserRole",e);
+		} finally {
+			  HibernateUtils.closeSession();
+		}
+
+	}
 
 	public void createInitialPermissions(int projectId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -57,7 +81,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 			//
 			UserRole owner = new UserRole();
 			owner.setPrincipalName(SecurityUtils.getSubject().getPrincipal().toString());
-			owner.setRole("owner_"+projectId);
+			owner.setRole(getPrivateUserRole("owner", projectId));
 			session.save(owner);
 			session.getTransaction().commit();
 			//
@@ -197,7 +221,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		try {
 			session.beginTransaction();
 			validate(userRole);
-			String projectRole = userRole.getRole()+"_"+projectId;
+			String projectRole = getPrivateUserRole(userRole.getRole(), projectId);
 			userRole.setRole(projectRole);
 			session.save(userRole);
 			session.getTransaction().commit();

@@ -176,6 +176,7 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		// Act on deleted resources
 		//
 		assertEquals(410, getClient().path(rolePath).get().getStatus());
+		assertEquals(410, getClient().path(rolePath).put(role).getStatus());
 		assertEquals(410, getClient().path(rolePath).delete().getStatus());		
 		assertEquals(410, getClient().path("project/"+projectId+"/role").get().getStatus());
 		assertEquals(410, getClient().path("project/"+projectId+"/role").post(role).getStatus());
@@ -320,6 +321,110 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		Response response = client.delete();
 		assertEquals(404, response.getStatus());
 		logout();
+	}
+	
+	@Test
+	public void modifyRole(){
+		
+		//
+		// Add role
+		//
+		loginUsingSSO("pingu", "pingu");
+		WebClient client = getClient();
+		client.path("project/"+projectId+"/role");
+		UserRole role = new UserRole();
+		role.setPrincipalName("pinga");
+		role.setRole("viewer");;
+		Response response = client.post(role);
+		
+		//
+		// This is the role URI
+		//
+		URI roleURI = response.getLocation();
+		assertEquals(201, response.getStatus());
+		
+		role.setRole("contributor");
+		assertEquals(200, getClient().path(roleURI.getPath()).put(role).getStatus());
+		
+		//
+		// Check we have the right role
+		//
+		role = getClient().path(roleURI.getPath()).get().readEntity(UserRole.class);
+		assertEquals("contributor", role.getRole());
+		
+
+		//
+		// Clean up
+		//
+		assertEquals(200, getClient().path(roleURI.getPath()).delete().getStatus());
+	}
+	
+	@Test
+	public void modifyRoleInvalid(){
+		
+		//
+		// Add role
+		//
+		loginUsingSSO("pingu", "pingu");
+		WebClient client = getClient();
+		client.path("project/"+projectId+"/role");
+		UserRole role = new UserRole();
+		role.setPrincipalName("pinga");
+		role.setRole("viewer");;
+		Response response = client.post(role);
+		
+		//
+		// This is the role URI
+		//
+		URI roleURI = response.getLocation();
+		assertEquals(201, response.getStatus());
+		
+		
+		//
+		// Invalid role
+		//
+		role.setRole("uberuser");
+		assertEquals(400, getClient().path(roleURI.getPath()).put(role).getStatus());
+		
+		//
+		// Invalid role - cross resource attack
+		//
+		role.setRole("viewer_96");
+		assertEquals(400, getClient().path(roleURI.getPath()).put(role).getStatus());
+		
+		//
+		// No role
+		//
+		role.setRole(null);
+		assertEquals(400, getClient().path(roleURI.getPath()).put(role).getStatus());
+		
+		//
+		// No project
+		//
+		role.setRole(null);
+		assertEquals(404, getClient().path("/project/999/role/999").put(role).getStatus());
+		
+		//
+		// No role 
+		//
+		role.setRole(null);
+		assertEquals(404, getClient().path("/project/"+projectId+"/role/999").put(role).getStatus());
+		
+		//
+		// Not permitted
+		//
+		logout();
+		loginUsingSSO("pinga", "pinga");
+		role.setRole("viewer");
+		assertEquals(403, getClient().path(roleURI.getPath()).put(role).getStatus());
+		logout();
+
+		//
+		// Clean up
+		//
+		loginUsingSSO("pingu", "pingu");
+		assertEquals(200, getClient().path(roleURI.getPath()).delete().getStatus());
+
 	}
 	
 	@Test
@@ -484,21 +589,22 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		URI role2URI = response.getLocation();
 		assertEquals(201, response.getStatus());
 
+		String path1 = role1URI.getPath();
+		String path2 = role2URI.getPath();
+		String pathBad = path1.replace(path1.split("/")[4], path2.split("/")[4]);
+		assertEquals(400, getClient().path(pathBad).get().getStatus());
+
+		//
+		// Pingu tries to change pinga from a viewer_1 role to contributor via project 2
+		//
+		role.setRole("contributor");
+		assertEquals(400, getClient().path(pathBad).put(role).getStatus());
+		
 		//
 		// Pingu tries to remove pinga from "viewer_1" role in project 2 - this should fail
 		// as that role belongs to project 1.
 		//
-		String path1 = role1URI.getPath();
-		String path2 = role2URI.getPath();
-		String pathBad = path1.replace(path1.split("/")[4], path2.split("/")[4]);
-		
-		assertEquals(400, getClient().path(pathBad).get().getStatus());
-		
-		client = getClient();
-		client.path(pathBad);
-		
-		response = client.delete();
-		assertEquals(400, response.getStatus());
+		assertEquals(400, getClient().path(pathBad).delete().getStatus());
 		
 		//
 		// However these deletes should work fine
