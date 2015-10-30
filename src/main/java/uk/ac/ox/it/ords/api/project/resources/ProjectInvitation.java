@@ -52,13 +52,13 @@ public class ProjectInvitation {
 		Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitationByInviteCode(invitationCode);
 		
 		if (invitation == null){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(invitation.getProjectId());
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		//
@@ -75,7 +75,7 @@ public class ProjectInvitation {
 			ProjectInvitationService.Factory.getInstance().confirmInvitation(invitationCode);
 			return Response.ok(project).build();
 		} catch (Exception e) {
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 	}
@@ -91,7 +91,7 @@ public class ProjectInvitation {
 		uk.ac.ox.it.ords.api.project.model.Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitation(invitationId);
 
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 
 		if (project.isDeleted()){
@@ -99,15 +99,15 @@ public class ProjectInvitation {
 		}
 		
 		if (invitation == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		if (project.getProjectId() != invitation.getProjectId()){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 
 		ProjectInvitationService.Factory.getInstance().deleteInvitation(invitation);
@@ -123,7 +123,7 @@ public class ProjectInvitation {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 
 		if (project.isDeleted()){
@@ -131,7 +131,7 @@ public class ProjectInvitation {
 		}
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW_INVITATIONS(projectId))){
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		List<Invitation> invitations = ProjectInvitationService.Factory.getInstance().getInvitations(projectId);
@@ -150,7 +150,7 @@ public class ProjectInvitation {
 		Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitation(invitationId);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 
 		if (project.isDeleted()){
@@ -158,18 +158,18 @@ public class ProjectInvitation {
 		}
 		
 		if (invitation == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW_INVITATIONS(projectId))){
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		//
 		// Check for cross-resource attack
 		//
 		if (invitation.getProjectId() != projectId){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 
 		return Response.ok(invitation).build();
@@ -191,7 +191,7 @@ public class ProjectInvitation {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 
 		if (project == null) {
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 
 		if (project.isDeleted()){
@@ -199,11 +199,11 @@ public class ProjectInvitation {
 		}
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		if (project.getProjectId() != invitation.getProjectId()){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 
 			invitation = ProjectInvitationService.Factory.getInstance().createInvitation(invitation);

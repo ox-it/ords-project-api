@@ -58,7 +58,7 @@ public class ProjectRole {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -67,21 +67,21 @@ public class ProjectRole {
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		
 		UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
 		
 		if (userRole == null){
-			throw new NotFoundException();		
+			return Response.status(404).build();
 		}
 		
 		//
 		// Prevent cross-resource attack
 		//
 		if(!userRole.getRole().endsWith(String.valueOf(projectId))){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 		//
@@ -105,7 +105,7 @@ public class ProjectRole {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -115,21 +115,21 @@ public class ProjectRole {
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(projectId))){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
-				throw new ForbiddenException();
+				return Response.status(403).build();
 			}
 		}
 		
 		UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
 		
 		if (userRole == null){
-			throw new NotFoundException();		
+			return Response.status(404).build();
 		}
 		
 		//
 		// Prevent cross-resource attack
 		//
 		if(!userRole.getRole().endsWith(String.valueOf(projectId))){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 		return Response.ok(new Member(userRole)).build();
@@ -146,7 +146,7 @@ public class ProjectRole {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -156,7 +156,7 @@ public class ProjectRole {
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(projectId))){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
-				throw new ForbiddenException();
+				return Response.status(403).build();
 			}
 		}
 		
@@ -176,7 +176,7 @@ public class ProjectRole {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 		
 		if (project == null) {
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -185,7 +185,7 @@ public class ProjectRole {
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 		
 		role = ProjectRoleService.Factory.getInstance().addUserRoleToProject(projectId, role);
@@ -205,7 +205,7 @@ public class ProjectRole {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
 
 		if (project == null) {
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -220,7 +220,7 @@ public class ProjectRole {
 		UserRole userRole = ProjectRoleService.Factory.getInstance().getUserRole(roleId);
 		
 		if (userRole == null){
-			throw new NotFoundException();				
+			return Response.status(404).build();
 		}
 		
 		ProjectRoleService.Factory.getInstance().removeUserFromRoleInProject(projectId, roleId);

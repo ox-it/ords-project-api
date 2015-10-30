@@ -116,13 +116,13 @@ public class Project {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
-				throw new ForbiddenException();
+				return Response.status(403).build();
 			}
 		}
 		if (project.isDeleted()){
@@ -142,7 +142,7 @@ public class Project {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		} 
 		
 		if (project.isDeleted()){
@@ -151,7 +151,7 @@ public class Project {
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_DELETE(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:delete", id);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		ProjectService.Factory.getInstance().deleteProject(id);
@@ -170,11 +170,11 @@ public class Project {
 		uk.ac.ox.it.ords.api.project.model.Project oldProject = ProjectService.Factory.getInstance().getProject(id);
 		
 		if (oldProject == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project == null){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 		if (oldProject.isDeleted()){
@@ -185,7 +185,7 @@ public class Project {
 		// Prevent side-modification hacks
 		//
 		if (id != project.getProjectId()){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 		//
@@ -194,7 +194,7 @@ public class Project {
 		if (oldProject.isTrialProject() == true && project.isTrialProject() == false){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_UPGRADE)){
 				AuditService.Factory.getInstance().createNotAuthRecord("project:upgrade", id);
-				throw new ForbiddenException();
+				return Response.status(403).build();
 			}
 		}
 
@@ -221,11 +221,11 @@ public class Project {
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE) && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE_FULL)){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:create", -1);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		if (project == null){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 		//
@@ -233,7 +233,7 @@ public class Project {
 		//
 		if (project.isTrialProject() == false && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE_FULL)){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:create-full", -1);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 
 		ProjectService.Factory.getInstance().createProject(project);		

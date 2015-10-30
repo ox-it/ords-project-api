@@ -55,7 +55,7 @@ public class ProjectDatabase {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -64,7 +64,7 @@ public class ProjectDatabase {
 		
 		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase database;
@@ -72,7 +72,7 @@ public class ProjectDatabase {
 		database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
 
 		if (database == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		return Response.ok(database).build();
@@ -88,7 +88,7 @@ public class ProjectDatabase {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -97,7 +97,7 @@ public class ProjectDatabase {
 		
 		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 		
 		List<uk.ac.ox.it.ords.api.project.model.ProjectDatabase> databases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(id);
@@ -117,7 +117,7 @@ public class ProjectDatabase {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -126,14 +126,14 @@ public class ProjectDatabase {
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 		
 		//
 		// Prevent side-attack; ensure the database belongs to the project specified
 		//
 		if (database.getProjectId() != project.getProjectId()){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 		database = ProjectDatabaseService.Factory.getInstance().addDatabaseToProject(id, database);
@@ -154,7 +154,7 @@ public class ProjectDatabase {
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
 		
 		if (project == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		if (project.isDeleted()){
@@ -163,7 +163,7 @@ public class ProjectDatabase {
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
 			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
-			throw new ForbiddenException();
+			return Response.status(403).build();
 		}
 		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase database = null; 
@@ -171,14 +171,14 @@ public class ProjectDatabase {
 		database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
 		
 		if (database == null){
-			throw new NotFoundException();
+			return Response.status(404).build();
 		}
 		
 		//
 		// Prevent side-attack; ensure the database belongs to the project specified
 		//
 		if (database.getProjectId() != id){
-			throw new BadRequestException();
+			return Response.status(400).build();
 		}
 		
 		ProjectDatabaseService.Factory.getInstance().removeDatabaseFromProject(id, db);
