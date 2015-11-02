@@ -19,12 +19,9 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -199,8 +196,8 @@ public class Project {
 		}
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:update", id);			
-			throw new ForbiddenException();
+			AuditService.Factory.getInstance().createNotAuthRecord("project:update", id);
+			return Response.status(403).build();
 		}
 		
 		//
