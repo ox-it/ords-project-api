@@ -30,6 +30,10 @@ public class ProjectPermissionSets {
 	}
 	public static List<String> getPermissionsForUser(){
 		List<String> permissions = getPermissionsForAnonymous();
+		return permissions;
+	}
+	public static List<String> getPermissionsForLocalUser(){
+		List<String> permissions = getPermissionsForAnonymous();
 		permissions.add(ProjectPermissions.PROJECT_CREATE);
 		return permissions;
 	}

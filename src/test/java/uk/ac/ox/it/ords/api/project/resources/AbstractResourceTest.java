@@ -78,11 +78,21 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		//
 		
 		//
-		// Anyone with the "User" role can create new trial projects
+		// Anyone with the "User" role can contribute to projects
 		//
 		for (String permission : ProjectPermissionSets.getPermissionsForUser()){
 			Permission permissionObject = new Permission();
 			permissionObject.setRole("user");
+			permissionObject.setPermission(permission);
+			session.save(permissionObject);
+		}
+		
+		//
+		// Anyone with the "LocalUser" role can create new trial projects
+		//
+		for (String permission : ProjectPermissionSets.getPermissionsForLocalUser()){
+			Permission permissionObject = new Permission();
+			permissionObject.setRole("localuser");
 			permissionObject.setPermission(permission);
 			session.save(permissionObject);
 		}
@@ -119,7 +129,7 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		
 		UserRole pingu = new UserRole();
 		pingu.setPrincipalName("pingu");
-		pingu.setRole("user");
+		pingu.setRole("localuser");
 		session.save(pingu);
 		
 		UserRole anonymous = new UserRole();
