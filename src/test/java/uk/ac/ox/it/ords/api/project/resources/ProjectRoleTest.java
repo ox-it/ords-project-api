@@ -81,6 +81,10 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		logout();
 		
 		assertEquals(403, getClient().path(rolePath).get().getStatus());
+		
+		loginUsingSSO("pingu", "pingu");
+		assertEquals(200, getClient().path(rolePath).delete().getStatus());
+		logout();		
 	}
 	
 	//
@@ -91,8 +95,8 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		
 		loginUsingSSO("pingu", "pingu");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
-		project.setName("Test Project C");
-		project.setDescription("Test Project C");
+		project.setName("publicRole");
+		project.setDescription("publicRole");
 		project.setPrivateProject(false);
 		String projectPath = getClient().path("/project").post(project).getLocation().getPath();
 		
@@ -105,6 +109,11 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		
 		assertEquals(200, getClient().path(projectPath+"/role/").get().getStatus());
 		assertEquals(200, getClient().path(rolePath).get().getStatus());
+		
+		loginUsingSSO("pingu", "pingu");
+		assertEquals(200, getClient().path(rolePath).delete().getStatus());
+
+		
 	}
 	
 	
@@ -488,6 +497,13 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		client.path(roleURI.getPath());
 		response = client.delete();
 		assertEquals(403, response.getStatus());
+		
+		//
+		// Clean up
+		//
+		logout();
+		loginUsingSSO("pingu", "test");
+		assertEquals(200, getClient().path(roleURI.getPath()).delete().getStatus());
 	}
 	
 	@Test
@@ -514,6 +530,7 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		role.setRole("viewer");;
 		response = client.post(role);
 		assertEquals(201, response.getStatus());
+		URI roleURI = response.getLocation();
 		logout();
 		
 		//
@@ -537,8 +554,12 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		assertEquals(200, response.getStatus());
 		List<UserRole> roles = response.readEntity(
 				new GenericType<List<UserRole>>() {});
-		logout();
+
 		assertEquals(2, roles.size());
+		
+		// Clean up
+		assertEquals(200, getClient().path(roleURI.getPath()).delete().getStatus());
+		logout();
 	}
 	
 	@Test
@@ -551,14 +572,14 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		WebClient client = getClient();
 		client.path("project/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
-		project.setName("Test Project C");
-		project.setDescription("Test Project C");
+		project.setName("unrelatedRoles");
+		project.setDescription("unrelatedRoles");
 		project.setPrivateProject(true);
 		Response response = client.post(project);
 		assertEquals(201, response.getStatus());
 		response = getClient().path(response.getLocation().getPath()).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
-		assertEquals("Test Project C", project.getName());
+		assertEquals("unrelatedRoles", project.getName());
 		int project2 = project.getProjectId();
 		
 		//
