@@ -110,11 +110,11 @@ public class Project implements Serializable {
     
     // This is set by the system and is not settable from REST calls
     @JsonIgnore 
-    private String dateCreated;
+    private Date dateCreated;
 
     public Project() {
         Date date = new Date();
-        this.setDateCreated(date.toString());
+        this.setDateCreated(date);
         this.setStartDate(startDate = date.toString());
         this.setProjectUuid(UUID.randomUUID().toString());
     }
@@ -208,14 +208,14 @@ public class Project implements Serializable {
     }
 
     @JsonProperty
-    public String getDateCreated() {
+    public Date getDateCreated() {
         return dateCreated;
     }
 
     @JsonIgnore 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(Date dateCreated) {
         if (dateCreated == null) {
-            dateCreated = new Date().toString();
+            dateCreated = new Date();
         }
         this.dateCreated = dateCreated;
     }
