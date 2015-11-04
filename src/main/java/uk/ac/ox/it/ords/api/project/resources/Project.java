@@ -18,6 +18,9 @@ package uk.ac.ox.it.ords.api.project.resources;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -44,6 +47,8 @@ import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 
 public class Project {
+	
+	Logger log = LoggerFactory.getLogger(Project.class);
 
 	public Project() {
 	}

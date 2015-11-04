@@ -32,6 +32,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
@@ -39,6 +41,8 @@ import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 public class ProjectInvitation {
+	
+	Logger log = LoggerFactory.getLogger(ProjectInvitation.class);
 	
 	@Path("/invitation")
 	@POST

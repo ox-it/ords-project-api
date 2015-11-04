@@ -32,6 +32,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
@@ -39,7 +41,8 @@ import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 public class ProjectDatabase {
-
+	
+	Logger log = LoggerFactory.getLogger(ProjectDatabase.class);
 	
 	@Path("/project/{id}/database/{db}")
 	@GET

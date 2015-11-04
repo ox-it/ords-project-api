@@ -20,9 +20,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HibernateUtils
 {
+	Logger log = LoggerFactory.getLogger(HibernateUtils.class);
+	
 	private static SessionFactory sessionFactory;
 	private static ServiceRegistry serviceRegistry;
 	

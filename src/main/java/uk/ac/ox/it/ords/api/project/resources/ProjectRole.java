@@ -31,6 +31,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Member;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
@@ -41,6 +43,7 @@ import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectRole {
 
+	Logger log = LoggerFactory.getLogger(ProjectRole.class);
 	
 	@Path("/project/{projectId}/role/{roleId}")
 	@PUT
