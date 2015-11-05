@@ -33,6 +33,7 @@ import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.AuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.api.project.services.ServerConfigurationService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectServiceImpl;
 
 /**
@@ -79,6 +80,22 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		
 		if (project == null) throw new Exception("Cannot create project: null");
 		
+		//
+		// Allocate to a server
+		//
+		String server = ServerConfigurationService.Factory.getInstance().getAvailableDbServer();
+		if (server == null){
+			throw new Exception("No servers available");
+		}
+		project.setDbServerAddress(server);
+		
+		//
+		// TODO sort out ODBC info
+		// project.setOdbcConnectionURL(ODBCUtils.createOdbcConnectionString(details.serverName));
+		
+		//
+		// Save the project
+		//
 		Session session = this.sessionFactory.getCurrentSession();
 		Transaction transaction = session.beginTransaction();
 		try {
@@ -313,5 +330,25 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		List<Project> visibleProjects = filterProjectsForVisible(projects);
 
 		return visibleProjects;
+	}
+
+	@Override
+	public int getNumberOfProjectsOnServer(String server) {
+		Session session = this.sessionFactory.getCurrentSession();
+		int projects = 0;
+		try {
+			session.beginTransaction();
+			projects = session.createCriteria(Project.class)
+					.add(Restrictions.eq("dbServerAddress", server))
+					.list().size();
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Error getting project list", e);
+			session.getTransaction().rollback();
+			throw e;
+		} finally {
+			  HibernateUtils.closeSession();
+		}
+		return projects;
 	}
 }
