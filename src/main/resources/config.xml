@@ -1,0 +1,3 @@
+<configuration>
+	<serverConfigurationLocation>/etc/ordsConfig/serverConfig.xml</serverConfigurationLocation>
+</configuration>
