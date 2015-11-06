@@ -42,7 +42,7 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.shiro.SecurityUtils;
 
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
-import uk.ac.ox.it.ords.api.project.services.AuditService;
+import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 
@@ -123,7 +123,7 @@ public class Project {
 		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
-				AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
+				ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 				return Response.status(403).build();
 			}
 		}
@@ -152,7 +152,7 @@ public class Project {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_DELETE(id))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:delete", id);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:delete", id);
 			return Response.status(403).build();
 		}
 
@@ -195,13 +195,13 @@ public class Project {
 		//
 		if (oldProject.isTrialProject() == true && project.isTrialProject() == false){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_UPGRADE)){
-				AuditService.Factory.getInstance().createNotAuthRecord("project:upgrade", id);
+				ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:upgrade", id);
 				return Response.status(403).build();
 			}
 		}
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:update", id);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:update", id);
 			return Response.status(403).build();
 		}
 		
@@ -222,7 +222,7 @@ public class Project {
 			) throws Exception {
 
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE) && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE_FULL)){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:create", -1);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:create", -1);
 			return Response.status(403).build();
 		}
 
@@ -234,7 +234,7 @@ public class Project {
 		// Only users with the project:create-full permission can create a new project that has TrialProject set to False
 		//
 		if (project.isTrialProject() == false && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_CREATE_FULL)){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:create-full", -1);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:create-full", -1);
 			return Response.status(403).build();
 		}
 

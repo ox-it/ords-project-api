@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
-import uk.ac.ox.it.ords.api.project.services.AuditService;
+import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
@@ -63,7 +63,7 @@ public class ProjectDatabase {
 		}
 		
 		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 			return Response.status(403).build();
 		}
 		
@@ -96,7 +96,7 @@ public class ProjectDatabase {
 		}
 		
 		if (project.isPrivateProject() && !SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(id))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:view", id);
 			return Response.status(403).build();
 		}
 		
@@ -125,7 +125,7 @@ public class ProjectDatabase {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
 			return Response.status(403).build();
 		}
 		
@@ -162,7 +162,7 @@ public class ProjectDatabase {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:modify", id);
 			return Response.status(403).build();
 		}
 		

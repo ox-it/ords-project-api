@@ -20,7 +20,7 @@ import java.util.ServiceLoader;
 import uk.ac.ox.it.ords.api.project.services.impl.ipc.AuditServiceImpl;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
-public interface AuditService {
+public interface ProjectAuditService {
 	
     /**
      * Create audit message that the user is not authorised to perform a specific action
@@ -89,8 +89,8 @@ public interface AuditService {
 	 * Factory for obtaining implementations
 	 */
     public static class Factory {
-		private static AuditService provider;
-	    public static AuditService getInstance() {
+		private static ProjectAuditService provider;
+	    public static ProjectAuditService getInstance() {
 	    	//
 	    	// Use the service loader to load an implementation if one is available
 	    	// Place a file called uk.ac.ox.oucs.ords.utilities.csv in src/main/resources/META-INF/services
@@ -98,8 +98,8 @@ public interface AuditService {
 	    	// By default we load the Hibernate implementation.
 	    	//
 	    	if (provider == null){
-	    		ServiceLoader<AuditService> ldr = ServiceLoader.load(AuditService.class);
-	    		for (AuditService service : ldr) {
+	    		ServiceLoader<ProjectAuditService> ldr = ServiceLoader.load(ProjectAuditService.class);
+	    		for (ProjectAuditService service : ldr) {
 	    			// We are only expecting one
 	    			provider = service;
 	    		}

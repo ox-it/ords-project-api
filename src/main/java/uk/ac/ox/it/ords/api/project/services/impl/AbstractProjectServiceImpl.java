@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Project;
 import uk.ac.ox.it.ords.api.project.server.ValidationException;
-import uk.ac.ox.it.ords.api.project.services.AuditService;
+import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 public abstract class AbstractProjectServiceImpl implements ProjectService{
@@ -70,19 +70,19 @@ public abstract class AbstractProjectServiceImpl implements ProjectService{
 		
 		if (project.getName() == null){
 			log.error("Invalid input - cannot have no project name");
-			AuditService.Factory.getInstance().createProjectFailed("Null project name");
+			ProjectAuditService.Factory.getInstance().createProjectFailed("Null project name");
 			throw new ValidationException("Invalid input - cannot have no project name");	
 		}
 		
 		if (project.getDescription() == null){
 			log.error("Invalid input - cannot have no project description");
-			AuditService.Factory.getInstance().createProjectFailed(project.getName());
+			ProjectAuditService.Factory.getInstance().createProjectFailed(project.getName());
 			throw new ValidationException("Invalid input - cannot have no project description");
 		}
 		
 		if ((project.getName().contains(METADATA_TOKEN)) || (project.getDescription().contains(METADATA_TOKEN))) {
 			log.error("Invalid input - cannot have '___' in project");
-			AuditService.Factory.getInstance().createProjectFailed(project.getName());
+			ProjectAuditService.Factory.getInstance().createProjectFailed(project.getName());
 			throw new ValidationException("Invalid input - cannot have '___' in project");
 		}
 	}

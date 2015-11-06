@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.server.ValidationException;
-import uk.ac.ox.it.ords.api.project.services.AuditService;
+import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectRoleService;
 import uk.ac.ox.it.ords.security.model.Permission;
@@ -225,7 +225,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 			userRole.setRole(projectRole);
 			session.save(userRole);
 			session.getTransaction().commit();
-			AuditService.Factory.getInstance().createProjectUser(userRole, projectId);
+			ProjectAuditService.Factory.getInstance().createProjectUser(userRole, projectId);
 			return userRole;
 		} catch (HibernateException e) {
 			log.error("Error creating user role", e);
@@ -267,7 +267,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 			session.beginTransaction();
 			session.delete(userRole);
 			session.getTransaction().commit();
-			AuditService.Factory.getInstance().deleteProjectRole(userRole, projectId);
+			ProjectAuditService.Factory.getInstance().deleteProjectRole(userRole, projectId);
 		} catch (Exception e) {
 			session.getTransaction().rollback();
 			log.error("Cannot find user role", e);

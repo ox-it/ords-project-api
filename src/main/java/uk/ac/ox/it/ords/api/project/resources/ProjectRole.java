@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Member;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
-import uk.ac.ox.it.ords.api.project.services.AuditService;
+import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 import uk.ac.ox.it.ords.security.model.UserRole;
@@ -66,7 +66,7 @@ public class ProjectRole {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
 			return Response.status(403).build();
 		}
 
@@ -114,7 +114,7 @@ public class ProjectRole {
 		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(projectId))){
-				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
+				ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
 				return Response.status(403).build();
 			}
 		}
@@ -155,7 +155,7 @@ public class ProjectRole {
 		
 		if (project.isPrivateProject()){
 			if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW(projectId))){
-				AuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
+				ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:view", projectId);
 				return Response.status(403).build();
 			}
 		}
@@ -184,7 +184,7 @@ public class ProjectRole {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
 			return Response.status(403).build();
 		}
 		
@@ -213,7 +213,7 @@ public class ProjectRole {
 		}
 		
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
-			AuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:modify", projectId);
 			return Response.status(403).build();
 		}
 		
