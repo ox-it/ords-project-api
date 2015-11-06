@@ -19,6 +19,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ox.it.ords.api.project.conf.MetaConfiguration;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 import uk.ac.ox.it.ords.api.project.services.ServerConfigurationService;
 
@@ -92,24 +93,10 @@ ServerConfigurationService {
 	@Override
 	public String getAvailableDbServer() throws Exception {
 
-		/*
-		 * Server Config files looks like this:
-		 * 
-		 *	<ordsServerConfig hostName="localhost" testServer="true" testEnvironment="true">
-		 *		<serverList>
-		 *			<server ip="localhost" name="localhost" full="false"/>
-		 *		</serverList>
-		 *	</ordsServerConfig>
-		 */
-
 		String serverConfigurationLocation = DEFAULT_SERVER_CONFIG_LOCATION;
 
-		//
-		// Load the meta-configuration file
-		//
 		try {
-			XMLConfiguration config = new XMLConfiguration("config.xml");
-			serverConfigurationLocation = config.getString("serverConfigurationLocation");
+			serverConfigurationLocation = MetaConfiguration.getConfigurationLocation("serverConfigurationLocation");
 			if (serverConfigurationLocation == null){
 				log.warn("No server configuration location set; using defaults");
 				serverConfigurationLocation = DEFAULT_SERVER_CONFIG_LOCATION;

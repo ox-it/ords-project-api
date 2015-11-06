@@ -23,18 +23,26 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ox.it.ords.api.project.conf.MetaConfiguration;
+
 public class HibernateUtils
 {
 	Logger log = LoggerFactory.getLogger(HibernateUtils.class);
-	
+
 	private static SessionFactory sessionFactory;
 	private static ServiceRegistry serviceRegistry;
-	
+
 	private static void init()
 	{
 		try
 		{
-			Configuration configuration = new Configuration().configure();
+			Configuration configuration;
+			String hibernateConfigLocation = MetaConfiguration.getConfigurationLocation("hibernate");
+			if (hibernateConfigLocation == null){
+				configuration = new Configuration().configure();
+			} else {
+				configuration = new Configuration().configure(hibernateConfigLocation);
+			}
 
 			serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
 			sessionFactory = configuration.buildSessionFactory(serviceRegistry);
