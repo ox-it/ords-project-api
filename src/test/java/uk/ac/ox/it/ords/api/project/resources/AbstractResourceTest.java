@@ -39,6 +39,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.server.UnrecognizedPropertyExceptionMapper;
 import uk.ac.ox.it.ords.api.project.server.ValidationExceptionMapper;
+import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 import uk.ac.ox.it.ords.security.AbstractShiroTest;
 import uk.ac.ox.it.ords.security.model.Permission;
@@ -48,7 +49,6 @@ public class AbstractResourceTest extends AbstractShiroTest {
 
 	protected final static String ENDPOINT_ADDRESS = "local://project-api";
 	protected static Server server;
-	private static boolean dbCreated = false;
 	protected static void startServer() throws Exception {
 
 	}
@@ -63,7 +63,21 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		return client;
 	}
 	
-	public static void createTestUsersAndRoles(){
+	public static void createTestUsersAndRoles() throws Exception{
+		
+		///
+		/// I have no idea why this is needed to "kickstart" Hibernate
+		/// into behaving properly for these tests. I *think* it binds
+		/// the hibernate session to the same thread that is used by
+		/// the resource classes, but I could be wrong. It doesn't seem
+		/// to bother any of the other modules.
+		/// 
+		ProjectRoleService service = ProjectRoleService.Factory.getInstance();
+		UserRole userRole = new UserRole();
+		userRole.setPrincipalName("bob");
+		userRole.setRole("viewer");
+		service.addUserRoleToProject(1, userRole);	
+		
 		//
 		// Set up the database
 		//
@@ -74,8 +88,16 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		Transaction transaction = session.beginTransaction();
 		
 		//
+		// Clear out anything there already
+		//
+		session.createSQLQuery("truncate userrole, permissions, project").executeUpdate();
+		transaction.commit();
+		
+		//
 		// Add our test permissions
 		//
+		session = HibernateUtils.getSessionFactory().getCurrentSession();
+		transaction = session.beginTransaction();
 		
 		//
 		// Anyone with the "User" role can contribute to projects
@@ -142,8 +164,6 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		//
 		transaction.commit();
 		HibernateUtils.closeSession();
-		
-		dbCreated = true;
 	}
 
 	/**
@@ -156,7 +176,7 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		//
 		// Set up roles
 		//
-		if (!dbCreated) createTestUsersAndRoles();
+		createTestUsersAndRoles();
 		
 		//
 		// This is for unit testing only and uses the test.shiro.ini configuration
