@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- This is the meta-configuration file - its used to lookup the location of configuration files in deployment -->
 <configuration>
 	<!-- ServerConfig.xml -->
