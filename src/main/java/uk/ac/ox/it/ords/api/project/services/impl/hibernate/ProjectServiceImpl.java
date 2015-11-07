@@ -139,9 +139,9 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			ProjectRoleService.Factory.getInstance().deletePermissions(id);
 			
 		} catch (Exception e) {
-			log.error("Error creating Project", e);
+			log.error("Error deleting Project", e);
 			session.getTransaction().rollback();
-			throw new Exception("Cannot create project",e);
+			throw new Exception("Cannot delete project",e);
 		} finally {
 			  HibernateUtils.closeSession();
 		}
