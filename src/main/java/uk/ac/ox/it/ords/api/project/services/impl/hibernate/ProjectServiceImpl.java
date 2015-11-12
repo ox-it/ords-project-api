@@ -15,8 +15,10 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl.hibernate;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
+
 
 import org.apache.shiro.SecurityUtils;
 import org.hibernate.Criteria;
@@ -165,13 +167,25 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			//
 			// Filter for projects where the current user has a role
 			//
-			myProjects = projects.stream()
-					.filter(p -> 
-							SecurityUtils.getSubject().hasRole("owner_"+p.getProjectId())
-						||  SecurityUtils.getSubject().hasRole("contributor_"+p.getProjectId())
-						||  SecurityUtils.getSubject().hasRole("viewer_"+p.getProjectId())		
-							)
-					.collect(Collectors.toList());
+//			myProjects = projects.stream()
+//					.filter(p -> 
+//							SecurityUtils.getSubject().hasRole("owner_"+p.getProjectId())
+//						||  SecurityUtils.getSubject().hasRole("contributor_"+p.getProjectId())
+//						||  SecurityUtils.getSubject().hasRole("viewer_"+p.getProjectId())		
+//							)
+//					.collect(Collectors.toList());
+			myProjects = new ArrayList<Project>();
+			for (Project project : projects){
+				if (
+						SecurityUtils.getSubject().hasRole("owner_"+project.getProjectId())
+						||  SecurityUtils.getSubject().hasRole("contributor_"+project.getProjectId())
+						||  SecurityUtils.getSubject().hasRole("viewer_"+project.getProjectId())		
+					){
+					myProjects.add(project);
+				}
+					
+			}
+			
 			
 		} catch (Exception e) {
 			log.error("Error getting project list", e);

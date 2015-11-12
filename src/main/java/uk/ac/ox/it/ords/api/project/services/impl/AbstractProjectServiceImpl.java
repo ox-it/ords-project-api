@@ -15,8 +15,9 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -39,13 +40,22 @@ public abstract class AbstractProjectServiceImpl implements ProjectService{
 	 */
 	protected List<Project> filterProjectsForVisible(List<Project> projects){	
 		
-		List<Project > visibleProjects = projects.stream()
-				.filter(p -> 
-						   !p.isPrivateProject() 
-						|| 
-							SecurityUtils.getSubject().isPermitted("project:view:"+p.getProjectId())
-						)
-				.collect(Collectors.toList());
+//		List<Project > visibleProjects = projects.stream()
+//				.filter(p -> 
+//						   !p.isPrivateProject() 
+//						|| 
+//							SecurityUtils.getSubject().isPermitted("project:view:"+p.getProjectId())
+//						)
+//				.collect(Collectors.toList());
+		
+		
+		List<Project> visibleProjects = new ArrayList<Project>();
+		for (Project project : projects){
+			if (!project.isPrivateProject() || SecurityUtils.getSubject().isPermitted("project:view:"+project.getProjectId())){
+				visibleProjects.add(project);
+			}
+		}
+		
 		
 		return visibleProjects;
 	}
