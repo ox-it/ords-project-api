@@ -44,7 +44,7 @@ public class ProjectDatabase {
 	
 	Logger log = LoggerFactory.getLogger(ProjectDatabase.class);
 	
-	@Path("/project/{id}/database/{db}")
+	@Path("/{id}/database/{db}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDatabaseForProject(
@@ -78,7 +78,7 @@ public class ProjectDatabase {
 		return Response.ok(database).build();
 	}
 	
-	@Path("/project/{id}/database")
+	@Path("/{id}/database")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDatabasesForProject(
@@ -104,7 +104,7 @@ public class ProjectDatabase {
 		return Response.ok(databases).build();		
 	}
 	
-	@Path("/project/{id}/database")
+	@Path("/{id}/database")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -144,7 +144,7 @@ public class ProjectDatabase {
 
 	}
 	
-	@Path("/project/{id}/database/{db}")
+	@Path("/{id}/database/{db}")
 	@DELETE
 	public Response removeDatabaseFromProject(
 			@PathParam("id") final int id,

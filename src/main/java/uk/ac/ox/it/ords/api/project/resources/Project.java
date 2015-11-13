@@ -54,7 +54,7 @@ public class Project {
 	}
 	
 	
-	@Path("/project")
+	@Path("/")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProjects(
@@ -106,7 +106,7 @@ public class Project {
 		
 	}
 
-	@Path("/project/{id}")
+	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProject(
@@ -134,7 +134,7 @@ public class Project {
 		return Response.ok(project).build();
 	}
 
-	@Path("/project/{id}")
+	@Path("/{id}")
 	@DELETE
 	public Response deleteProject(
 			@PathParam("id") final int id, 
@@ -160,7 +160,7 @@ public class Project {
 		return Response.ok().build();
 	}
 	
-	@Path("/project/{id}")
+	@Path("/{id}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -212,7 +212,7 @@ public class Project {
 		return Response.ok(updatedProject).build();
 	}
 
-	@Path("/project/")
+	@Path("/")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

@@ -45,7 +45,7 @@ public class ProjectRole {
 
 	Logger log = LoggerFactory.getLogger(ProjectRole.class);
 	
-	@Path("/project/{projectId}/role/{roleId}")
+	@Path("/{projectId}/role/{roleId}")
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -94,7 +94,7 @@ public class ProjectRole {
 		return Response.ok().build();
 	}
 	
-	@Path("/project/{projectId}/role/{roleId}")
+	@Path("/{projectId}/role/{roleId}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProjectRole(
@@ -136,7 +136,7 @@ public class ProjectRole {
 		
 	}
 	
-	@Path("/project/{id}/role")
+	@Path("/{id}/role")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getRoles(
@@ -163,7 +163,7 @@ public class ProjectRole {
 		return Response.ok(ProjectRoleService.Factory.getInstance().getProjectMembers(projectId)).build();
 	}
 
-	@Path("/project/{id}/role")
+	@Path("/{id}/role")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -195,7 +195,7 @@ public class ProjectRole {
 	    return Response.created(builder.build()).build();
 	}
 	
-	@Path("/project/{projectId}/role/{roleId}")
+	@Path("/{projectId}/role/{roleId}")
 	@DELETE
 	public Response deleteRoleFromProject(
 				@PathParam("projectId") final int projectId,

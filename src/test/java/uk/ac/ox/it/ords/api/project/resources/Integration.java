@@ -42,7 +42,7 @@ public class Integration  extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("integrationTest");
 		project.setDescription("integrationTest");
@@ -58,7 +58,7 @@ public class Integration  extends AbstractResourceTest {
 		// Pingu adds Pinga as Contributor to Project 
 		//
 		client = getClient();
-		client.path("project/"+project2+"/role");
+		client.path("/"+project2+"/role");
 		UserRole role = new UserRole();
 		role.setPrincipalName("pinga");
 		role.setRole("contributor");;
@@ -70,7 +70,7 @@ public class Integration  extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+project2+"/role");
+		client.path("/"+project2+"/role");
 		role = new UserRole();
 		role.setPrincipalName("pinga");
 		role.setRole("viewer");;
@@ -82,7 +82,7 @@ public class Integration  extends AbstractResourceTest {
 		//
 		loginUsingSSO("pinga", "pinga");
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		response = client.get();
 		List<uk.ac.ox.it.ords.api.project.model.Project> projects = response.readEntity(
 				new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
@@ -94,7 +94,7 @@ public class Integration  extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("/project/"+project2);
+		client.path("/"+project2);
 		response = client.delete();
 		assertEquals(200, response.getStatus());
 		

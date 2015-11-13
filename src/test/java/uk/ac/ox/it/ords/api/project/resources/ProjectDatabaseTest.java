@@ -36,7 +36,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu","pingu");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project H");
 		project.setDescription("privateProjectDatabases");
@@ -84,7 +84,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu","pingu");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project I");
 		project.setDescription("deleteDatabaseFromDeletedProject");
@@ -101,7 +101,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		// Add a database
 		//
 		client = getClient();
-		client.path("project/"+id+"/database");		
+		client.path("/"+id+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
@@ -127,7 +127,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		WebClient client = getClient();
 		
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project S1");
 		project.setDescription("sideAttacks");
@@ -140,7 +140,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		int id1 = project.getProjectId();
 		
 		client = getClient();
-		client.path("project/"+id1+"/database");		
+		client.path("/"+id1+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase1 = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase1.setProjectId(id1);
 		response = client.post(projectDatabase1);
@@ -149,7 +149,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		int databaseId1 = getClient().path(projectDatabaseURI1.getPath()).get().readEntity(uk.ac.ox.it.ords.api.project.model.ProjectDatabase.class).getProjectDatabaseId();
 		
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project2 = new uk.ac.ox.it.ords.api.project.model.Project();
 		project2.setName("Test Project S2");
 		project2.setDescription("sideAttacks");
@@ -165,14 +165,14 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		// Add using wrong project id
 		//
 		client = getClient();
-		client.path("project/"+id2+"/database");		
+		client.path("/"+id2+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase2 = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase2.setProjectId(id1);
 		response = client.post(projectDatabase2);
 		assertEquals(400, response.getStatus());
 		
 		client = getClient();
-		client.path("project/"+id2+"/database");		
+		client.path("/"+id2+"/database");		
 		projectDatabase2.setProjectId(id2);
 		response = client.post(projectDatabase2);
 		assertEquals(201, response.getStatus());
@@ -182,8 +182,8 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		//
 		// OK, now lets do some deleting using the wrong projects
 		//
-		assertEquals(400, getClient().path("project/" + id1 + "/database/" + databaseId2).delete().getStatus());
-		assertEquals(400, getClient().path("project/" + id2 + "/database/" + databaseId1).delete().getStatus());		
+		assertEquals(400, getClient().path("/" + id1 + "/database/" + databaseId2).delete().getStatus());
+		assertEquals(400, getClient().path("/" + id2 + "/database/" + databaseId1).delete().getStatus());		
 	}
 	
 	@Test
@@ -192,7 +192,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		WebClient client = getClient();
 		
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project O");
 		project.setDescription("getDatabaseNonExisting");
@@ -204,9 +204,9 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		assertEquals("Test Project O", project.getName());
 		int id = project.getProjectId();
 		
-		assertEquals(404, getClient().path("project/" + id + "/database/9999").delete().getStatus());
+		assertEquals(404, getClient().path("/" + id + "/database/9999").delete().getStatus());
 		
-		assertEquals(404, getClient().path("project/9999/database/9999").delete().getStatus());		
+		assertEquals(404, getClient().path("/9999/database/9999").delete().getStatus());		
 		
 	}
 	
@@ -219,7 +219,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// create a project
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project N");
 		project.setDescription("addDatabasesToProject");
@@ -232,7 +232,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// add database
 		client = getClient();
-		client.path("project/"+id+"/database");		
+		client.path("/"+id+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
@@ -242,7 +242,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		// add database unauthenticated
 		logout();
 		client = getClient();
-		client.path("project/"+id+"/database");		
+		client.path("/"+id+"/database");		
 		projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
@@ -258,19 +258,19 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// Get non-existant db
 		client = getClient();
-		client.path("project/"+id+"/database/9999");		
+		client.path("/"+id+"/database/9999");		
 		response = client.get();
 		assertEquals(404, response.getStatus());
 		
 		// Delete non-existant db
 		client = getClient();
-		client.path("project/"+id+"/database/9999");
+		client.path("/"+id+"/database/9999");
 		response = client.delete();
 		assertEquals(404, response.getStatus());
 		
 		// Add a DB where Ids don't match up
 		client = getClient();
-		client.path("project/"+id+"/database");		
+		client.path("/"+id+"/database");		
 		projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase.setProjectId(9999);
 		response = client.post(projectDatabase);
@@ -283,7 +283,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		loginUsingSSO("pingu","pingu");
 		
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project O");
 		project.setDescription("getDatabaseNonExisting");
@@ -295,13 +295,13 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		assertEquals("Test Project O", project.getName());
 		int id = project.getProjectId();
 		
-		path = "project/" + id + "/database/9999";
+		path = "/" + id + "/database/9999";
 		assertEquals(404, getClient().path(path).get().getStatus());
 		
-		path =  "project/9999/database/9999";
+		path =  "/9999/database/9999";
 		assertEquals(404, getClient().path(path).get().getStatus());
 		
-		path =  "project/9999/database/";
+		path =  "/9999/database/";
 		assertEquals(404, getClient().path(path).get().getStatus());
 		
 	}
@@ -314,7 +314,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		// Create database for non-existing project
 		//
 		WebClient client = getClient();
-		client.path("project/9999/database");		
+		client.path("/9999/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase.setProjectId(9999);
 		Response response = client.post(projectDatabase);
@@ -324,7 +324,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		// create a project and delete it, then attempt to add a database to it
 		//
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project G");
 		project.setDescription("addDatabasesToNoProject");
@@ -357,7 +357,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// create a project
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project N");
 		project.setDescription("addDatabasesToProject");
@@ -370,14 +370,14 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// add two databases
 		client = getClient();
-		client.path("project/"+id+"/database");		
+		client.path("/"+id+"/database");		
 		uk.ac.ox.it.ords.api.project.model.ProjectDatabase projectDatabase = new uk.ac.ox.it.ords.api.project.model.ProjectDatabase();
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
 		
 		client = getClient();
-		client.path("project/"+id+"/database");
+		client.path("/"+id+"/database");
 		projectDatabase.setProjectId(id);
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
@@ -385,7 +385,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// get them
 		client = getClient();
-		client.path("project/"+id+"/database");
+		client.path("/"+id+"/database");
 		response = client.get();
 		assertEquals(200, response.getStatus());
 		List<uk.ac.ox.it.ords.api.project.model.ProjectDatabase> projectDatabases = response.readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.ProjectDatabase>>() {});
@@ -393,7 +393,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// get one of them
 		client = getClient();
-		client.path("project/"+id+"/database/"+projectDatabases.get(0).getProjectDatabaseId());
+		client.path("/"+id+"/database/"+projectDatabases.get(0).getProjectDatabaseId());
 		response = client.get();
 		assertEquals(200, response.getStatus());
 		
@@ -405,7 +405,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// get again
 		client = getClient();
-		client.path("project/"+id+"/database");
+		client.path("/"+id+"/database");
 		response = client.get();
 		assertEquals(200, response.getStatus());
 		projectDatabases = response.readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.ProjectDatabase>>() {});
@@ -413,7 +413,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 		// delete the project
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.delete();
 		assertEquals(200, response.getStatus());
 	}

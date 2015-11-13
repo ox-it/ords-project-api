@@ -29,7 +29,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 	public void setup(){
 			loginUsingSSO("pingu", "pingu");
 			WebClient client = getClient();
-			client.path("project/");
+			client.path("/");
 			uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 			project.setName("Test Project B");
 			project.setDescription("ProjectInvitationsTest");
@@ -51,9 +51,9 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
 		invitation.setUserId(27);
-		Response response = getClient().path("project/"+projectId+"/invitation").post(invitation);
+		Response response = getClient().path("/"+projectId+"/invitation").post(invitation);
 		assertEquals(201, response.getStatus());
-		assertEquals(1, getClient().path("project/"+projectId+"/invitation").get().readEntity(new GenericType<List<Invitation>>() {}).size());
+		assertEquals(1, getClient().path("/"+projectId+"/invitation").get().readEntity(new GenericType<List<Invitation>>() {}).size());
 		
 		invitation = getClient().path(response.getLocation().getPath()).get().readEntity(Invitation.class);
 		assertEquals(projectId, invitation.getProjectId());
@@ -72,12 +72,12 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
 		invitation.setUserId(27);
-		String path = getClient().path("project/"+projectId+"/invitation").post(invitation).getLocation().getPath();
+		String path = getClient().path("/"+projectId+"/invitation").post(invitation).getLocation().getPath();
 		logout();
 		
 		assertEquals(403, getClient().path(path).get().getStatus());
 		assertEquals(403, getClient().path(path).delete().getStatus());
-		assertEquals(403, getClient().path("project/"+projectId+"/invitation").get().getStatus());
+		assertEquals(403, getClient().path("/"+projectId+"/invitation").get().getStatus());
 		
 	}
 	
@@ -88,8 +88,8 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation.setProjectId(-1);
 		invitation.setRoleRequired("viewer");
 		invitation.setUserId(27);
-		assertEquals(400, getClient().path("project/"+projectId+"/invitation").post(invitation).getStatus());
-		assertEquals(404, getClient().path("project/9999/invitation").post(invitation).getStatus());
+		assertEquals(400, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
+		assertEquals(404, getClient().path("/9999/invitation").post(invitation).getStatus());
 
 		logout();
 	}
@@ -100,7 +100,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		UserRole userRole = new UserRole();
 		userRole.setPrincipalName("fred");
 		userRole.setRole("chief banana");
-		assertEquals(400, getClient().path("project/"+projectId+"/invitation").post(userRole).getStatus());
+		assertEquals(400, getClient().path("/"+projectId+"/invitation").post(userRole).getStatus());
 		logout();
 	}
 	
@@ -111,7 +111,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation.setProjectId(-1);
 		invitation.setRoleRequired(null);
 		invitation.setUserId(27);
-		assertEquals(400, getClient().path("project/"+projectId+"/invitation").post(invitation).getStatus());
+		assertEquals(400, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 		logout();
 	}
 	
@@ -122,7 +122,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
 		invitation.setUserId(27);
-		String path = getClient().path("project/"+projectId+"/invitation").post(invitation).getLocation().getPath();
+		String path = getClient().path("/"+projectId+"/invitation").post(invitation).getLocation().getPath();
 		
 		assertEquals(200, getClient().path(path).delete().getStatus());
 		assertEquals(404, getClient().path(path).get().getStatus());
@@ -131,16 +131,16 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 	
 	@Test
 	public void noProject(){
-		assertEquals(404, getClient().path("project/9999/invitation/").get().getStatus());
-		assertEquals(404, getClient().path("project/9999/invitation/26").delete().getStatus());
-		assertEquals(404, getClient().path("project/9999/invitation/26").get().getStatus());
+		assertEquals(404, getClient().path("/9999/invitation/").get().getStatus());
+		assertEquals(404, getClient().path("/9999/invitation/26").delete().getStatus());
+		assertEquals(404, getClient().path("/9999/invitation/26").get().getStatus());
 
 	}
 	
 	@Test
 	public void noInvitation(){
-		assertEquals(404, getClient().path("project/"+projectId+"/invitation/9999").delete().getStatus());
-		assertEquals(404, getClient().path("project/"+projectId+"/invitation/9999").get().getStatus());
+		assertEquals(404, getClient().path("/"+projectId+"/invitation/9999").delete().getStatus());
+		assertEquals(404, getClient().path("/"+projectId+"/invitation/9999").get().getStatus());
 	}
 	
 	@Test
@@ -150,7 +150,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation.setRoleRequired("viewer");
 		invitation.setUserId(27);
 		
-		assertEquals(403, getClient().path("project/"+projectId+"/invitation").post(invitation).getStatus());
+		assertEquals(403, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 	}
 	
 	@Test
@@ -159,7 +159,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		UserRole role = new UserRole();
 		role.setPrincipalName("pinga");
 		role.setRole("viewer");
-		assertEquals(201, getClient().path("project/"+projectId+"/role").post(role).getStatus());
+		assertEquals(201, getClient().path("/"+projectId+"/role").post(role).getStatus());
 		logout();
 		
 		loginUsingSSO("pinga", "pinga");
@@ -167,24 +167,24 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
 		invitation.setUserId(27);
-		assertEquals(403, getClient().path("project/"+projectId+"/invitation").post(invitation).getStatus());
+		assertEquals(403, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 		logout();
 	}
 	
 	@Test
 	public void deletedProjects(){
 		loginUsingSSO("pingu", "pingu");		
-		assertEquals(200, getClient().path("project/"+projectId).delete().getStatus());
+		assertEquals(200, getClient().path("/"+projectId).delete().getStatus());
 		
 
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
 		invitation.setUserId(27);
-		assertEquals(410, getClient().path("project/"+projectId+"/invitation").post(invitation).getStatus());
-		assertEquals(410, getClient().path("project/"+projectId+"/invitation").get().getStatus());
-		assertEquals(410, getClient().path("project/"+projectId+"/invitation/26").get().getStatus());
-		assertEquals(410, getClient().path("project/"+projectId+"/invitation/26").delete().getStatus());
+		assertEquals(410, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
+		assertEquals(410, getClient().path("/"+projectId+"/invitation").get().getStatus());
+		assertEquals(410, getClient().path("/"+projectId+"/invitation/26").get().getStatus());
+		assertEquals(410, getClient().path("/"+projectId+"/invitation/26").delete().getStatus());
 		
 		logout();
 	}
@@ -196,7 +196,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		
 		// Project 1
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project S1");
 		project.setDescription("sideAttacks");
@@ -213,14 +213,14 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		invitation1.setProjectId(project1Id);
 		invitation1.setRoleRequired("owner");
 		invitation1.setUserId(16);
-		response = getClient().path("project/"+project1Id+"/invitation").post(invitation1);
+		response = getClient().path("/"+project1Id+"/invitation").post(invitation1);
 		assertEquals(201, response.getStatus());
 		URI invitation1URI = response.getLocation();
 		int invitationId1 = getClient().path(invitation1URI.getPath()).get().readEntity(Invitation.class).getId();
 		
 		// Project 2
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project2 = new uk.ac.ox.it.ords.api.project.model.Project();
 		project2.setName("Test Project S2");
 		project2.setDescription("sideAttacks");
@@ -237,13 +237,13 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		//	
 		Invitation invitation2 = new Invitation();
 		invitation2.setProjectId(project1Id);
-		assertEquals(400, getClient().path("project/"+project2Id+"/invitation").post(invitation2).getStatus());
+		assertEquals(400, getClient().path("/"+project2Id+"/invitation").post(invitation2).getStatus());
 		
 		//
 		// Now add to the correct project2 invitation2
 		//
 		invitation2.setProjectId(project2Id);
-		response = getClient().path("project/"+project2Id+"/invitation").post(invitation2);
+		response = getClient().path("/"+project2Id+"/invitation").post(invitation2);
 		assertEquals(201, response.getStatus());
 		URI projectDatabaseURI2 = response.getLocation();
 		int invitationId2 = getClient().path(projectDatabaseURI2.getPath()).get().readEntity(Invitation.class).getId();
@@ -251,21 +251,21 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		//
 		// OK, now lets do some gets and deletes using the wrong projects
 		//
-		assertEquals(400, getClient().path("project/" + project1Id + "/invitation/" + invitationId2).get().getStatus());
-		assertEquals(400, getClient().path("project/" + project2Id + "/invitation/" + invitationId1).get().getStatus());
-		assertEquals(400, getClient().path("project/" + project1Id + "/invitation/" + invitationId2).delete().getStatus());
-		assertEquals(400, getClient().path("project/" + project2Id + "/invitation/" + invitationId1).delete().getStatus());
+		assertEquals(400, getClient().path("/" + project1Id + "/invitation/" + invitationId2).get().getStatus());
+		assertEquals(400, getClient().path("/" + project2Id + "/invitation/" + invitationId1).get().getStatus());
+		assertEquals(400, getClient().path("/" + project1Id + "/invitation/" + invitationId2).delete().getStatus());
+		assertEquals(400, getClient().path("/" + project2Id + "/invitation/" + invitationId1).delete().getStatus());
 		
 		//
 		// Now delete properly
 		//
-		assertEquals(200, getClient().path("project/" + project1Id + "/invitation/" + invitationId1).delete().getStatus());
-		assertEquals(200, getClient().path("project/" + project2Id + "/invitation/" + invitationId2).delete().getStatus());
+		assertEquals(200, getClient().path("/" + project1Id + "/invitation/" + invitationId1).delete().getStatus());
+		assertEquals(200, getClient().path("/" + project2Id + "/invitation/" + invitationId2).delete().getStatus());
 	}
 	
 	@After
 	public void tearDown(){
 		loginUsingSSO("pingu", "pingu");
-		getClient().path("project/"+projectId).delete().getStatus();
+		getClient().path("/"+projectId).delete().getStatus();
 	}
 }

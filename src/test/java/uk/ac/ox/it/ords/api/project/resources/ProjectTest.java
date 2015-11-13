@@ -34,7 +34,7 @@ public class ProjectTest extends AbstractResourceTest {
 	@Test
 	public void deleteNonexistingProject(){
 		WebClient client = getClient();
-		client.path("project/99999");
+		client.path("/99999");
 		Response response = client.delete();
 		assertEquals(404, response.getStatus());
 	}
@@ -47,7 +47,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project X");
@@ -66,7 +66,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		logout();
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.delete();
 		assertEquals(403, response.getStatus());
 		
@@ -75,7 +75,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pinga","test");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.delete();
 		assertEquals(403, response.getStatus());
 		logout();
@@ -86,7 +86,7 @@ public class ProjectTest extends AbstractResourceTest {
 	public void createNullProject() throws IOException {
 		loginUsingSSO("pingu","test");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		Response response = client.post(null);
 		assertEquals(400, response.getStatus());
 		logout();
@@ -98,7 +98,7 @@ public class ProjectTest extends AbstractResourceTest {
 	public void createIncompleteProject() throws IOException {
 		loginUsingSSO("pingu","test");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setDescription("createIncompleteProject");
 		Response response = client.post(project);
@@ -113,15 +113,15 @@ public class ProjectTest extends AbstractResourceTest {
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("createInvalidProject");
-		assertEquals(400, getClient().path("project/").post(project).getStatus());
+		assertEquals(400, getClient().path("/").post(project).getStatus());
 		
 		project.setName("createInvalidProject___");
 		project.setDescription("createInvalidProject");
-		assertEquals(400, getClient().path("project/").post(project).getStatus());
+		assertEquals(400, getClient().path("/").post(project).getStatus());
 		
 		project.setName("createInvalidProject");
 		project.setDescription("createInvalidProject___");
-		assertEquals(400, getClient().path("project/").post(project).getStatus());
+		assertEquals(400, getClient().path("/").post(project).getStatus());
 		
 		logout();
 	}
@@ -130,7 +130,7 @@ public class ProjectTest extends AbstractResourceTest {
 	@Test
 	public void createProjectUnauthenticated() throws IOException {
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project A");
@@ -149,11 +149,11 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setTrialProject(false);
 		
 		loginUsingSSO("pingu", "pingu");
-		assertEquals(403, getClient().path("project/").post(project).getStatus());
+		assertEquals(403, getClient().path("/").post(project).getStatus());
 		logout();
 		
 		loginUsingSSO("admin","admin");
-		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		assertEquals(201, getClient().path("/").post(project).getStatus());
 		logout();
 	}
 	
@@ -172,7 +172,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("admin","admin");
 		
-		String projectPath = getClient().path("project/").post(project).getLocation().getPath();
+		String projectPath = getClient().path("/").post(project).getLocation().getPath();
 	
 		UserRole role = new UserRole();
 		role.setPrincipalName("pingu");
@@ -195,7 +195,7 @@ public class ProjectTest extends AbstractResourceTest {
 	public void createProjectAuthenticated() throws IOException {
 		loginUsingSSO("pingu", "pingu");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		
 		//
 		// POST project
@@ -214,7 +214,7 @@ public class ProjectTest extends AbstractResourceTest {
 		// GET the project
 		//
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.get();
 		assertEquals(200, response.getStatus());
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
@@ -226,7 +226,7 @@ public class ProjectTest extends AbstractResourceTest {
 		// DELETE the project
 		//
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.delete();
 		assertEquals(200, response.getStatus());
 		
@@ -234,7 +234,7 @@ public class ProjectTest extends AbstractResourceTest {
 		// GET it again - is it GONE?
 		//
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.get();
 		assertEquals(410, response.getStatus());
 		
@@ -248,7 +248,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("admin", "test");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Apple");
@@ -292,7 +292,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		logout();
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		client.query("open", true);
 		response = client.get();
 		List<uk.ac.ox.it.ords.api.project.model.Project> projects = 
@@ -308,7 +308,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("admin", "test");
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		client.query("full", true);
 		response = client.get();
 		projects = response.readEntity(
@@ -322,7 +322,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		logout();
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		client.query("full", true);
 		response = client.get();
 		projects = response.readEntity(
@@ -335,7 +335,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("admin", "test");
 		client = getClient();
-		client.path("project/");
+		client.path("/");
 		response = client.get();
 		projects = response.readEntity(
 						new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
@@ -347,7 +347,7 @@ public class ProjectTest extends AbstractResourceTest {
 	public void getMalformedRequest(){
 		loginUsingSSO("admin", "test");
 		WebClient client = getClient();
-		client.path("project/XXXX");
+		client.path("/XXXX");
 		Response response = client.get();
 		assertEquals(404, response.getStatus());
 		
@@ -357,7 +357,7 @@ public class ProjectTest extends AbstractResourceTest {
 	public void getNonexistantProject(){
 		loginUsingSSO("admin", "test");
 		WebClient client = getClient();
-		client.path("project/99999");
+		client.path("/99999");
 		Response response = client.get();
 		assertEquals(404, response.getStatus());
 		
@@ -370,7 +370,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project U");
 		project.setDescription("upgradeProject");
@@ -388,7 +388,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		project.setId(id);
 		project.setTrialProject(false);
 		response = client.put(project);
@@ -400,7 +400,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("admin", "admin");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		project.setId(id);
 		project.setTrialProject(false);
 		response = client.put(project);
@@ -413,7 +413,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.get();
 		assertEquals(200, response.getStatus());
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
@@ -429,7 +429,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		WebClient client = getClient();
-		client.path("project/");
+		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("Test Project V");
 		project.setDescription("updateProject");
@@ -448,7 +448,7 @@ public class ProjectTest extends AbstractResourceTest {
 		// PUT while logged out
 		//
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		project.setId(id);
 		project.setDescription("updateProject - updated BADLY");
 		response = client.put(project);
@@ -459,7 +459,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/9999");
+		client.path("/9999");
 		response = client.put(project);
 		assertEquals(404, response.getStatus());
 		logout();
@@ -469,7 +469,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.put(null);
 		assertEquals(400, response.getStatus());
 		logout();
@@ -479,7 +479,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		project.setId(26);
 		project.setDescription("updateProject - updated BADLY");
 		response = client.put(project);
@@ -492,7 +492,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.get();
 		assertEquals(200, response.getStatus());
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
@@ -505,7 +505,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		project.setId(id);
 		project.setDescription("updateProject - updated");
 		project.setStartDate("2000 BC");
@@ -519,7 +519,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		client = getClient();
-		client.path("project/"+id);
+		client.path("/"+id);
 		response = client.get();
 		assertEquals(200, response.getStatus());
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
@@ -533,8 +533,8 @@ public class ProjectTest extends AbstractResourceTest {
 		// DELETE the project and try to modify it
 		//
 		loginUsingSSO("pingu", "pingu");
-		assertEquals(200, getClient().path("project/"+id).delete().getStatus());
-		assertEquals(410, getClient().path("project/"+id).put(project).getStatus());
+		assertEquals(200, getClient().path("/"+id).delete().getStatus());
+		assertEquals(410, getClient().path("/"+id).put(project).getStatus());
 		logout();
 	}
 	
@@ -552,31 +552,31 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		project.setName("Test Project searchProjects1");
 		project.setDescription("searchProjects Octopus");
-		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		assertEquals(201, getClient().path("/").post(project).getStatus());
 		
 		project.setName("Test Project searchProjects2");
 		project.setDescription("searchProjects Octopus");
-		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		assertEquals(201, getClient().path("/").post(project).getStatus());
 		
 		project.setName("Test Project searchProjects3");
 		project.setDescription("searchProjects Squid");
-		assertEquals(201, getClient().path("project/").post(project).getStatus());
+		assertEquals(201, getClient().path("/").post(project).getStatus());
 		
 		//
 		// Baseline - all projects
 		//
-		int openProjects = getClient().path("project/").query("open", "true").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size();
+		int openProjects = getClient().path("/").query("open", "true").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size();
 
 		
 		//
 		// Search projects
 		//
-		assertEquals(1, getClient().path("project/").query("q", "searchProjects1").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
-		assertEquals(2, getClient().path("project/").query("q", "octopus").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
-		assertEquals(1, getClient().path("project/").query("q", "squid").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
-		assertEquals(0, getClient().path("project/").query("q", "mussell").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
-		assertEquals(openProjects, getClient().path("project/").query("q", " ").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
-		assertEquals(openProjects, getClient().path("project/").query("q", "").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(1, getClient().path("/").query("q", "searchProjects1").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(2, getClient().path("/").query("q", "octopus").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(1, getClient().path("/").query("q", "squid").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(0, getClient().path("/").query("q", "mussell").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(openProjects, getClient().path("/").query("q", " ").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+		assertEquals(openProjects, getClient().path("/").query("q", "").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
 
 	}
 }

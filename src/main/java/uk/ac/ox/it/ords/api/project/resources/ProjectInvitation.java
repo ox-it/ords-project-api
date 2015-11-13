@@ -81,7 +81,7 @@ public class ProjectInvitation {
 		
 	}
 
-	@Path("/project/{id}/invitation/{invitationid}")
+	@Path("/{id}/invitation/{invitationid}")
 	@DELETE
 	public Response deleteInvitation(
 			@PathParam("id") final int projectId,
@@ -115,7 +115,7 @@ public class ProjectInvitation {
 		return Response.ok().build();
 	}
 
-	@Path("/project/{id}/invitation")
+	@Path("/{id}/invitation")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getInvitations(
@@ -139,7 +139,7 @@ public class ProjectInvitation {
 		return Response.ok(invitations).build();
 	}
 
-	@Path("/project/{id}/invitation/{invitationid}")
+	@Path("/{id}/invitation/{invitationid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getInvitations(
@@ -179,7 +179,7 @@ public class ProjectInvitation {
 
 
 
-	@Path("/project/{id}/invitation")
+	@Path("/{id}/invitation")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
