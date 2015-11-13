@@ -19,9 +19,9 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ox.it.ords.api.project.conf.MetaConfiguration;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 import uk.ac.ox.it.ords.api.project.services.ServerConfigurationService;
+import uk.ac.ox.it.ords.security.configuration.MetaConfiguration;
 
 public class ServerConfigurationServiceImpl implements
 ServerConfigurationService {
@@ -41,6 +41,7 @@ ServerConfigurationService {
 		//
 		// Read the server list
 		//
+		
 		int servers = serverConfiguration.getStringArray("serverList.server[@name]").length;
 
 		//
@@ -96,7 +97,7 @@ ServerConfigurationService {
 		String serverConfigurationLocation = DEFAULT_SERVER_CONFIG_LOCATION;
 
 		try {
-			serverConfigurationLocation = MetaConfiguration.getConfigurationLocation("serverConfigurationLocation");
+			serverConfigurationLocation = MetaConfiguration.getConfiguration().getString("server.configuration");
 			if (serverConfigurationLocation == null){
 				log.warn("No server configuration location set; using defaults");
 				serverConfigurationLocation = DEFAULT_SERVER_CONFIG_LOCATION;

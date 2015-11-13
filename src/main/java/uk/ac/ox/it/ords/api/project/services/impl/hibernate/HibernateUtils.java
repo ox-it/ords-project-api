@@ -23,7 +23,7 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ox.it.ords.api.project.conf.MetaConfiguration;
+import uk.ac.ox.it.ords.security.configuration.MetaConfiguration;
 
 public class HibernateUtils
 {
@@ -37,7 +37,7 @@ public class HibernateUtils
 		try
 		{
 			Configuration configuration;
-			String hibernateConfigLocation = MetaConfiguration.getConfigurationLocation("hibernate");
+			String hibernateConfigLocation = MetaConfiguration.getConfiguration().getString("hibernate.configuration");			
 			if (hibernateConfigLocation == null){
 				configuration = new Configuration().configure();
 			} else {
