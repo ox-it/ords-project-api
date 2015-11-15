@@ -28,7 +28,7 @@ ServerConfigurationService {
 
 	public static Logger log = LoggerFactory.getLogger(ServerConfigurationServiceImpl.class);
 
-	public static final String DEFAULT_SERVER_CONFIG_LOCATION = "/etc/ordsConfig/serverConfig.xml";
+	public static final String DEFAULT_SERVER_CONFIG_LOCATION = "serverConfig.xml";
 
 	/**
 	 * Check which server is suitable and return it.
@@ -97,7 +97,7 @@ ServerConfigurationService {
 		String serverConfigurationLocation = DEFAULT_SERVER_CONFIG_LOCATION;
 
 		try {
-			serverConfigurationLocation = MetaConfiguration.getConfiguration().getString("server.configuration");
+			serverConfigurationLocation = MetaConfiguration.getConfiguration().getString("ords.server.configuration");
 			if (serverConfigurationLocation == null){
 				log.warn("No server configuration location set; using defaults");
 				serverConfigurationLocation = DEFAULT_SERVER_CONFIG_LOCATION;
