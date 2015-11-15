@@ -15,6 +15,8 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl.hibernate;
 
+import java.io.File;
+
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -23,33 +25,57 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ox.it.ords.api.project.model.*;
 import uk.ac.ox.it.ords.security.configuration.MetaConfiguration;
+import uk.ac.ox.it.ords.security.model.*;
 
 public class HibernateUtils
 {
-	Logger log = LoggerFactory.getLogger(HibernateUtils.class);
+	static Logger log = LoggerFactory.getLogger(HibernateUtils.class);
 
 	private static SessionFactory sessionFactory;
 	private static ServiceRegistry serviceRegistry;
-
-	private static void init()
+	
+	protected static String HIBERNATE_CONFIGURATION_PROPERTY = "ords.hibernate.configuration";
+	
+	protected static Configuration configuration;
+	
+	/**
+	 * Add the class mappings for this module
+	 */
+	protected static void addMappings(){
+		configuration.addAnnotatedClass(Project.class);
+		configuration.addAnnotatedClass(Invitation.class);
+		configuration.addAnnotatedClass(Member.class);
+		configuration.addAnnotatedClass(ProjectDatabase.class);
+		configuration.addAnnotatedClass(Permission.class);
+		configuration.addAnnotatedClass(Audit.class);
+		configuration.addAnnotatedClass(UserRole.class);
+	}
+	protected static void init()
 	{
 		try
 		{
-			Configuration configuration;
-			String hibernateConfigLocation = MetaConfiguration.getConfiguration().getString("hibernate.configuration");			
+			String hibernateConfigLocation = MetaConfiguration.getConfiguration().getString(HIBERNATE_CONFIGURATION_PROPERTY);			
 			if (hibernateConfigLocation == null){
+				log.warn("No hibernate configuration found; using default hibernate.cfg.xml");
 				configuration = new Configuration().configure();
 			} else {
-				configuration = new Configuration().configure(hibernateConfigLocation);
+				log.info("Hibernate configuration found; using configuration from "+hibernateConfigLocation);
+				configuration = new Configuration().configure(new File(hibernateConfigLocation));
 			}
-
+			
+			//
+			// Add class mappings. Note we do this programmatically as this is
+			// completely independent of the database configuration.
+			//
+			addMappings();
+			
 			serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
 			sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		}
 		catch (HibernateException he)
 		{
-			System.err.println("Error creating Session: " + he);
 			throw new ExceptionInInitializerError(he);
 		}
 	}
@@ -61,6 +87,12 @@ public class HibernateUtils
 	}
 
 	public static void closeSession() {
+		if (sessionFactory.getCurrentSession().getTransaction().isActive()){
+		}
 		sessionFactory.getCurrentSession().close();
+		
 	} 
+	
+	
+	
 }

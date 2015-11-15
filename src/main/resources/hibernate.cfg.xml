@@ -4,11 +4,11 @@
           "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.connection.url">jdbc:postgresql://localhost/ordstest</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://127.6.10.2:5432/ords2</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-        <property name="hibernate.connection.username">ords</property>
-        <property name="hibernate.connection.password">ords</property>
+        <property name="hibernate.connection.username">adminrbszyws</property>
+        <property name="hibernate.connection.password">w4AtRkrx6g99</property>
         <property name="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
         <property name="current_session_context_class">thread</property>
         <property name="hibernate.show_sql">false</property>
@@ -19,11 +19,5 @@
         <property name="c3p0.max_statements">50</property>
         <property name="hibernate.c3p0.idle_test_period">3000</property>
         <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
-        <mapping class="uk.ac.ox.it.ords.api.project.model.Project"/>
-        <mapping class="uk.ac.ox.it.ords.security.model.UserRole"/>
-        <mapping class="uk.ac.ox.it.ords.security.model.Permission"/>
-        <mapping class="uk.ac.ox.it.ords.security.model.Audit"/>
-        <mapping class="uk.ac.ox.it.ords.api.project.model.ProjectDatabase"/>
-        <mapping class="uk.ac.ox.it.ords.api.project.model.Invitation"/>
     </session-factory>
 </hibernate-configuration>
