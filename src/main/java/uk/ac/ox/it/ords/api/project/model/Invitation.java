@@ -45,23 +45,22 @@ public class Invitation implements Serializable {
     
     private int projectId;
     
-    @JsonIgnore 
+    @JsonProperty
     private String uuid;
     
-    private int userId;
     private String roleRequired;
-    private String principalName;
     
-    public String getPrincipalName() {
-		return principalName;
+    private String email;
+    
+    public String getEmail() {
+		return email;
 	}
 
-	public void setPrincipalName(String principalName) {
-		this.principalName = principalName;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public Invitation() {
-    	uuid = UUID.randomUUID().toString();
     }
 
     public int getId() {
@@ -88,14 +87,6 @@ public class Invitation implements Serializable {
     @JsonIgnore 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public String getRoleRequired() {

@@ -1,6 +1,8 @@
 package uk.ac.ox.it.ords.api.project.services.impl;
 
 
+import org.apache.shiro.SecurityUtils;
+
 import uk.ac.ox.it.ords.api.project.model.Invitation;
 import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
@@ -21,7 +23,7 @@ public abstract class AbstractProjectInvitationService implements
 		// Create the desired role
 		//
 		UserRole userRole = new UserRole();
-		userRole.setPrincipalName(invitation.getPrincipalName());
+		userRole.setPrincipalName(SecurityUtils.getSubject().getPrincipal().toString());
 		userRole.setRole(invitation.getRoleRequired());
 		ProjectRoleService.Factory.getInstance().addUserRoleToProject(invitation.getProjectId(), userRole);
 

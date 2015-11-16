@@ -16,6 +16,7 @@
 package uk.ac.ox.it.ords.api.project.services.impl.hibernate;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,6 +49,7 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 		Session session = this.sessionFactory.getCurrentSession();
 		Transaction transaction = session.beginTransaction();
 		try {
+			invitation.setUuid(UUID.randomUUID().toString());
 			session.save(invitation);
 			transaction.commit();
 			return invitation;
@@ -115,21 +117,26 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectInvitationService#getInvitationByInviteCode(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Invitation getInvitationByInviteCode(String code) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		Transaction transaction = session.beginTransaction();
+		List<Invitation> invitations = null;
 		try {
-			@SuppressWarnings("unchecked")
-			List<Invitation> invitations = session.createCriteria(Invitation.class).add(Restrictions.eq("uuid", code)).list();
+			invitations = session.createCriteria(Invitation.class).add(Restrictions.eq("uuid", code)).list();
 			transaction.commit();
-			return invitations.get(0); 
 		} catch (Exception e) {
 			log.error("Error listing invitations", e);
 			transaction.rollback();
 			throw new Exception("Cannot list invitations",e);
 		} finally {
 			HibernateUtils.closeSession();
+		}
+		if (invitations != null && !invitations.isEmpty()){
+			return invitations.get(0);
+		} else {
+			return null;
 		}
 	}
 

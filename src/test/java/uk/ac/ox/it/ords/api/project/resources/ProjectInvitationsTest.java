@@ -50,19 +50,35 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
-		invitation.setUserId(27);
+		invitation.setEmail("pinga@mailinator.com");
 		Response response = getClient().path("/"+projectId+"/invitation").post(invitation);
 		assertEquals(201, response.getStatus());
 		assertEquals(1, getClient().path("/"+projectId+"/invitation").get().readEntity(new GenericType<List<Invitation>>() {}).size());
 		
 		invitation = getClient().path(response.getLocation().getPath()).get().readEntity(Invitation.class);
+		
 		assertEquals(projectId, invitation.getProjectId());
 		assertEquals("viewer", invitation.getRoleRequired());
-		assertEquals(27,invitation.getUserId());
 		assertNotNull(invitation.getUuid());
-		assertTrue(invitation.getId() > -1);
-		
 		logout();
+		
+		//
+		// Now confirm invitation
+		//
+		loginUsingSSO("pinga", "pinga");
+		assertEquals(200, getClient().path("/invitation/"+invitation.getUuid()).post(null).getStatus());
+		
+		//
+		// Now check she has a role
+		//
+		assertEquals(200, getClient().path("/"+projectId).get().getStatus());	
+		
+	}
+	
+	@Test
+	public void confirmUsingWrongCode(){
+		loginUsingSSO("pinga", "pinga");
+		assertEquals(400, getClient().path("/invitation/zzzzz-111111-99999").post(null).getStatus());
 	}
 	
 	@Test
@@ -71,7 +87,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
-		invitation.setUserId(27);
 		String path = getClient().path("/"+projectId+"/invitation").post(invitation).getLocation().getPath();
 		logout();
 		
@@ -87,7 +102,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(-1);
 		invitation.setRoleRequired("viewer");
-		invitation.setUserId(27);
 		assertEquals(400, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 		assertEquals(404, getClient().path("/9999/invitation").post(invitation).getStatus());
 
@@ -110,7 +124,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(-1);
 		invitation.setRoleRequired(null);
-		invitation.setUserId(27);
 		assertEquals(400, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 		logout();
 	}
@@ -121,7 +134,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
-		invitation.setUserId(27);
 		String path = getClient().path("/"+projectId+"/invitation").post(invitation).getLocation().getPath();
 		
 		assertEquals(200, getClient().path(path).delete().getStatus());
@@ -148,7 +160,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
-		invitation.setUserId(27);
 		
 		assertEquals(403, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 	}
@@ -166,7 +177,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
-		invitation.setUserId(27);
 		assertEquals(403, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 		logout();
 	}
@@ -180,7 +190,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
-		invitation.setUserId(27);
 		assertEquals(410, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 		assertEquals(410, getClient().path("/"+projectId+"/invitation").get().getStatus());
 		assertEquals(410, getClient().path("/"+projectId+"/invitation/26").get().getStatus());
@@ -212,7 +221,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation1 = new Invitation();
 		invitation1.setProjectId(project1Id);
 		invitation1.setRoleRequired("owner");
-		invitation1.setUserId(16);
 		response = getClient().path("/"+project1Id+"/invitation").post(invitation1);
 		assertEquals(201, response.getStatus());
 		URI invitation1URI = response.getLocation();

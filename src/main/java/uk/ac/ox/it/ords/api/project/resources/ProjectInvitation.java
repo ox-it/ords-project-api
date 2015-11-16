@@ -44,14 +44,14 @@ public class ProjectInvitation {
 	
 	Logger log = LoggerFactory.getLogger(ProjectInvitation.class);
 	
-	@Path("/invitation")
+	@Path("/invitation/{invitationCode}")
 	@POST
 	public Response confirmInvitation(
-			final String invitationCode
+			@PathParam("invitationCode") final String invitationCode
 			) throws Exception{
 		
 		Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitationByInviteCode(invitationCode);
-		
+				
 		if (invitation == null){
 			return Response.status(400).build();
 		}
@@ -202,15 +202,15 @@ public class ProjectInvitation {
 		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(projectId))){
 			return Response.status(403).build();
 		}
-
+		
 		if (project.getProjectId() != invitation.getProjectId()){
 			return Response.status(400).build();
 		}
 
-			invitation = ProjectInvitationService.Factory.getInstance().createInvitation(invitation);
-			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-			builder.path(Integer.toString(invitation.getId()));
-			return Response.created(builder.build()).build();
+		invitation = ProjectInvitationService.Factory.getInstance().createInvitation(invitation);
+		UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+		builder.path(Integer.toString(invitation.getId()));
+		return Response.created(builder.build()).build();
 	}
 
 }
