@@ -30,6 +30,8 @@ public interface ProjectInvitationService {
 	public Invitation createInvitation(Invitation invitation) throws Exception;
 	public void confirmInvitation(String code) throws Exception;
 
+	public boolean validate(Invitation invitation);
+	
 	/**
 	 * Factory for obtaining implementations
 	 */
