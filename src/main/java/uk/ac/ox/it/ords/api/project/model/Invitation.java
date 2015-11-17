@@ -17,7 +17,6 @@
 package uk.ac.ox.it.ords.api.project.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -43,14 +42,31 @@ public class Invitation implements Serializable {
     @GeneratedValue
 	private int id;
     
+    /**
+     * The project the invite applies to
+     */
     private int projectId;
     
+    /**
+     * The verification code for the invite
+     */
     @JsonProperty
     private String uuid;
     
+    /**
+     * The requested role
+     */
     private String roleRequired;
     
+    /**
+     * The email address of the invitee
+     */
     private String email;
+    
+    /**
+     * The person or entity that sent the invitation
+     */
+    private String sender;
     
     public String getEmail() {
 		return email;
@@ -96,4 +112,12 @@ public class Invitation implements Serializable {
     public void setRoleRequired(String roleRequired) {
         this.roleRequired = roleRequired;
     }
+
+	public String getSender() {
+		return sender;
+	}
+
+	public void setSender(String sender) {
+		this.sender = sender;
+	}
 }
