@@ -206,6 +206,10 @@ public class ProjectInvitation {
 		if (project.getProjectId() != invitation.getProjectId()){
 			return Response.status(400).build();
 		}
+		
+		if (!ProjectInvitationService.Factory.getInstance().validate(invitation)){
+			return Response.status(400).build();
+		}
 
 		invitation = ProjectInvitationService.Factory.getInstance().createInvitation(invitation);
 		UriBuilder builder = uriInfo.getAbsolutePathBuilder();
