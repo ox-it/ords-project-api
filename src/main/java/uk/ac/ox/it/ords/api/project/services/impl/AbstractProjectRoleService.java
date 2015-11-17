@@ -72,7 +72,7 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 	 * @param role
 	 * @return
 	 */
-	private boolean isValidRole(String role){
+	public boolean isValidRole(String role){
 		for (ProjectRole projectRole : ProjectRole.values()){
 			if (projectRole.name().equals(role)) return true;
 		}

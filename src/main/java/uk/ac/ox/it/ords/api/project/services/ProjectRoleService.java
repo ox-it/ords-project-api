@@ -25,6 +25,13 @@ import uk.ac.ox.it.ords.security.model.UserRole;
 public interface ProjectRoleService {
 	
 	/**
+	 * Validates the given role string as matching a role supported by ORDS
+	 * @param role
+	 * @return true if the role is valid, otherwise false
+	 */
+	public boolean isValidRole(String role);
+	
+	/**
 	 * Return the public representation of a role in a project, rather than
 	 * the internal role identity. For example, returns "Owner" rather than "owner_27".
 	 * @param role
