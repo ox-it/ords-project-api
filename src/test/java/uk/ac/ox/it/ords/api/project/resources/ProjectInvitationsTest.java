@@ -1,8 +1,22 @@
+/*
+ * Copyright 2015 University of Oxford
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.ac.ox.it.ords.api.project.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.List;
@@ -49,6 +63,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		loginUsingSSO("pingu", "pingu");
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
+		invitation.setSender("Pingu");
 		invitation.setRoleRequired("viewer");
 		invitation.setEmail("pinga@mailinator.com");
 		Response response = getClient().path("/"+projectId+"/invitation").post(invitation);
@@ -87,6 +102,8 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
 		invitation.setRoleRequired("viewer");
+		invitation.setSender("Pingu");
+		invitation.setEmail("pinga@mailinator.com");
 		String path = getClient().path("/"+projectId+"/invitation").post(invitation).getLocation().getPath();
 		logout();
 		
@@ -133,6 +150,8 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		loginUsingSSO("pingu", "pingu");
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(projectId);
+		invitation.setEmail("pinga@mailinator.com");
+		invitation.setSender("Pingu");
 		invitation.setRoleRequired("viewer");
 		String path = getClient().path("/"+projectId+"/invitation").post(invitation).getLocation().getPath();
 		
@@ -221,6 +240,8 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		Invitation invitation1 = new Invitation();
 		invitation1.setProjectId(project1Id);
 		invitation1.setRoleRequired("owner");
+		invitation1.setSender("Pingu");
+		invitation1.setEmail("pinga@mailinator.com");
 		response = getClient().path("/"+project1Id+"/invitation").post(invitation1);
 		assertEquals(201, response.getStatus());
 		URI invitation1URI = response.getLocation();
@@ -245,6 +266,9 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		//	
 		Invitation invitation2 = new Invitation();
 		invitation2.setProjectId(project1Id);
+		invitation2.setRoleRequired("owner");
+		invitation2.setSender("Pingu");
+		invitation2.setEmail("pinga@mailinator.com");
 		assertEquals(400, getClient().path("/"+project2Id+"/invitation").post(invitation2).getStatus());
 		
 		//
