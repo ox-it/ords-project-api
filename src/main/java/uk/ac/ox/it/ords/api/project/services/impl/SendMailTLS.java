@@ -42,6 +42,7 @@ public class SendMailTLS implements SendProjectInvitationEmailService {
 	private Logger log = LoggerFactory.getLogger(SendMailTLS.class);
 	private Properties props;
 	private String email;
+	protected Message message;
 
 	public SendMailTLS() {
 		props = ConfigurationConverter.getProperties(MetaConfiguration.getConfiguration());
@@ -50,7 +51,7 @@ public class SendMailTLS implements SendProjectInvitationEmailService {
 	@Override
 	public void sendProjectInvitation(Invitation invite) {
 		String messageText = createVerificationMessage(invite);
-		if ( MetaConfiguration.getConfiguration().getBoolean("ords.mail.send")) sendMail(messageText);	
+		sendMail(messageText);	
 	}
 	
 	/**
@@ -64,7 +65,7 @@ public class SendMailTLS implements SendProjectInvitationEmailService {
 	}
 	
 	protected String createVerificationMessage(Invitation invite){
-		String messageText = String.format(props.getProperty("ords.mail.invitation.message"), invite.getEmail(), getVerificationUrl(invite));
+		String messageText = String.format(props.getProperty("ords.mail.invitation.message"), invite.getSender(), getVerificationUrl(invite));
 		email = invite.getEmail();
 		if (log.isDebugEnabled()) {
 			log.debug("The email I want to send is:" + messageText);
@@ -72,7 +73,7 @@ public class SendMailTLS implements SendProjectInvitationEmailService {
 		return messageText;
 	}
 
-	private void sendMail(String messageText) {
+	protected void sendMail(String messageText) {
 		if (props.get("mail.smtp.username") == null) {
 			log.error("Unable to send emails due to null user");
 			return;
@@ -87,14 +88,19 @@ public class SendMailTLS implements SendProjectInvitationEmailService {
 		});
 
 		try {
-			Message message = new MimeMessage(session);
+			message = new MimeMessage(session);
 			message.setRecipients(Message.RecipientType.TO,
 					InternetAddress.parse(email));
 			message.setSubject(props.getProperty("ords.mail.invitation.subject"));
 			message.setText(messageText);
-			message.setFrom(new InternetAddress("ords@it.ox.ac.uk"));
+			message.setFrom(new InternetAddress(props.getProperty("mail.smtp.from")));
 
-			Transport.send(message);
+			//
+			// This is just to help with testing
+			//
+			if ( MetaConfiguration.getConfiguration().getBoolean("ords.mail.send")){
+				Transport.send(message);
+			}
 
 			if (log.isDebugEnabled()) {
 				log.debug(String.format("Sent email to %s", email));
