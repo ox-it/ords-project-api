@@ -47,7 +47,8 @@ public class HibernateUtils
 		configuration.addAnnotatedClass(Project.class);
 		configuration.addAnnotatedClass(Invitation.class);
 		configuration.addAnnotatedClass(Member.class);
-		configuration.addAnnotatedClass(ProjectDatabase.class);
+		configuration.addAnnotatedClass(Database.class);
+		configuration.addAnnotatedClass(DatabaseVersion.class);
 		configuration.addAnnotatedClass(Permission.class);
 		configuration.addAnnotatedClass(Audit.class);
 		configuration.addAnnotatedClass(UserRole.class);

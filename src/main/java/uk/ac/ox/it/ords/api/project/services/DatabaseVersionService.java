@@ -15,51 +15,27 @@
  */
 package uk.ac.ox.it.ords.api.project.services;
 
-import java.util.List;
 import java.util.ServiceLoader;
+import java.util.List;
 
-import uk.ac.ox.it.ords.api.project.model.Database;
-import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectDatabaseServiceImpl;
+import uk.ac.ox.it.ords.api.project.model.DatabaseVersion;
+import uk.ac.ox.it.ords.api.project.services.impl.hibernate.DatabaseVersionServiceImpl;
 
-public interface ProjectDatabaseService {
+public interface DatabaseVersionService {
 	
 	/**
-	 * Get a logical Database by its ID
-	 * @param id
+	 * Obtain the database versions associated with a logical Database
+	 * @param logicalDatabaseId
 	 * @return
-	 * @throws Exception
 	 */
-	public Database getDatabase(int id) throws Exception;
-	
-	/**
-	 * Get all the logical Databases for the specified project
-	 * @param projectId
-	 * @return
-	 * @throws Exception
-	 */
-	public List<Database> getDatabasesForProject(int projectId) throws Exception;
-	
-	/**
-	 * Create a logical Database
-	 * @param db
-	 * @return
-	 * @throws Exception
-	 */
-	public Database addDatabase(Database db)  throws Exception;
-	
-	/**
-	 * Delete a logical Database
-	 * @param databaseId
-	 * @throws Exception
-	 */
-	public void removeDatabase(int databaseId) throws Exception;
+	public List<DatabaseVersion> getDatabaseVersions(int logicalDatabaseId);
 	
 	/**
 	 * Factory for obtaining implementations
 	 */
     public static class Factory {
-		private static ProjectDatabaseService provider;
-	    public static ProjectDatabaseService getInstance() {
+		private static DatabaseVersionService provider;
+	    public static DatabaseVersionService getInstance() {
 	    	//
 	    	// Use the service loader to load an implementation if one is available
 	    	// Place a file called uk.ac.ox.oucs.ords.utilities.csv in src/main/resources/META-INF/services
@@ -67,8 +43,8 @@ public interface ProjectDatabaseService {
 	    	// By default we load the Hibernate implementation.
 	    	//
 	    	if (provider == null){
-	    		ServiceLoader<ProjectDatabaseService> ldr = ServiceLoader.load(ProjectDatabaseService.class);
-	    		for (ProjectDatabaseService service : ldr) {
+	    		ServiceLoader<DatabaseVersionService> ldr = ServiceLoader.load(DatabaseVersionService.class);
+	    		for (DatabaseVersionService service : ldr) {
 	    			// We are only expecting one
 	    			provider = service;
 	    		}
@@ -77,7 +53,7 @@ public interface ProjectDatabaseService {
 	    	// If no service provider is found, use the default
 	    	//
 	    	if (provider == null){
-	    		provider = new ProjectDatabaseServiceImpl();
+	    		provider = new DatabaseVersionServiceImpl();
 	    	}
 	    	
 	    	return provider;

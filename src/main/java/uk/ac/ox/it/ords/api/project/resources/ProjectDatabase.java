@@ -35,7 +35,10 @@ import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ox.it.ords.api.project.model.Database;
+import uk.ac.ox.it.ords.api.project.model.DatabaseVersion;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
+import uk.ac.ox.it.ords.api.project.services.DatabaseVersionService;
 import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
@@ -67,13 +70,20 @@ public class ProjectDatabase {
 			return Response.status(403).build();
 		}
 		
-		uk.ac.ox.it.ords.api.project.model.ProjectDatabase database;
+		Database database;
 		
-		database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
+		database = ProjectDatabaseService.Factory.getInstance().getDatabase(db);
 
 		if (database == null){
 			return Response.status(404).build();
 		}
+		
+		//
+		// Add database versions
+		//
+		List<DatabaseVersion> databaseVersions = DatabaseVersionService.Factory.getInstance().getDatabaseVersions(database.getLogicalDatabaseId());
+		database.setDatabaseVersions(databaseVersions);
+		database.setNumberOfPhysicalDatabases(databaseVersions.size());
 		
 		return Response.ok(database).build();
 	}
@@ -100,7 +110,7 @@ public class ProjectDatabase {
 			return Response.status(403).build();
 		}
 		
-		List<uk.ac.ox.it.ords.api.project.model.ProjectDatabase> databases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(id);
+		List<Database> databases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(id);
 		return Response.ok(databases).build();		
 	}
 	
@@ -110,7 +120,7 @@ public class ProjectDatabase {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addDatabaseToProject(
 			@PathParam("id") final int id,
-			uk.ac.ox.it.ords.api.project.model.ProjectDatabase database,
+			Database database,
 			@Context UriInfo uriInfo
 			) throws Exception{
 		
@@ -132,14 +142,14 @@ public class ProjectDatabase {
 		//
 		// Prevent side-attack; ensure the database belongs to the project specified
 		//
-		if (database.getProjectId() != project.getProjectId()){
+		if (database.getDatabaseProjectId() != project.getProjectId()){
 			return Response.status(400).build();
 		}
 		
-		database = ProjectDatabaseService.Factory.getInstance().addDatabaseToProject(id, database);
+		database = ProjectDatabaseService.Factory.getInstance().addDatabase(database);
 
 		UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-		builder.path(Integer.toString(database.getProjectDatabaseId()));
+		builder.path(Integer.toString(database.getLogicalDatabaseId()));
 		return Response.created(builder.build()).build();
 
 	}
@@ -166,9 +176,9 @@ public class ProjectDatabase {
 			return Response.status(403).build();
 		}
 		
-		uk.ac.ox.it.ords.api.project.model.ProjectDatabase database = null; 
+		Database database = null; 
 		
-		database = ProjectDatabaseService.Factory.getInstance().getDatabaseForProject(db);
+		database = ProjectDatabaseService.Factory.getInstance().getDatabase(db);
 		
 		if (database == null){
 			return Response.status(404).build();
@@ -177,11 +187,11 @@ public class ProjectDatabase {
 		//
 		// Prevent side-attack; ensure the database belongs to the project specified
 		//
-		if (database.getProjectId() != id){
+		if (database.getDatabaseProjectId() != id){
 			return Response.status(400).build();
 		}
 		
-		ProjectDatabaseService.Factory.getInstance().removeDatabaseFromProject(id, db);
+		ProjectDatabaseService.Factory.getInstance().removeDatabase(db);
 		return Response.ok().build();
 		
 	}

@@ -23,7 +23,7 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ox.it.ords.api.project.model.ProjectDatabase;
+import uk.ac.ox.it.ords.api.project.model.Database;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 
 public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
@@ -44,14 +44,16 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#getDatabaseForProject(int)
 	 */
 	@Override
-	public ProjectDatabase getDatabaseForProject(int id) throws Exception {
+	public Database getDatabase(int id) throws Exception {
 		
+		Database projectDatabase = null;
+
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
-			ProjectDatabase projectDatabase = (ProjectDatabase) session.get(ProjectDatabase.class, id);
+			projectDatabase = (Database) session.get(Database.class, id);
 			session.getTransaction().commit();
-			return projectDatabase;
+
 		} catch (Exception e) {
 			log.debug(e.getMessage());
 			session.getTransaction().rollback();
@@ -59,20 +61,21 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 		} finally {
 			  HibernateUtils.closeSession();
 		}
+		return projectDatabase;
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#getDatabasesForProject(int)
 	 */
 	@Override
-	public List<ProjectDatabase> getDatabasesForProject(int id) throws Exception {
+	public List<Database> getDatabasesForProject(int projectId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		
 		try {
 			session.beginTransaction();
 			@SuppressWarnings("unchecked")
-			List<ProjectDatabase> projectDatabases = session.createCriteria(ProjectDatabase.class)
-					.add(Restrictions.eq("projectId", id))
+			List<Database> projectDatabases = session.createCriteria(Database.class)
+					.add(Restrictions.eq("databaseProjectId", projectId))
 					.list();
 			session.getTransaction().commit();
 			return projectDatabases;
@@ -89,7 +92,7 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#addDatabaseToProject(int, uk.ac.ox.it.ords.api.project.model.ProjectDatabase)
 	 */
 	@Override
-	public ProjectDatabase addDatabaseToProject(int projectId, ProjectDatabase projectDatabase) throws Exception {
+	public Database addDatabase(Database projectDatabase) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
@@ -109,9 +112,9 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#removeDatabaseFromProject(int, int)
 	 */
 	@Override
-	public void removeDatabaseFromProject(int projectId, int databaseId)
+	public void removeDatabase(int databaseId)
 			throws Exception {
-		ProjectDatabase projectDatabase = this.getDatabaseForProject(databaseId);
+		Database projectDatabase = this.getDatabase(databaseId);
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
@@ -125,5 +128,4 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 			  HibernateUtils.closeSession();
 		}
 	}
-
 }
