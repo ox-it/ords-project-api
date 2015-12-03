@@ -15,9 +15,6 @@
  */
 package uk.ac.ox.it.ords.api.project.services.impl.hibernate;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
