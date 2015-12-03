@@ -41,6 +41,9 @@ public class DatabaseVersionServiceImpl implements DatabaseVersionService {
 		setSessionFactory (HibernateUtils.getSessionFactory());
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.DatabaseVersionService#getDatabaseVersions(int)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<DatabaseVersion> getDatabaseVersions(int logicalDatabaseId) {
