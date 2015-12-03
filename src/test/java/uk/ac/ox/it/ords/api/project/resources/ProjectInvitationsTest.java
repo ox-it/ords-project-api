@@ -25,11 +25,14 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
+import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectInvitationsTest extends AbstractResourceTest {
@@ -126,6 +129,108 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 	}
 
 	@Test
+	public void createInvitationDeletedProject(){
+
+		loginUsingSSO("pingu", "pingu");
+		
+		// Create project
+		WebClient client = getClient();
+		client.path("/");
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project Z");
+		project.setDescription("createInvitationDeletedProject");
+		project.setPrivateProject(true);
+		Response response = client.post(project);
+		assertEquals(201, response.getStatus());
+		project = getClient().path(response.getLocation().getPath()).get().readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project Z", project.getName());
+		projectId = project.getProjectId();
+
+		// Delete project
+		assertEquals(200, getClient().path(response.getLocation().getPath()).delete().getStatus());
+		
+		// Create invitation
+		Invitation invitation = new Invitation();
+		invitation.setProjectId(projectId);
+		invitation.setRoleRequired("viewer");
+		assertEquals(410, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
+		logout();
+	}
+	
+	@Test
+	public void confirmInvitationDeletedProject(){
+
+		loginUsingSSO("pingu", "pingu");
+		
+		// Create project
+		WebClient client = getClient();
+		client.path("/");
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project Z");
+		project.setDescription("createInvitationDeletedProject");
+		project.setPrivateProject(true);
+		Response response = client.post(project);
+		assertEquals(201, response.getStatus());
+		project = getClient().path(response.getLocation().getPath()).get().readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project Z", project.getName());
+		projectId = project.getProjectId();
+
+		
+		// Create invitation
+		Invitation invitation = new Invitation();
+		invitation.setProjectId(projectId);
+		invitation.setRoleRequired("viewer");
+		invitation.setEmail("pinga@ox.ac.uk");
+		invitation.setSender("pingu@ox.ac.uk");
+		response = getClient().path("/"+projectId+"/invitation").post(invitation);
+		invitation = getClient().path(response.getLocation().getPath()).get().readEntity(Invitation.class);
+		
+		// Delete project
+		assertEquals(200, getClient().path("/"+projectId).delete().getStatus());
+		logout();
+		
+		// Confirm invitation
+		loginUsingSSO("pinga", "pinga");
+		assertEquals(410, getClient().path("/invitation/"+invitation.getUuid()).post(null).getStatus());
+		logout();
+	}
+	
+	@Test
+	public void confirmInvitationWithPurgedProject(){
+		loginUsingSSO("pingu", "pingu");
+		Invitation invitation = new Invitation();
+		invitation.setProjectId(projectId);
+		invitation.setSender("Pingu");
+		invitation.setRoleRequired("viewer");
+		invitation.setEmail("pinga@mailinator.com");
+		Response response = getClient().path("/"+projectId+"/invitation").post(invitation);
+		assertEquals(201, response.getStatus());
+		assertEquals(1, getClient().path("/"+projectId+"/invitation").get().readEntity(new GenericType<List<Invitation>>() {}).size());
+		
+		invitation = getClient().path(response.getLocation().getPath()).get().readEntity(Invitation.class);
+		
+		assertEquals(projectId, invitation.getProjectId());
+		assertEquals("viewer", invitation.getRoleRequired());
+		assertNotNull(invitation.getUuid());
+		logout();
+		
+		//
+		// Purge the project
+		//
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+		Session session = HibernateUtils.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		session.delete(project);
+		session.getTransaction().commit();
+		
+		//
+		// Now confirm invitation
+		//
+		loginUsingSSO("pinga", "pinga");
+		assertEquals(404, getClient().path("/invitation/"+invitation.getUuid()).post(null).getStatus());
+	}
+	
+	@Test
 	public void createInvitationWrongObject(){
 		loginUsingSSO("pingu", "pingu");
 		UserRole userRole = new UserRole();
@@ -140,6 +245,16 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		loginUsingSSO("pingu", "pingu");
 		Invitation invitation = new Invitation();
 		invitation.setProjectId(-1);
+		invitation.setRoleRequired(null);
+		assertEquals(400, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
+		logout();
+	}
+	
+	@Test
+	public void createInvalidInvitation(){
+		loginUsingSSO("pingu", "pingu");
+		Invitation invitation = new Invitation();
+		invitation.setProjectId(projectId);
 		invitation.setRoleRequired(null);
 		assertEquals(400, getClient().path("/"+projectId+"/invitation").post(invitation).getStatus());
 		logout();
