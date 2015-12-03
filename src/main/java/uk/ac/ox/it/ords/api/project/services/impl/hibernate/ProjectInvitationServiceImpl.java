@@ -20,7 +20,6 @@ import java.util.UUID;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,15 +46,15 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 	public Invitation createInvitation(Invitation invitation)
 			throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		Transaction transaction = session.beginTransaction();
 		try {
+			session.beginTransaction();
 			invitation.setUuid(UUID.randomUUID().toString());
 			session.save(invitation);
-			transaction.commit();
+			session.getTransaction().commit();
 			return invitation;
 		} catch (Exception e) {
 			log.error("Error creating invitation", e);
-			transaction.rollback();
+			session.getTransaction().rollback();
 			throw new Exception("Cannot create invitation",e);
 		} finally {
 			  HibernateUtils.closeSession();
@@ -65,15 +64,15 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 	@Override
 	public List<Invitation> getInvitations(int projectId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		Transaction transaction = session.beginTransaction();
 		try {
+			session.beginTransaction();
 			@SuppressWarnings("unchecked")
 			List<Invitation> invitations = session.createCriteria(Invitation.class).add(Restrictions.eq("projectId", projectId)).list();
-			transaction.commit();
+			session.getTransaction().commit();
 			return invitations; 
 		} catch (Exception e) {
 			log.error("Error listing invitations", e);
-			transaction.rollback();
+			session.getTransaction().rollback();
 			throw new Exception("Cannot list invitations",e);
 		} finally {
 			  HibernateUtils.closeSession();
@@ -83,14 +82,14 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 	@Override
 	public Invitation getInvitation(int invitationId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		Transaction transaction = session.beginTransaction();
 		try {
+			session.beginTransaction();
 			Invitation invitation = (Invitation) session.get(Invitation.class, invitationId);
-			transaction.commit();
+			session.getTransaction().commit();
 			return invitation; 
 		} catch (Exception e) {
 			log.error("Error getting invitation", e);
-			transaction.rollback();
+			session.getTransaction().rollback();
 			throw new Exception("Cannot get invitation",e);
 		} finally {
 			  HibernateUtils.closeSession();
@@ -100,13 +99,13 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 	@Override
 	public void deleteInvitation(Invitation invitation) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		Transaction transaction = session.beginTransaction();
 		try {
+			session.beginTransaction();
 			session.delete(invitation);
-			transaction.commit();
+			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Error getting invitation", e);
-			transaction.rollback();
+			session.getTransaction().rollback();
 			throw new Exception("Cannot get invitation",e);
 		} finally {
 			  HibernateUtils.closeSession();
@@ -121,19 +120,19 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 	@Override
 	public Invitation getInvitationByInviteCode(String code) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		Transaction transaction = session.beginTransaction();
 		List<Invitation> invitations = null;
 		try {
+			session.beginTransaction();
 			invitations = session.createCriteria(Invitation.class).add(Restrictions.eq("uuid", code)).list();
-			transaction.commit();
+			session.getTransaction().commit();
 		} catch (Exception e) {
 			log.error("Error listing invitations", e);
-			transaction.rollback();
+			session.getTransaction().rollback();
 			throw new Exception("Cannot list invitations",e);
 		} finally {
 			HibernateUtils.closeSession();
 		}
-		if (invitations != null && !invitations.isEmpty()){
+		if (!invitations.isEmpty()){
 			return invitations.get(0);
 		} else {
 			return null;
