@@ -88,10 +88,7 @@ public class HibernateUtils
 	}
 
 	public static void closeSession() {
-		if (sessionFactory.getCurrentSession().getTransaction().isActive()){
-		}
 		sessionFactory.getCurrentSession().close();
-		
 	} 
 	
 	
