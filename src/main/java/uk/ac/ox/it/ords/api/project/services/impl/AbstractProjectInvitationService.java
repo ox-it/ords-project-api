@@ -15,9 +15,7 @@ public abstract class AbstractProjectInvitationService implements
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectInvitationService#confirmInvitation(java.lang.String)
 	 */
 	@Override
-	public void confirmInvitation(String code) throws Exception {
-		Invitation invitation = getInvitationByInviteCode(code);
-		if (invitation == null) throw new Exception("invalid invitation code");
+	public void confirmInvitation(Invitation invitation) throws Exception {
 
 		//
 		// Create the desired role

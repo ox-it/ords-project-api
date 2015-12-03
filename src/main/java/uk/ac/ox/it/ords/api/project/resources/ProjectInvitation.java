@@ -58,6 +58,11 @@ public class ProjectInvitation {
 
 		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(invitation.getProjectId());
 		
+		//
+		// Its not actually possible to have an invitation with no project, unless
+		// you deliberately directly purge the project from the database after creating
+		// the invitation
+		//
 		if (project == null){
 			return Response.status(404).build();
 		}
@@ -70,14 +75,10 @@ public class ProjectInvitation {
 		}
 		
 		//
-		// Try to convert the invite into an active role; if successful, return the project metadata
+		// Convert the invite into an active role, and return the project metadata
 		//
-		try {
-			ProjectInvitationService.Factory.getInstance().confirmInvitation(invitationCode);
-			return Response.ok(project).build();
-		} catch (Exception e) {
-			return Response.status(400).build();
-		}
+		ProjectInvitationService.Factory.getInstance().confirmInvitation(invitation);
+		return Response.ok(project).build();
 		
 	}
 
