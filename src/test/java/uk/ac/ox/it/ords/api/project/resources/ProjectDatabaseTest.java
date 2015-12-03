@@ -492,6 +492,16 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		assertEquals(1, projectDatabase.getDatabaseVersions().size());
 		assertEquals("test.mdb", projectDatabase.getDatabaseVersions().get(0).getFileName());
 		assertEquals(DatabaseVersion.EntityType.MAIN, projectDatabase.getDatabaseVersions().get(0).getEntityType());
+		
+		//
+		// Clean up
+		//
+		session = HibernateUtils.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		session.delete(version);
+		session.getTransaction().commit();
+
+		
 	}
 
 }
