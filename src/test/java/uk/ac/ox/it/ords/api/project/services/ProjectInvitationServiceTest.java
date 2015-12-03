@@ -20,9 +20,80 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
+import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 
 public class ProjectInvitationServiceTest {
 
+	
+	@Test
+	public void nullInvite() throws Exception{
+		assertNull(ProjectInvitationService.Factory.getInstance().getInvitationByInviteCode(null));
+	}
+	
+	@Test
+	public void noInvite() throws Exception{
+		assertNull(ProjectInvitationService.Factory.getInstance().getInvitationByInviteCode("TEST"));
+	}
+	
+	@Test
+	public void forceHibernateException() throws Exception{
+		try {
+			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+			ProjectInvitationService.Factory.getInstance().getInvitationByInviteCode("TEST");
+			fail();
+		} catch (Exception e) {
+		} finally {
+			HibernateUtils.closeSession();
+		}
+	}
+	
+	@Test
+	public void forceHibernateException2() throws Exception{
+		try {
+			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+			ProjectInvitationService.Factory.getInstance().createInvitation(null);
+			fail();
+		} catch (Exception e) {
+		} finally {
+			HibernateUtils.closeSession();
+		}
+	}
+	
+	@Test
+	public void forceHibernateException3() throws Exception{
+		try {
+			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+			ProjectInvitationService.Factory.getInstance().deleteInvitation(null);
+			fail();
+		} catch (Exception e) {
+		} finally {
+			HibernateUtils.closeSession();
+		}
+	}
+	
+	@Test
+	public void forceHibernateException4() throws Exception{
+		try {
+			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+			ProjectInvitationService.Factory.getInstance().getInvitation(-1);
+			fail();
+		} catch (Exception e) {
+		} finally {
+			HibernateUtils.closeSession();
+		}
+	}
+	
+	@Test
+	public void forceHibernateException5() throws Exception{
+		try {
+			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
+			ProjectInvitationService.Factory.getInstance().getInvitations(-1);
+			fail();
+		} catch (Exception e) {
+		} finally {
+			HibernateUtils.closeSession();
+		}
+	}
 	
 	@Test
 	public void inviteNoEmail(){
@@ -78,4 +149,6 @@ public class ProjectInvitationServiceTest {
 		invitation.setRoleRequired("viewer");;
 		assertFalse(ProjectInvitationService.Factory.getInstance().validate(invitation));
 	}
+	
+	
 }
