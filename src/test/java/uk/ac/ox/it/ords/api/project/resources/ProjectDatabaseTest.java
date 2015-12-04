@@ -85,6 +85,114 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		
 	}
 	
+	@Test
+	public void addAndModifyDatabase(){
+		//
+		// Create project
+		//
+		loginUsingSSO("pingu","pingu");
+		WebClient client = getClient();
+		client.path("/");
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project I");
+		project.setDescription("deleteDatabaseFromDeletedProject");
+		Response response = client.post(project);
+		assertEquals(201, response.getStatus());
+		String path = response.getLocation().getPath();
+		response = getClient().path(path).get();
+		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project I", project.getName());
+		int id = project.getProjectId();
+		
+		//
+		// Add a database
+		//
+		client = getClient();
+		client.path("/"+id+"/database");		
+		Database projectDatabase = new Database();
+		projectDatabase.setDatabaseProjectId(id);
+		projectDatabase.setDatabaseType("MAIN");
+		projectDatabase.setDbName("test");
+		projectDatabase.setDbDescription("test");
+		response = client.post(projectDatabase);
+		assertEquals(201, response.getStatus());
+		URI projectDatabaseURI = response.getLocation();
+		projectDatabase = getClient().path(projectDatabaseURI.getPath()).get().readEntity(Database.class);
+		
+		//
+		// Update
+		//
+		projectDatabase.setDataGatheringProcess("Random");
+		assertEquals(200, getClient().path(projectDatabaseURI.getPath()).put(projectDatabase).getStatus());
+		
+		//
+		// Check it updated OK
+		//
+		projectDatabase = getClient().path(projectDatabaseURI.getPath()).get().readEntity(Database.class);
+		assertEquals("Random", projectDatabase.getDataGatheringProcess());
+	}
+	
+	@Test
+	public void updateWithErrors(){
+		// Project does not exist
+		assertEquals(404, getClient().path("/999/database/999").put(null).getStatus());
+		
+		//
+		// Create project
+		//
+		loginUsingSSO("pingu","pingu");
+		WebClient client = getClient();
+		client.path("/");
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project I");
+		project.setDescription("deleteDatabaseFromDeletedProject");
+		Response response = client.post(project);
+		assertEquals(201, response.getStatus());
+		String path = response.getLocation().getPath();
+		response = getClient().path(path).get();
+		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project I", project.getName());
+		int id = project.getProjectId();
+		
+		// Database does not exist
+		assertEquals(404, getClient().path("/"+id+"/database/999").put(null).getStatus());
+		
+		//
+		// Add a database
+		//
+		client = getClient();
+		client.path("/"+id+"/database");		
+		Database projectDatabase = new Database();
+		projectDatabase.setDatabaseProjectId(id);
+		projectDatabase.setDatabaseType("MAIN");
+		projectDatabase.setDbName("test");
+		projectDatabase.setDbDescription("test");
+		response = client.post(projectDatabase);
+		assertEquals(201, response.getStatus());
+		URI projectDatabaseURI = response.getLocation();
+		projectDatabase = getClient().path(projectDatabaseURI.getPath()).get().readEntity(Database.class);
+		
+		//
+		// Update without permission
+		//
+		logout();
+		assertEquals(403, getClient().path(projectDatabaseURI.getPath()).put(projectDatabase).getStatus());
+
+		
+		//
+		// Update with null
+		//
+		loginUsingSSO("pingu","pingu");
+		assertEquals(400, getClient().path(projectDatabaseURI.getPath()).put(null).getStatus());
+		
+		//
+		// Update with invalid id
+		//
+		projectDatabase.setLogicalDatabaseId(9999);
+		assertEquals(400, getClient().path(projectDatabaseURI.getPath()).put(projectDatabase).getStatus());
+
+	}
+	
 	// Delete from deleted project
 	@Test
 	public void deleteDatabaseFromDeletedProject(){

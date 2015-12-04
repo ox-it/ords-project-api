@@ -19,9 +19,12 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import uk.ac.ox.it.ords.api.project.model.Database;
+import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectDatabaseServiceImpl;
 
 public interface ProjectDatabaseService {
+	
+	public void validate(Database database) throws ValidationException;
 	
 	/**
 	 * Get a logical Database by its ID
@@ -46,6 +49,14 @@ public interface ProjectDatabaseService {
 	 * @throws Exception
 	 */
 	public Database addDatabase(Database db)  throws Exception;
+	
+	/**
+	 * Update a logical Database
+	 * @param db
+	 * @return
+	 * @throws Exception
+	 */
+	public Database updateDatabase(Database db)  throws Exception;
 	
 	/**
 	 * Delete a logical Database

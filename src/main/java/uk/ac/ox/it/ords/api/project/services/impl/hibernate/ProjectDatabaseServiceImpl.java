@@ -25,8 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Database;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
+import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectDatabaseService;
 
-public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
+public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService implements ProjectDatabaseService {
 
 	private static Logger log = LoggerFactory.getLogger(ProjectDatabaseServiceImpl.class);
 
@@ -127,5 +128,22 @@ public class ProjectDatabaseServiceImpl implements ProjectDatabaseService {
 		} finally {
 			  HibernateUtils.closeSession();
 		}
+	}
+
+	@Override
+	public Database updateDatabase(Database database) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+			session.update(database);
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.debug(e.getMessage());
+			session.getTransaction().rollback();
+			throw e;
+		} finally {
+			  HibernateUtils.closeSession();
+		}
+		return database;
 	}
 }

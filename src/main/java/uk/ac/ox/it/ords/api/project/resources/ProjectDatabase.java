@@ -21,6 +21,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,6 +47,61 @@ import uk.ac.ox.it.ords.api.project.services.ProjectService;
 public class ProjectDatabase {
 	
 	Logger log = LoggerFactory.getLogger(ProjectDatabase.class);
+	
+	@Path("/{id}/database/{db}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)	
+	public Response updateDatabase(
+			@PathParam("id") final int id,
+			@PathParam("db") final int db,
+			final Database database
+			) throws Exception{
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(id);
+		
+		if (project == null){
+			return Response.status(404).build();
+		}
+		
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_MODIFY(id))){
+			ProjectAuditService.Factory.getInstance().createNotAuthRecord("projectdatabase:modify", id);
+			return Response.status(403).build();
+		}
+		
+		Database existing;
+		
+		existing = ProjectDatabaseService.Factory.getInstance().getDatabase(db);
+
+		if (existing == null){
+			return Response.status(404).build();
+		}
+		if (database == null){
+			return Response.status(400).build();
+		}
+		
+		//
+		// Validate the input
+		//
+		ProjectDatabaseService.Factory.getInstance().validate(database);
+		
+		//
+		// Check for cross-resource attacks
+		//
+		if (existing.getLogicalDatabaseId() != database.getLogicalDatabaseId()){
+			return Response.status(400).build();
+		}
+		
+		//
+		// Update the database
+		//
+		Database updated = ProjectDatabaseService.Factory.getInstance().updateDatabase(database);
+		
+		return Response.ok(updated).build();
+	}
 	
 	@Path("/{id}/database/{db}")
 	@GET
