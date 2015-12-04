@@ -15,7 +15,6 @@
  */
 package uk.ac.ox.it.ords.api.project.model;
 
-import java.io.File;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -81,70 +80,6 @@ public class DatabaseVersion implements Cloneable {
 
     public DatabaseVersion clone() throws CloneNotSupportedException {
         return (DatabaseVersion) super.clone();
-    }
-
-    /**
-     * When a file has been uploaded to the server it is written to the file
-     * system. However, several files might have the same name, so the actual
-     * name of the file is calculated to be
-     * <storage folder> / <original filename> _ uuid
-     *
-     * @return the calculated name showing where the file resides on disk
-     */
-    public String calculateFullNameOfFile() {
-        String file = null;
-
-        if (getEntityType() == null) {
-            setEntityType(EntityType.MAIN);
-        }
-
-        if (getEntityType().equals(EntityType.MAIN)) {
-            file = this.getFullPathToDirectory() + File.separator + this.getFileName() + "_" + this.getUuid();
-        }
-        else if (getEntityType().equals(EntityType.MILESTONE)) {
-            file = calculateFullNameOfMilestoneFile();
-        }
-        else if (getEntityType().equals(EntityType.TEST)) {
-            file = calculateFullNameOfTestFile();
-        }
-
-        return file;
-    }
-
-    public String calculateFullNameOfMilestoneFile() {
-        String file = "";
-
-        file = this.getFullPathToDirectory() + File.separator + this.getFileName() + "_Milestone_" + this.getUuid();
-
-        return file;
-    }
-
-    public String calculateFullNameOfTestFile() {
-        String file = "";
-
-        file = this.getFullPathToDirectory() + File.separator + this.getFileName() + "_Test_" + this.getUuid();
-
-        return file;
-    }
-
-    /**
-     *
-     * @return the size of the file as an easily displayable string
-     */
-    public String calculateDisplayableFileSize() {
-        String readableFileSize;
-
-        if (this.fileSize < 5000) {
-            readableFileSize = String.format("%d bytes", this.fileSize);
-        }
-        else if (this.fileSize < 5000000) {
-            readableFileSize = String.format("%d Kbytes", this.fileSize / 1024);
-        }
-        else {
-            readableFileSize = String.format("%d Mbytes", this.fileSize / (1024 * 1024));
-        }
-
-        return readableFileSize;
     }
 
     public int getPhysicalDatabaseId() {
@@ -258,19 +193,6 @@ public class DatabaseVersion implements Cloneable {
 
     public void setDbConsumedName(String dbConsumedName) {
         this.dbConsumedName = dbConsumedName;
-    }
-
-    /**
-     * Set the consumed name based on the current entity type
-     */
-    public void resetConsumedName() {
-        if (dbConsumedName == null) {
-            //setDbConsumedName(GeneralUtils.calculateWebappDatabaseName(this));
-        	// bodge
-        	getDbConsumedName();
-        }
-        String[] nameTokens = dbConsumedName.split("_");
-        dbConsumedName = entityType.toString().toLowerCase() + "_" + nameTokens[1] + "_" + nameTokens[2];
     }
 
     public String getUploadedHost() {
