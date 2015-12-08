@@ -29,6 +29,7 @@ public interface ProjectInvitationService {
 	public void deleteInvitation(Invitation invitation) throws Exception;
 	public Invitation createInvitation(Invitation invitation) throws Exception;
 	public void confirmInvitation(Invitation invitation) throws Exception;
+	public void updateInvitation(Invitation invitation) throws Exception;
 
 	public boolean validate(Invitation invitation);
 	

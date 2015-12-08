@@ -139,4 +139,21 @@ public class ProjectInvitationServiceImpl extends AbstractProjectInvitationServi
 		}
 	}
 
+	@Override
+	public void updateInvitation(Invitation invitation) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+			session.update(invitation);
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			log.error("Error getting invitation", e);
+			session.getTransaction().rollback();
+			throw new Exception("Cannot get invitation",e);
+		} finally {
+			  HibernateUtils.closeSession();
+		}
+		
+	}
+
 }

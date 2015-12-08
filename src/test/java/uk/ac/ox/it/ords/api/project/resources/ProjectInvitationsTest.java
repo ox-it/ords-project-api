@@ -316,6 +316,99 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 	}
 	
 	@Test
+	public void createAndUpdateInvitation(){
+		loginUsingSSO("pingu", "pingu");
+		Invitation invitation = new Invitation();
+		invitation.setProjectId(projectId);
+		invitation.setSender("Pingu");
+		invitation.setRoleRequired("contributor");
+		invitation.setEmail("pinga@mailinator.com");
+		Response response = getClient().path("/"+projectId+"/invitation").post(invitation);
+		assertEquals(201, response.getStatus());
+		assertEquals(1, getClient().path("/"+projectId+"/invitation").get().readEntity(new GenericType<List<Invitation>>() {}).size());
+		String invitePath = response.getLocation().getPath();
+		invitation = getClient().path(invitePath).get().readEntity(Invitation.class);
+		
+		assertEquals(projectId, invitation.getProjectId());
+		assertEquals("contributor", invitation.getRoleRequired());
+		assertNotNull(invitation.getUuid());
+
+		//
+		// Now update invitation
+		//
+		System.out.println(invitation.getProjectId());
+		System.out.println(invitation.getEmail());
+		System.out.println(invitation.getSender());
+		invitation.setRoleRequired("viewer");
+		assertEquals(200, getClient().path(invitePath).put(invitation).getStatus());
+		invitation = getClient().path(invitePath).get().readEntity(Invitation.class);
+		assertEquals("viewer", invitation.getRoleRequired());
+
+		
+		//
+		// Try some invalid updates
+		//
+		invitation.setRoleRequired("banana");
+		assertEquals(400, getClient().path(invitePath).put(invitation).getStatus());
+		
+		invitation.setRoleRequired("viewer");
+		invitation.setEmail("differentemail@mailinator.com");
+		assertEquals(400, getClient().path(invitePath).put(invitation).getStatus());
+		
+		invitation.setRoleRequired("viewer");
+		invitation.setEmail("pinga@mailinator.com");
+		invitation.setProjectId(999);
+		assertEquals(400, getClient().path(invitePath).put(invitation).getStatus());
+		
+		invitation.setRoleRequired("viewer");
+		invitation.setEmail("pinga@mailinator.com");
+		invitation.setProjectId(projectId);
+		invitation.setSender("Nobody");
+		assertEquals(400, getClient().path(invitePath).put(invitation).getStatus());
+		
+		//
+		// Now confirm invitation
+		//
+		logout();
+		loginUsingSSO("pinga", "pinga");
+		assertEquals(200, getClient().path("/invitation/"+invitation.getUuid()).post(null).getStatus());
+		
+		//
+		// Now check she has a Viewer role
+		//
+		assertEquals(200, getClient().path("/"+projectId).get().getStatus());	
+		assertEquals(403, getClient().path("/"+projectId).delete().getStatus());	
+		
+	}
+	
+	@Test
+	public void invalidUpdates(){
+		loginUsingSSO("pingu", "pingu");
+		
+		// Create an invitation
+		Invitation invitation = new Invitation();
+		invitation.setProjectId(projectId);
+		invitation.setSender("Pingu");
+		invitation.setRoleRequired("contributor");
+		invitation.setEmail("pinga@mailinator.com");
+		
+		Response response = getClient().path("/"+projectId+"/invitation").post(invitation);
+		assertEquals(201, response.getStatus());
+		assertEquals(1, getClient().path("/"+projectId+"/invitation").get().readEntity(new GenericType<List<Invitation>>() {}).size());
+		String invitePath = response.getLocation().getPath();
+		
+		// Nonexisting invitations
+		assertEquals(404, getClient().path("/"+projectId + "/invitation/999").put(invitation).getStatus());		
+		assertEquals(404, getClient().path("/999/invitation/999").put(invitation).getStatus());		
+		logout();
+		
+		// Unauth
+		assertEquals(403, getClient().path(invitePath).put(invitation).getStatus());		
+
+
+	}
+	
+	@Test
 	public void deletedProjects(){
 		loginUsingSSO("pingu", "pingu");		
 		assertEquals(200, getClient().path("/"+projectId).delete().getStatus());
