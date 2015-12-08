@@ -21,6 +21,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,6 +40,7 @@ import uk.ac.ox.it.ords.api.project.model.Invitation;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.api.project.services.SendProjectInvitationEmailService;
 
 public class ProjectInvitation {
 	
@@ -178,6 +180,59 @@ public class ProjectInvitation {
 
 	}
 
+	@Path("/{id}/invitation/{invitationid}")
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateInvitation(
+			@PathParam("id") final int projectId,
+			@PathParam("invitationid") final int invitationId,
+			Invitation updatedInvitation
+			) throws Exception{
+
+		uk.ac.ox.it.ords.api.project.model.Project project = ProjectService.Factory.getInstance().getProject(projectId);
+		Invitation invitation = ProjectInvitationService.Factory.getInstance().getInvitation(invitationId);
+		
+		if (project == null){
+			return Response.status(404).build();
+		}
+
+		if (project.isDeleted()){
+			return Response.status(Status.GONE).build();
+		}
+		
+		if (invitation == null){
+			return Response.status(404).build();
+		}
+
+		if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_VIEW_INVITATIONS(projectId))){
+			return Response.status(403).build();
+		}
+
+		//
+		// Check for cross-resource attack
+		//
+		if (invitation.getProjectId() != projectId){
+			return Response.status(400).build();
+		}
+		
+		//
+		// We can only modify the role required
+		//
+		if (
+				!updatedInvitation.getEmail().equals(invitation.getEmail()) ||
+				updatedInvitation.getProjectId() != invitation.getProjectId() ||
+				!updatedInvitation.getSender().equals(invitation.getSender()) ||
+				!ProjectInvitationService.Factory.getInstance().validate(updatedInvitation)
+			){
+			return Response.status(400).build();			
+		}
+		
+		ProjectInvitationService.Factory.getInstance().updateInvitation(updatedInvitation);
+		
+		return Response.ok().build();
+
+	}
+
 
 
 	@Path("/{id}/invitation")
@@ -213,6 +268,12 @@ public class ProjectInvitation {
 		}
 
 		invitation = ProjectInvitationService.Factory.getInstance().createInvitation(invitation);
+		
+		//
+		// Send out the email invitation to the user
+		//
+		SendProjectInvitationEmailService.Factory.getInstance().sendProjectInvitation(invitation);
+		
 		UriBuilder builder = uriInfo.getAbsolutePathBuilder();
 		builder.path(Integer.toString(invitation.getId()));
 		return Response.created(builder.build()).build();
