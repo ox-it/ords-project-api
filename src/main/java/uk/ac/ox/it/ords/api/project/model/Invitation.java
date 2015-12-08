@@ -40,6 +40,7 @@ public class Invitation implements Serializable {
 	
     @Id
     @GeneratedValue
+    @JsonProperty
 	private int id;
     
     /**
@@ -79,10 +80,12 @@ public class Invitation implements Serializable {
 	public Invitation() {
     }
 
+    @JsonProperty
     public int getId() {
         return id;
     }
 
+    @JsonIgnore 
     public void setId(int id) {
         this.id = id;
     }
