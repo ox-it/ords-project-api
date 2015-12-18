@@ -15,6 +15,16 @@
  */
 package uk.ac.ox.it.ords.api.project.resources;
 
+import java.net.URI;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -30,6 +40,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +52,27 @@ import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
+@Api(value="Project Role (Members)")
+@CrossOriginResourceSharing(allowAllOrigins=true)
 public class ProjectRole {
 
 	Logger log = LoggerFactory.getLogger(ProjectRole.class);
 	
+	@ApiOperation(value="Update the role of a project member")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Project member role successfully updated."),
+		    @ApiResponse(code = 400, message = "Invalid data supplied."),
+		    @ApiResponse(code = 403, message = "Not authorized to update this member role."),
+		    @ApiResponse(code = 404, message = "Role not found."),
+		    @ApiResponse(code = 410, message = "Project has been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{projectId}/role/{roleId}")
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
@@ -94,6 +122,21 @@ public class ProjectRole {
 		return Response.ok().build();
 	}
 	
+	@ApiOperation(value="Get a member role")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Project role successfully retrieved.", response=Member.class),
+		    @ApiResponse(code = 400, message = "Invalid data supplied."),
+		    @ApiResponse(code = 403, message = "Not authorized to get this member role."),
+		    @ApiResponse(code = 404, message = "Role not found."),
+		    @ApiResponse(code = 410, message = "Project has been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{projectId}/role/{roleId}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -136,6 +179,21 @@ public class ProjectRole {
 		
 	}
 	
+	@ApiOperation(value="Get all member roles in a project")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Project roles successfully retrieved.", response=Member.class, responseContainer="List"),
+		    @ApiResponse(code = 400, message = "Invalid data supplied."),
+		    @ApiResponse(code = 403, message = "Not authorized to retrieve roles for this project."),
+		    @ApiResponse(code = 404, message = "Project not found."),
+		    @ApiResponse(code = 410, message = "Project has been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{id}/role")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -163,6 +221,23 @@ public class ProjectRole {
 		return Response.ok(ProjectRoleService.Factory.getInstance().getProjectMembers(projectId)).build();
 	}
 
+	@ApiOperation(value="Create a member role in a project")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 201, message = "Project role successfully created.",					
+					responseHeaders = @ResponseHeader(name = "Location", description = "The URI of the project role", response = URI.class)
+					),
+		    @ApiResponse(code = 400, message = "Invalid data supplied."),
+		    @ApiResponse(code = 403, message = "Not authorized to create a role for this project."),
+		    @ApiResponse(code = 404, message = "Project not found."),
+		    @ApiResponse(code = 410, message = "Project has been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{id}/role")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -195,6 +270,21 @@ public class ProjectRole {
 	    return Response.created(builder.build()).build();
 	}
 	
+	@ApiOperation(value="Remove a member role from a project")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Project role successfully deleted."),
+		    @ApiResponse(code = 400, message = "Invalid data supplied."),
+		    @ApiResponse(code = 403, message = "Not authorized to delete this role."),
+		    @ApiResponse(code = 404, message = "Project not found."),
+		    @ApiResponse(code = 410, message = "Project has been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{projectId}/role/{roleId}")
 	@DELETE
 	public Response deleteRoleFromProject(

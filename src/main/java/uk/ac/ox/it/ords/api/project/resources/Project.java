@@ -15,7 +15,17 @@
  */
 package uk.ac.ox.it.ords.api.project.resources;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ResponseHeader;
+
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -39,13 +49,15 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.apache.shiro.SecurityUtils;
 
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
-
+@Api(value="Project")
+@CrossOriginResourceSharing(allowAllOrigins=true)
 public class Project {
 	
 	Logger log = LoggerFactory.getLogger(Project.class);
@@ -53,14 +65,27 @@ public class Project {
 	public Project() {
 	}
 	
-	
+	@ApiOperation(
+			value="Gets a list of projects", 
+			notes="Returns by default the projects the authenticated user is a member of, or can be used to "
+					+ "return the list of open projects, the list of full (non-demo) projects, or the results of a query", 
+			response = uk.ac.ox.it.ords.api.project.model.Project.class, 
+			responseContainer = "List"
+			)
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProjects(
-			@QueryParam("open") final boolean open,
-			@QueryParam("full") final boolean full,
-			@QueryParam("q") final String q
+			@ApiParam(value = "return all open projects", required = false) @QueryParam("open") final boolean open,
+			@ApiParam(value = "return all full projects", required = false) @QueryParam("full") final boolean full,
+			@ApiParam(value = "return projects matching the query", required = false) @QueryParam("q") final String q
 			) {
 		
 		List<uk.ac.ox.it.ords.api.project.model.Project> projects;
@@ -106,6 +131,21 @@ public class Project {
 		
 	}
 
+	@ApiOperation(value="Gets a project")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Project successfully returned.", response=uk.ac.ox.it.ords.api.project.model.Project.class),
+		    @ApiResponse(code = 400, message = "Invalid ID supplied."),
+		    @ApiResponse(code = 403, message = "Project is private and client not authorized to view it."),
+		    @ApiResponse(code = 404, message = "Project not found."),
+		    @ApiResponse(code = 410, message = "Project has been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -134,6 +174,21 @@ public class Project {
 		return Response.ok(project).build();
 	}
 
+	@ApiOperation(value="Deletes a project")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Project successfully deleted."),
+		    @ApiResponse(code = 400, message = "Invalid ID supplied."),
+		    @ApiResponse(code = 403, message = "Not authorized to delete this project."),
+		    @ApiResponse(code = 404, message = "Project not found."),
+		    @ApiResponse(code = 410, message = "Project has already been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{id}")
 	@DELETE
 	public Response deleteProject(
@@ -160,6 +215,21 @@ public class Project {
 		return Response.ok().build();
 	}
 	
+	@ApiOperation(value="Updates a project")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Project successfully updated.", response=uk.ac.ox.it.ords.api.project.model.Project.class),
+		    @ApiResponse(code = 400, message = "Invalid Project supplied."),
+		    @ApiResponse(code = 403, message = "Not authorized to update this project."),
+		    @ApiResponse(code = 404, message = "Project not found."),
+		    @ApiResponse(code = 410, message = "Project has been deleted."),
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/{id}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -212,6 +282,21 @@ public class Project {
 		return Response.ok(updatedProject).build();
 	}
 
+	@ApiOperation(value="Creates a project")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 201, message = "Project successfull created.",
+					responseHeaders = @ResponseHeader(name = "Location", description = "The URI of the Project", response = URI.class)
+					),
+		    @ApiResponse(code = 400, message = "Invalid Project."),
+		    @ApiResponse(code = 403, message = "Not authorized to create a Project.")
+	})
+	// 
+	// These are used by upstream gateways; including them here makes it easier to use an API portal
+	//
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "Version", value = "API version number", required = false, dataType = "string", paramType = "header"),
+	    @ApiImplicitParam(name = "Authorization", value = "API key", required = false, dataType = "string", paramType = "header"),
+	  })
 	@Path("/")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

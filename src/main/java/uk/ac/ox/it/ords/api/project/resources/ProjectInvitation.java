@@ -15,6 +15,8 @@
  */
 package uk.ac.ox.it.ords.api.project.resources;
 
+import io.swagger.annotations.Api;
+
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -32,6 +34,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharing;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,8 @@ import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 import uk.ac.ox.it.ords.api.project.services.SendProjectInvitationEmailService;
 
+@Api(value="Project Invitation")
+@CrossOriginResourceSharing(allowAllOrigins=true)
 public class ProjectInvitation {
 	
 	Logger log = LoggerFactory.getLogger(ProjectInvitation.class);
