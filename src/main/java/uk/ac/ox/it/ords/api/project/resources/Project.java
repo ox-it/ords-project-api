@@ -284,7 +284,7 @@ public class Project {
 
 	@ApiOperation(value="Creates a project")
 	@ApiResponses(value = { 
-			@ApiResponse(code = 201, message = "Project successfull created.",
+			@ApiResponse(code = 201, message = "Project successfully created.",
 					responseHeaders = @ResponseHeader(name = "Location", description = "The URI of the Project", response = URI.class)
 					),
 		    @ApiResponse(code = 400, message = "Invalid Project."),

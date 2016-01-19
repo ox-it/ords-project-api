@@ -19,7 +19,7 @@ import org.apache.cxf.jaxrs.swagger.Swagger2Feature;
 
 /**
  * 
- * Swagger documentation condfiguration.
+ * Swagger documentation configuration.
  * This is handled in a subclass as its not currently possible to configure Swagger2Feature without
  * using Spring.
  *
