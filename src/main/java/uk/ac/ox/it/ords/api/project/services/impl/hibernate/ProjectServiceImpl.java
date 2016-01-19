@@ -89,7 +89,6 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		if (server == null){
 			throw new Exception("No servers available");
 		}
-		project.setDbServerAddress(server);
 		
 		//
 		// TODO sort out ODBC info
@@ -102,6 +101,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		Transaction transaction = session.beginTransaction();
 		try {
 			configureProject(project);
+			project.setDbServerAddress(server);
 			validate(project);
 			session.save(project);
 			transaction.commit();
