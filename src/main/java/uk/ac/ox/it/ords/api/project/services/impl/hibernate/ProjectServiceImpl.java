@@ -158,35 +158,15 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Project> projects = null;
 		List<Project> myProjects = null;
+		
+		//
+		// Obtain projects
+		//
 		try {
 			session.beginTransaction();
 			projects = session.createCriteria(Project.class)
 					.add(Restrictions.eq("deleted", false)).list();
 			session.getTransaction().commit();
-			
-			//
-			// Filter for projects where the current user has a role
-			//
-//			myProjects = projects.stream()
-//					.filter(p -> 
-//							SecurityUtils.getSubject().hasRole("owner_"+p.getProjectId())
-//						||  SecurityUtils.getSubject().hasRole("contributor_"+p.getProjectId())
-//						||  SecurityUtils.getSubject().hasRole("viewer_"+p.getProjectId())		
-//							)
-//					.collect(Collectors.toList());
-			myProjects = new ArrayList<Project>();
-			for (Project project : projects){
-				if (
-						SecurityUtils.getSubject().hasRole("owner_"+project.getProjectId())
-						||  SecurityUtils.getSubject().hasRole("contributor_"+project.getProjectId())
-						||  SecurityUtils.getSubject().hasRole("viewer_"+project.getProjectId())		
-					){
-					myProjects.add(project);
-				}
-					
-			}
-			
-			
 		} catch (Exception e) {
 			log.error("Error getting project list", e);
 			session.getTransaction().rollback();
@@ -194,6 +174,22 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		} finally {
 			  HibernateUtils.closeSession();
 		}
+		
+		//
+		// Filter for projects where the current user has a role
+		//
+		myProjects = new ArrayList<Project>();
+		for (Project project : projects){
+			if (
+					SecurityUtils.getSubject().hasRole("owner_"+project.getProjectId())
+					||  SecurityUtils.getSubject().hasRole("contributor_"+project.getProjectId())
+					||  SecurityUtils.getSubject().hasRole("viewer_"+project.getProjectId())		
+				){
+				myProjects.add(project);
+			}
+				
+		}
+		
 		return myProjects;
 	}
 
