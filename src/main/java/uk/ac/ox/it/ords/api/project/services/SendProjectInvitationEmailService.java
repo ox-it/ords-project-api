@@ -3,11 +3,11 @@ package uk.ac.ox.it.ords.api.project.services;
 import java.util.ServiceLoader;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
-import uk.ac.ox.it.ords.api.project.services.impl.SendMailTLS;
+import uk.ac.ox.it.ords.api.project.services.impl.SendProjectInvitationEmailServiceImpl;
 
 public interface SendProjectInvitationEmailService {
 
-	public void sendProjectInvitation(Invitation invite);
+	public void sendProjectInvitation(Invitation invite) throws Exception;
 	
 	/**
 	 * Factory for obtaining implementations
@@ -32,7 +32,7 @@ public interface SendProjectInvitationEmailService {
 	    	// If no service provider is found, use the default
 	    	//
 	    	if (provider == null){
-	    		provider = new SendMailTLS();
+	    		provider = new SendProjectInvitationEmailServiceImpl();
 	    	}
 	    	
 	    	return provider;

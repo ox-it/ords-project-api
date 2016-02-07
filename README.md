@@ -10,7 +10,7 @@ When the service is deployed, go to /api/1.0/project/swagger.json for REST docum
 
     ords.mail.send = true
 
-Optional; determines whether to send out notification emails
+Determines whether to send out notification emails
 
     ords.mail.invitation.subject=Message from ORDS
 

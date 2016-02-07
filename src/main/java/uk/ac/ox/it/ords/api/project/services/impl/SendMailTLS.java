@@ -29,54 +29,38 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import uk.ac.ox.it.ords.api.project.model.Invitation;
-import uk.ac.ox.it.ords.api.project.services.SendProjectInvitationEmailService;
 import uk.ac.ox.it.ords.security.configuration.MetaConfiguration;
 
 /**
  *
  * @author dave
  */
-public class SendMailTLS implements SendProjectInvitationEmailService {
+public class SendMailTLS {
 
 	private Logger log = LoggerFactory.getLogger(SendMailTLS.class);
-	private Properties props;
-	private String email;
-	protected Message message;
+	protected Properties props;
+	protected String email;
 
 	public SendMailTLS() {
 		props = ConfigurationConverter.getProperties(MetaConfiguration.getConfiguration());
 	}
 	
-	@Override
-	public void sendProjectInvitation(Invitation invite) {
-		String messageText = createVerificationMessage(invite);
-		sendMail(messageText);	
-	}
-	
-	/**
-	 * Generate the verification URL the user should use to click through.
-	 * @param user
-	 * @return
-	 */
-	protected String getVerificationUrl(Invitation invite){
-		String link = String.format(props.getProperty("ords.mail.invitation.address"), invite.getUuid());
-		return link;
-	}
-	
-	protected String createVerificationMessage(Invitation invite){
-		String messageText = String.format(props.getProperty("ords.mail.invitation.message"), invite.getSender(), getVerificationUrl(invite));
-		email = invite.getEmail();
-		if (log.isDebugEnabled()) {
-			log.debug("The email I want to send is:" + messageText);
-		}
-		return messageText;
+	public SendMailTLS(Properties properties){
+		props = properties;
 	}
 
-	protected void sendMail(String messageText) {
-		if (props.get("mail.smtp.username") == null) {
-			log.error("Unable to send emails due to null user");
-			return;
+	protected void sendMail(String subject, String messageText) throws Exception {
+		
+		//
+		// Validate Mail server settings
+		//
+		if (
+				!props.containsKey("mail.smtp.username")  ||
+				!props.containsKey("mail.smtp.password")  ||
+				!props.containsKey("mail.smtp.host")
+		) {
+			    log.error("Unable to send emails as email server configuration is missing");
+			    throw new Exception("Unable to send emails as email server configuration is missing");			
 		}
 		
 		Session session = Session.getInstance(props,
@@ -88,19 +72,13 @@ public class SendMailTLS implements SendProjectInvitationEmailService {
 		});
 
 		try {
-			message = new MimeMessage(session);
+			Message message = new MimeMessage(session);
 			message.setRecipients(Message.RecipientType.TO,
 					InternetAddress.parse(email));
-			message.setSubject(props.getProperty("ords.mail.invitation.subject"));
+			message.setSubject(subject);
 			message.setText(messageText);
-			message.setFrom(new InternetAddress(props.getProperty("mail.smtp.from")));
 
-			//
-			// This is just to help with testing
-			//
-			if ( MetaConfiguration.getConfiguration().getBoolean("ords.mail.send")){
-				Transport.send(message);
-			}
+			Transport.send(message);
 
 			if (log.isDebugEnabled()) {
 				log.debug(String.format("Sent email to %s", email));
@@ -109,8 +87,8 @@ public class SendMailTLS implements SendProjectInvitationEmailService {
 		}
 		catch (MessagingException e) {
 			log.error("Unable to send email to " + email, e);
+			throw new Exception("Unable to send email to " + email, e);
 		}
 	}
-
 
 }
