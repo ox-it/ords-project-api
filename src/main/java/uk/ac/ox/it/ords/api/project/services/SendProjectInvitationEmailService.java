@@ -3,11 +3,13 @@ package uk.ac.ox.it.ords.api.project.services;
 import java.util.ServiceLoader;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
+import uk.ac.ox.it.ords.api.project.model.Project;
 import uk.ac.ox.it.ords.api.project.services.impl.SendProjectInvitationEmailServiceImpl;
 
 public interface SendProjectInvitationEmailService {
 
 	public void sendProjectInvitation(Invitation invite) throws Exception;
+	public void sendProjectInvitationAcceptance(Project project, Invitation invite) throws Exception;
 	
 	/**
 	 * Factory for obtaining implementations

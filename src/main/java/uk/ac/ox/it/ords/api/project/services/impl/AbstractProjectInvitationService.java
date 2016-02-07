@@ -4,8 +4,11 @@ package uk.ac.ox.it.ords.api.project.services.impl;
 import org.apache.shiro.SecurityUtils;
 
 import uk.ac.ox.it.ords.api.project.model.Invitation;
+import uk.ac.ox.it.ords.api.project.model.Project;
 import uk.ac.ox.it.ords.api.project.services.ProjectInvitationService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
+import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.api.project.services.SendProjectInvitationEmailService;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public abstract class AbstractProjectInvitationService implements
@@ -24,6 +27,12 @@ public abstract class AbstractProjectInvitationService implements
 		userRole.setPrincipalName(SecurityUtils.getSubject().getPrincipal().toString());
 		userRole.setRole(invitation.getRoleRequired());
 		ProjectRoleService.Factory.getInstance().addUserRoleToProject(invitation.getProjectId(), userRole);
+		
+		//
+		// Send out the acceptance email
+		//
+		Project project = ProjectService.Factory.getInstance().getProject(invitation.getProjectId());
+		SendProjectInvitationEmailService.Factory.getInstance().sendProjectInvitationAcceptance(project, invitation);
 
 		//
 		// Remove the invitation
