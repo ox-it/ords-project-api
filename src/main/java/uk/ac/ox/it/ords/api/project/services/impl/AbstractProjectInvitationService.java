@@ -24,7 +24,17 @@ public abstract class AbstractProjectInvitationService implements
 		// Create the desired role
 		//
 		UserRole userRole = new UserRole();
-		userRole.setPrincipalName(SecurityUtils.getSubject().getPrincipal().toString());
+		
+		//
+		// If the user is logged in, use the principal name. If not, we'll use the
+		// email address as the principal name.
+		//
+		if (SecurityUtils.getSubject() != null && SecurityUtils.getSubject().getPrincipal() != null){
+			userRole.setPrincipalName(SecurityUtils.getSubject().getPrincipal().toString());
+		} else {
+			userRole.setPrincipalName(invitation.getEmail());
+		}
+		
 		userRole.setRole(invitation.getRoleRequired());
 		ProjectRoleService.Factory.getInstance().addUserRoleToProject(invitation.getProjectId(), userRole);
 		
