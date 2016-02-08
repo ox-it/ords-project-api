@@ -65,7 +65,10 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 		}
 		
 		String messageText = createInvitationMessage(invite);
-		sendMail(subject, messageText);	
+		
+		if (props.containsKey("ords.mail.send")){
+			if ( props.get("ords.mail.send").equals("true")) sendMail(subject, messageText);
+		}	
 	}
 	
 	@Override
@@ -80,8 +83,10 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 		}
 		
 		String messageText = createAcceptedMessage(project, invite);
-		sendMail(subject, messageText);	
-		
+
+		if (props.containsKey("ords.mail.send")){
+			if ( props.get("ords.mail.send").equals("true")) sendMail(subject, messageText);
+		}	
 	}
 
 	/**
