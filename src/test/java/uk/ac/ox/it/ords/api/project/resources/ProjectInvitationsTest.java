@@ -336,9 +336,6 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 		//
 		// Now update invitation
 		//
-		System.out.println(invitation.getProjectId());
-		System.out.println(invitation.getEmail());
-		System.out.println(invitation.getSender());
 		invitation.setRoleRequired("viewer");
 		assertEquals(200, getClient().path(invitePath).put(invitation).getStatus());
 		invitation = getClient().path(invitePath).get().readEntity(Invitation.class);

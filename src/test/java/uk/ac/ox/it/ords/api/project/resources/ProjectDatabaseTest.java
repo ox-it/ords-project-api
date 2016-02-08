@@ -73,7 +73,6 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		// View
 		// 
 		assertEquals(200, getClient().path(projectURI.getPath()+"/database").get().getStatus());
-		System.out.println(projectDatabaseURI.getPath());
 		assertEquals(200, getClient().path(projectDatabaseURI.getPath()).get().getStatus());
 		
 		//
