@@ -21,6 +21,10 @@ import uk.ac.ox.it.ords.security.permissions.Permissions;
  * Standard permission definitions used by the Project API.
  */
 public class ProjectPermissions extends Permissions{
+	
+	public static String PROJECT_DELETE_ANY(){
+		return "project:delete:*";
+	}
 
 	//
 	// Contextual permissions that apply to individual projects

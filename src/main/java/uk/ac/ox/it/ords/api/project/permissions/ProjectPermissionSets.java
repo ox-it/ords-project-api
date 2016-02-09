@@ -63,6 +63,7 @@ public class ProjectPermissionSets {
 		permissions.add(ProjectPermissions.PROJECT_UPGRADE);
 		permissions.add(ProjectPermissions.PROJECT_MODIFY_ALL);
 		permissions.add(ProjectPermissions.PROJECT_VIEW_ALL);
+		permissions.add(ProjectPermissions.PROJECT_DELETE_ANY());
 		return permissions;
 	}
 }
