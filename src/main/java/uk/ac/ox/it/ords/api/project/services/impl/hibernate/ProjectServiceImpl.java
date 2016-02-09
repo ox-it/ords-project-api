@@ -198,14 +198,12 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Project> getFullProjects() {
+	public List<Project> getAllProjects() {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Project> visibleProjects = null;
 		try {
 			session.beginTransaction();
 			List<Project> projects = session.createCriteria(Project.class)
-					.add(Restrictions.eq("deleted", false))
-					.add(Restrictions.eq("trialProject", false))
 					.list();
 			session.getTransaction().commit();
 			

@@ -68,7 +68,7 @@ public class Project {
 	@ApiOperation(
 			value="Gets a list of projects", 
 			notes="Returns by default the projects the authenticated user is a member of, or can be used to "
-					+ "return the list of open projects, the list of full (non-demo) projects, or the results of a query", 
+					+ "return the list of open projects, the list of all projects, or the results of a query", 
 			response = uk.ac.ox.it.ords.api.project.model.Project.class, 
 			responseContainer = "List"
 			)
@@ -84,7 +84,7 @@ public class Project {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProjects(
 			@ApiParam(value = "return all open projects", required = false) @QueryParam("open") final boolean open,
-			@ApiParam(value = "return all full projects", required = false) @QueryParam("full") final boolean full,
+			@ApiParam(value = "return all projects", required = false) @QueryParam("all") final boolean full,
 			@ApiParam(value = "return projects matching the query", required = false) @QueryParam("q") final String q
 			) {
 		
@@ -102,11 +102,11 @@ public class Project {
 			if (full){	
 				
 				//
-				// To get the list of FULL projects, including private,
+				// To get the list of ALL projects, including private,
 				// requires a security check. This is carried out by
 				// the service implementation.
 				//
-				projects = ProjectService.Factory.getInstance().getFullProjects();
+				projects = ProjectService.Factory.getInstance().getAllProjects();
 				
 			} else {
 				
@@ -249,8 +249,23 @@ public class Project {
 			return Response.status(400).build();
 		}
 		
+		//
+		// If the project has been deleted, the only possible option is to undelete it. Otherwise
+		// we return "gone"
+		//
 		if (oldProject.isDeleted()){
-			return Response.status(Status.GONE).build();
+			
+			//
+			// Does this update modify the deletion flag? If so, check if the user has the project:delete permission
+			//
+			if (oldProject.isDeleted() && !project.isDeleted()){
+				if (!SecurityUtils.getSubject().isPermitted(ProjectPermissions.PROJECT_DELETE(project.getProjectId()))){
+					ProjectAuditService.Factory.getInstance().createNotAuthRecord("project:delete", id);
+					return Response.status(403).build();
+				}
+			} else {
+				return Response.status(Status.GONE).build();
+			}
 		}
 		
 		//

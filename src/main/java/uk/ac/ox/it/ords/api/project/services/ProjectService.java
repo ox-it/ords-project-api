@@ -47,7 +47,7 @@ public interface ProjectService {
      */
 	public List<Project> searchProjects(String searchTerms);
 	
-	public List<Project> getFullProjects();
+	public List<Project> getAllProjects();
 	public List<Project> getOpenProjects();
 	
 	public Project getProject(int id);

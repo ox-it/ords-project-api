@@ -102,7 +102,7 @@ public class ProjectServiceTest {
 	public void testListFullProjectException() throws Exception{
 		try {
 			HibernateUtils.getSessionFactory().getCurrentSession().beginTransaction();
-			ProjectService.Factory.getInstance().getFullProjects();
+			ProjectService.Factory.getInstance().getAllProjects();
 		} catch (Exception e) {
 			HibernateUtils.closeSession();			
 			throw e;

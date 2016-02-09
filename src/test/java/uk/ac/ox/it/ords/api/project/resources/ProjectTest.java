@@ -303,32 +303,32 @@ public class ProjectTest extends AbstractResourceTest {
 		
 		//
 		// Now lets see what Admin can see if they ask for the list
-		// of all projects - they should see all 3, including the
-		// private one
+		// of all projects - they should see all 5, including the
+		// private one and two deleted ones
 		//
 		loginUsingSSO("admin", "test");
 		client = getClient();
 		client.path("/");
-		client.query("full", true);
+		client.query("all", true);
 		response = client.get();
 		projects = response.readEntity(
 						new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
 						);
-		assertEquals(3, projects.size());
+		assertEquals(5, projects.size());
 		
 		//
 		// Anonymous user asking for the FULL project list sees the same
-		// as the open list
+		// as the open list plus deleted public projects
 		//
 		logout();
 		client = getClient();
 		client.path("/");
-		client.query("full", true);
+		client.query("all", true);
 		response = client.get();
 		projects = response.readEntity(
 						new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
 						);
-		assertEquals(2, projects.size());
+		assertEquals(4, projects.size());
 		
 		//
 		// Admin asks for their projects - they'll get all 3
@@ -534,8 +534,28 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		loginUsingSSO("pingu", "pingu");
 		assertEquals(200, getClient().path("/"+id).delete().getStatus());
+		project.setDeleted(true);
 		assertEquals(410, getClient().path("/"+id).put(project).getStatus());
+		
+		//
+		// Try to Restore the project
+		//
+		project.setDeleted(false);
+		assertEquals(403, getClient().path("/"+id).put(project).getStatus());
 		logout();
+		
+		//
+		// Admin can restore the project
+		//
+		loginUsingSSO("admin", "admin");
+		assertEquals(200, getClient().path("/"+id).put(project).getStatus());
+		
+		//
+		// And then delete it again!
+		//
+		assertEquals(200, getClient().path("/"+id).delete().getStatus());
+		logout();
+
 	}
 	
 
