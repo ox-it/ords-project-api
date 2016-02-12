@@ -291,6 +291,15 @@ public class Project {
 		}
 		
 		//
+		// Only specific properties can be updated, so we need to ensure we don't overwrite with
+		// NULL anything the client can't set
+		//
+		project.setDbServerAddress(oldProject.getDbServerAddress());
+		project.setProjectUuid(oldProject.getProjectUuid());
+		project.setDateCreated(oldProject.getDateCreated());
+		
+		
+		//
 		// Fulfill update request
 		//
 		uk.ac.ox.it.ords.api.project.model.Project updatedProject = ProjectService.Factory.getInstance().updateProject(project);

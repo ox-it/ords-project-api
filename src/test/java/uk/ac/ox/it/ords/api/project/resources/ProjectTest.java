@@ -18,6 +18,7 @@ package uk.ac.ox.it.ords.api.project.resources;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.GenericType;
@@ -430,15 +431,17 @@ public class ProjectTest extends AbstractResourceTest {
 		loginUsingSSO("pingu", "pingu");
 		WebClient client = getClient();
 		client.path("/");
-		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
-		project.setName("Test Project V");
-		project.setDescription("updateProject");
-		Response response = client.post(project);
+		uk.ac.ox.it.ords.api.project.model.Project projectToCreate = new uk.ac.ox.it.ords.api.project.model.Project();
+		projectToCreate.setName("Test Project V");
+		projectToCreate.setDescription("updateProject");
+		Response response = client.post(projectToCreate);
 		
 		assertEquals(201, response.getStatus());
 		response = getClient().path(response.getLocation().getPath()).get();
-		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
-		
+		assertEquals(200, response.getStatus());
+		ProjectTestModel project = response.readEntity(ProjectTestModel.class);
+
+		assertEquals("localhost", project.getDbServerPublicAddress());
 		assertEquals("Test Project V", project.getName());
 		assertEquals(true, project.isTrialProject());
 		int id = project.getProjectId();
@@ -495,7 +498,7 @@ public class ProjectTest extends AbstractResourceTest {
 		client.path("/"+id);
 		response = client.get();
 		assertEquals(200, response.getStatus());
-		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		project = response.readEntity(ProjectTestModel.class);
 		assertEquals("Test Project V", project.getName());
 		assertEquals("updateProject", project.getDescription());
 		logout();
@@ -510,8 +513,17 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setDescription("updateProject - updated");
 		project.setStartDate("2000 BC");
 		project.setEndDate("THE END OF THE WORLD");
+		
+		//
+		// Set some things we aren't allowed to - these should be ignored
+		//
+		project.setProjectUuid("99");
+		project.setDbServerAddress("banana");
+		project.setDbServerPublicAddress("banana");
+		project.setDateCreated(new Date());
+		
 		response = client.put(project);
-		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		project = response.readEntity(ProjectTestModel.class);
 		logout();
 		
 		//
@@ -522,11 +534,12 @@ public class ProjectTest extends AbstractResourceTest {
 		client.path("/"+id);
 		response = client.get();
 		assertEquals(200, response.getStatus());
-		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		project = response.readEntity(ProjectTestModel.class);
 		assertEquals("Test Project V", project.getName());
 		assertEquals("updateProject - updated", project.getDescription());
 		assertEquals("2000 BC", project.getStartDate());
 		assertEquals("THE END OF THE WORLD", project.getEndDate());
+		assertEquals("localhost", project.getDbServerPublicAddress());
 		logout();
 		
 		//

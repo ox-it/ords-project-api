@@ -74,7 +74,7 @@ public class Project implements Serializable {
     // TODO should this be settable?
     private String odbcConnectionURL;
     
-    // TODO should this be settable?
+    @JsonIgnore 
     private String dbServerAddress;
     
     // Trial Project work
