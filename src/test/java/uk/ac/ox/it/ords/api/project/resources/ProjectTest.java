@@ -593,7 +593,11 @@ public class ProjectTest extends AbstractResourceTest {
 		
 		project.setName("Test Project searchProjects3");
 		project.setDescription("searchProjects Squid");
-		assertEquals(201, getClient().path("/").post(project).getStatus());
+		Response response = getClient().path("/").post(project);
+		assertEquals(201, response.getStatus());
+		String path = response.getLocation().getPath();
+		response = getClient().path(path).get();
+		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
 		
 		//
 		// Baseline - all projects
@@ -610,6 +614,20 @@ public class ProjectTest extends AbstractResourceTest {
 		assertEquals(0, getClient().path("/").query("q", "mussell").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
 		assertEquals(openProjects, getClient().path("/").query("q", " ").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
 		assertEquals(openProjects, getClient().path("/").query("q", "").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+
+		//
+		// Exclude project from search
+		//
+		project.setPrivateProject(true);
+		assertEquals(200, getClient().path(path).put(project).getStatus());
+		assertEquals(0, getClient().path("/").query("q", "squid").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
+
+		//
+		// Re-include
+		//
+		project.setPrivateProject(false);
+		assertEquals(200, getClient().path(path).put(project).getStatus());
+		assertEquals(1, getClient().path("/").query("q", "squid").get().readEntity(new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}).size());
 
 	}
 }

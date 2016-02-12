@@ -298,7 +298,8 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 			
 			Criteria searchCriteria = session.createCriteria(Project.class)
 					.add(Restrictions.eq("trialProject", Boolean.FALSE))
-					.add(Restrictions.eq("deleted", Boolean.FALSE));
+					.add(Restrictions.eq("deleted", Boolean.FALSE))
+					.add(Restrictions.eq("privateProject", Boolean.FALSE));
 			String[] terms = searchTerms.split(",");
 			
 			for (String term : terms) {
