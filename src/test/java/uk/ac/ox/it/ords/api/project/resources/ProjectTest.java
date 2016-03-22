@@ -16,8 +16,6 @@
 package uk.ac.ox.it.ords.api.project.resources;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Date;
@@ -27,10 +25,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.shiro.SecurityUtils;
 import org.junit.Test;
 
-import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectTest extends AbstractResourceTest {
