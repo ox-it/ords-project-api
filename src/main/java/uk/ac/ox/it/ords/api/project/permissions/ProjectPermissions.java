@@ -15,6 +15,7 @@
  */
 package uk.ac.ox.it.ords.api.project.permissions;
 
+import uk.ac.ox.it.ords.api.project.model.Database;
 import uk.ac.ox.it.ords.security.permissions.Permissions;
 
 /**
@@ -24,6 +25,13 @@ public class ProjectPermissions extends Permissions{
 	
 	public static String PROJECT_DELETE_ANY(){
 		return "project:delete:*";
+	}
+	
+	//
+	// Contextual permissions that apply to databases within projects
+	//
+	public static String DATABASE_REQUEST_ODBC_ACCESS(Database database){
+		return "database:odbc:"+database.getLogicalDatabaseId();
 	}
 
 	//
