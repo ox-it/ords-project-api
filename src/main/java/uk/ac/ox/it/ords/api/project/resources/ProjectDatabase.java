@@ -277,6 +277,13 @@ public class ProjectDatabase {
 		}
 		
 		database = ProjectDatabaseService.Factory.getInstance().addDatabase(database);
+		
+		//
+		// If ODBC is enabled, add ODBC permissions for all project members
+		//
+		if (ProjectService.Factory.getInstance().getProject(database.getDatabaseProjectId()).isOdbcSet()){
+			ProjectDatabaseService.Factory.getInstance().enableODBC(database);
+		}
 
 		UriBuilder builder = uriInfo.getAbsolutePathBuilder();
 		builder.path(Integer.toString(database.getLogicalDatabaseId()));
@@ -336,7 +343,16 @@ public class ProjectDatabase {
 			return Response.status(400).build();
 		}
 		
+		//
+		// remove database
+		//
 		ProjectDatabaseService.Factory.getInstance().removeDatabase(db);
+		
+		//
+		// remove ODBC permissions, if any
+		//
+		ProjectDatabaseService.Factory.getInstance().disableODBC(database);
+		
 		return Response.ok().build();
 		
 	}

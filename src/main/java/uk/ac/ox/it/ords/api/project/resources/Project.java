@@ -54,6 +54,7 @@ import org.apache.shiro.SecurityUtils;
 
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
+import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
 
 @Api(value="Project")
@@ -298,6 +299,15 @@ public class Project {
 		project.setProjectUuid(oldProject.getProjectUuid());
 		project.setDateCreated(oldProject.getDateCreated());
 		
+		//
+		// If the user changed the ODBC status, we have to change permissions...
+		//
+		if (!project.isOdbcSet() && oldProject.isOdbcSet()){
+			ProjectDatabaseService.Factory.getInstance().disableODBC(project.getProjectId());
+		}
+		if (project.isOdbcSet() && !oldProject.isOdbcSet()){
+			ProjectDatabaseService.Factory.getInstance().enableODBC(project.getProjectId());
+		}
 		
 		//
 		// Fulfill update request
