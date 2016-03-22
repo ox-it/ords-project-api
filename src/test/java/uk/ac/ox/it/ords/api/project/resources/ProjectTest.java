@@ -16,6 +16,8 @@
 package uk.ac.ox.it.ords.api.project.resources;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Date;
@@ -25,8 +27,10 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.shiro.SecurityUtils;
 import org.junit.Test;
 
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public class ProjectTest extends AbstractResourceTest {
@@ -191,6 +195,58 @@ public class ProjectTest extends AbstractResourceTest {
 		assertEquals(200, getClient().path(projectPath).put(project).getStatus());
 		logout();
 	}
+
+	
+	@Test
+	public void createProjectWithODBC() throws IOException {
+		loginUsingSSO("pingu", "pingu");
+		WebClient client = getClient();
+		client.path("/");
+		
+		//
+		// POST project
+		//
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project F2");
+		project.setDescription("createProjectWithODBC");
+		project.setOdbcSet(true);
+		Response response = client.post(project);
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
+		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project F2", project.getName());
+		int id = project.getProjectId();
+		
+		//
+		// GET the project
+		//
+		client = getClient();
+		client.path("/"+id);
+		response = client.get();
+		assertEquals(200, response.getStatus());
+		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project F2", project.getName());
+		assertEquals(true, project.canEdit());
+		assertEquals(true, project.canDelete());
+				
+		//
+		// DELETE the project
+		//
+		client = getClient();
+		client.path("/"+id);
+		response = client.delete();
+		assertEquals(200, response.getStatus());
+		
+		//
+		// GET it again - is it GONE?
+		//
+		client = getClient();
+		client.path("/"+id);
+		response = client.get();
+		assertEquals(410, response.getStatus());
+		
+		logout();
+	}
 	
 	@Test
 	public void createProjectAuthenticated() throws IOException {
@@ -222,7 +278,7 @@ public class ProjectTest extends AbstractResourceTest {
 		assertEquals("Test Project F", project.getName());
 		assertEquals(true, project.canEdit());
 		assertEquals(true, project.canDelete());
-		
+				
 		//
 		// DELETE the project
 		//
@@ -304,8 +360,8 @@ public class ProjectTest extends AbstractResourceTest {
 		
 		//
 		// Now lets see what Admin can see if they ask for the list
-		// of all projects - they should see all 5, including the
-		// private one and two deleted ones
+		// of all projects - they should see all 6, including the
+		// private one and 3 deleted ones
 		//
 		loginUsingSSO("admin", "test");
 		client = getClient();
@@ -315,7 +371,7 @@ public class ProjectTest extends AbstractResourceTest {
 		projects = response.readEntity(
 						new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
 						);
-		assertEquals(5, projects.size());
+		assertEquals(6, projects.size());
 		
 		//
 		// Anonymous user asking for the FULL project list sees the same
@@ -329,7 +385,7 @@ public class ProjectTest extends AbstractResourceTest {
 		projects = response.readEntity(
 						new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
 						);
-		assertEquals(4, projects.size());
+		assertEquals(5, projects.size());
 		
 		//
 		// Admin asks for their projects - they'll get all 3
@@ -513,6 +569,11 @@ public class ProjectTest extends AbstractResourceTest {
 		project.setDescription("updateProject - updated");
 		project.setStartDate("2000 BC");
 		project.setEndDate("THE END OF THE WORLD");
+		
+		//
+		// Enable ODBC
+		//
+		//project.setOdbcSet(true);	
 		
 		//
 		// Set some things we aren't allowed to - these should be ignored

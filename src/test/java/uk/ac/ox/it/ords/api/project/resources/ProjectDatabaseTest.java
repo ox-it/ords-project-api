@@ -16,6 +16,8 @@
 package uk.ac.ox.it.ords.api.project.resources;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.List;
@@ -24,11 +26,13 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.shiro.SecurityUtils;
 import org.hibernate.Session;
 import org.junit.Test;
 
 import uk.ac.ox.it.ords.api.project.model.Database;
 import uk.ac.ox.it.ords.api.project.model.DatabaseVersion;
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.impl.hibernate.HibernateUtils;
 
 public class ProjectDatabaseTest extends AbstractResourceTest {
@@ -46,6 +50,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		project.setName("Test Project H");
 		project.setDescription("privateProjectDatabases");
 		project.setPrivateProject(true);
+		project.setOdbcSet(true);
 		Response response = client.post(project);
 		assertEquals(201, response.getStatus());
 		String path = response.getLocation().getPath();
@@ -69,11 +74,18 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		assertEquals(201, response.getStatus());
 		URI projectDatabaseURI = response.getLocation();
 		
+		
 		//
 		// View
 		// 
 		assertEquals(200, getClient().path(projectURI.getPath()+"/database").get().getStatus());
 		assertEquals(200, getClient().path(projectDatabaseURI.getPath()).get().getStatus());
+		
+		//
+		// Check ODBC is enabled for this user
+		//
+		projectDatabase = getClient().path(projectDatabaseURI.getPath()).get().readEntity(Database.class);
+		assertTrue(SecurityUtils.getSubject().isPermitted(ProjectPermissions.DATABASE_REQUEST_ODBC_ACCESS(projectDatabase)));
 		
 		//
 		// Logout and view
@@ -527,12 +539,18 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		client.path("/"+id+"/database/"+projectDatabases.get(0).getLogicalDatabaseId());
 		response = client.get();
 		assertEquals(200, response.getStatus());
+		Database deletedDatabase = getClient().path(projectDatabaseURI.getPath()).get().readEntity(Database.class);
 		
 		// delete one
 		client = getClient();
 		client.path(projectDatabaseURI.getPath());
 		response = client.delete();
 		assertEquals(200, response.getStatus());
+		
+		//
+		// Check ODBC is disabled for the deleted database
+		//
+		assertFalse(SecurityUtils.getSubject().isPermitted(ProjectPermissions.DATABASE_REQUEST_ODBC_ACCESS(deletedDatabase)));
 		
 		// get again
 		client = getClient();
