@@ -65,6 +65,35 @@ public interface ProjectDatabaseService {
 	 */
 	public void removeDatabase(int databaseId) throws Exception;
 	
+	
+	/**
+	 * Enable ODBC for a database
+	 * @param projectId
+	 * @throws Exception
+	 */
+	public void enableODBC(Database database) throws Exception;	
+	
+	/**
+	 * Disable ODBC for a database
+	 * @param projectId
+	 * @throws Exception
+	 */
+	public void disableODBC(Database database) throws Exception;	
+	
+	/**
+	 * Enable ODBC for all databases in the specified project
+	 * @param projectId
+	 * @throws Exception
+	 */
+	public void enableODBC(int projectId) throws Exception;
+	
+	/**
+	 * Disable ODBC connections for all databases in the specified project
+	 * @param projectId
+	 * @throws Exception
+	 */
+	public void disableODBC(int projectId) throws Exception;
+	
 	/**
 	 * Factory for obtaining implementations
 	 */

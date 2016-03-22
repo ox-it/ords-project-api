@@ -24,8 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Database;
+import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectDatabaseService;
+import uk.ac.ox.it.ords.security.model.Permission;
+import uk.ac.ox.it.ords.security.permissions.Permissions;
+import uk.ac.ox.it.ords.security.services.PermissionsService;
 
 public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService implements ProjectDatabaseService {
 
@@ -99,14 +103,15 @@ public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService i
 			session.beginTransaction();
 			session.save(projectDatabase);
 			session.getTransaction().commit();
-			return projectDatabase;
 		} catch (Exception e) {
 			log.debug(e.getMessage());
 			session.getTransaction().rollback();
 			throw e;
 		} finally {
-			  HibernateUtils.closeSession();
+			HibernateUtils.closeSession();
 		}
+		initialisePermissions(projectDatabase);
+		return projectDatabase;
 	}
 
 	/* (non-Javadoc)
@@ -116,6 +121,7 @@ public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService i
 	public void removeDatabase(int databaseId)
 			throws Exception {
 		Database projectDatabase = this.getDatabase(databaseId);
+		revokePermissions(projectDatabase);
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
@@ -145,5 +151,116 @@ public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService i
 			  HibernateUtils.closeSession();
 		}
 		return database;
+	}
+	
+	@Override
+	public void enableODBC(int projectId) throws Exception {
+		List<Database> databases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(projectId);
+		for (Database database : databases){
+			enableODBC(database);
+		}
+	}
+
+	@Override
+	public void disableODBC(int projectId) throws Exception {
+		List<Database> databases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(projectId);
+		for (Database database : databases){
+			disableODBC(database);
+		}
+	}
+
+	@Override
+	public void enableODBC(Database database) throws Exception {
+		
+		String ownerRole = "owner_"+database.getDatabaseProjectId();
+		String contributorRole = "contributor_"+database.getDatabaseProjectId();
+		String viewerRole = "viewer_"+database.getDatabaseProjectId();
+		
+		Permission ownerPermission = new Permission();
+		ownerPermission.setRole(ownerRole);
+		ownerPermission.setPermission(ProjectPermissions.DATABASE_REQUEST_ODBC_ACCESS(database));
+		PermissionsService.Factory.getInstance().createPermission(ownerPermission);
+
+		Permission contributorPermission = new Permission();
+		contributorPermission.setRole(contributorRole);
+		contributorPermission.setPermission(ProjectPermissions.DATABASE_REQUEST_ODBC_ACCESS(database));
+		PermissionsService.Factory.getInstance().createPermission(contributorPermission);
+
+		Permission viewerPermission = new Permission();
+		viewerPermission.setRole(viewerRole);
+		viewerPermission.setPermission(ProjectPermissions.DATABASE_REQUEST_ODBC_ACCESS(database));
+		PermissionsService.Factory.getInstance().createPermission(viewerPermission);
+	}
+
+	@Override
+	public void disableODBC(Database database) throws Exception {
+
+		String ownerRole = "owner_"+database.getDatabaseProjectId();
+		String contributorRole = "contributor_"+database.getDatabaseProjectId();
+		String viewerRole = "viewer_"+database.getDatabaseProjectId();
+
+		// Collect all permissions
+		List<Permission> permissions = PermissionsService.Factory.getInstance().getPermissionsForRole(ownerRole);
+		permissions.addAll(PermissionsService.Factory.getInstance().getPermissionsForRole(contributorRole));
+		permissions.addAll(PermissionsService.Factory.getInstance().getPermissionsForRole(viewerRole));
+
+		// Revoke all ODBC permissions on this database
+		for (Permission permission : permissions){
+			if (permission.getPermission().equals(ProjectPermissions.DATABASE_REQUEST_ODBC_ACCESS(database))){
+				PermissionsService.Factory.getInstance().deletePermission(permission);
+			}
+		}
+	}
+	
+	/**
+	 * Create initial permissions for a new database
+	 * @param database
+	 * @throws Exception
+	 */
+	private void initialisePermissions(Database database) throws Exception {
+		
+		String ownerRole = "owner_"+database.getDatabaseProjectId();
+		String contributorRole = "contributor_"+database.getDatabaseProjectId();
+		String viewerRole = "viewer_"+database.getDatabaseProjectId();
+		
+		Permission ownerPermission = new Permission();
+		ownerPermission.setRole(ownerRole);
+		ownerPermission.setPermission(Permissions.DATABASE_VIEW(database.getLogicalDatabaseId()));
+		PermissionsService.Factory.getInstance().createPermission(ownerPermission);
+
+		Permission contributorPermission = new Permission();
+		contributorPermission.setRole(contributorRole);
+		contributorPermission.setPermission(Permissions.DATABASE_MODIFY(database.getLogicalDatabaseId()));
+		PermissionsService.Factory.getInstance().createPermission(contributorPermission);
+
+		Permission viewerPermission = new Permission();
+		viewerPermission.setRole(viewerRole);
+		viewerPermission.setPermission(Permissions.DATABASE_DELETE(database.getLogicalDatabaseId()));
+		PermissionsService.Factory.getInstance().createPermission(viewerPermission);
+	}
+	
+	private void revokePermissions(Database database) throws Exception {
+
+		String ownerRole = "owner_"+database.getDatabaseProjectId();
+		String contributorRole = "contributor_"+database.getDatabaseProjectId();
+		String viewerRole = "viewer_"+database.getDatabaseProjectId();
+
+		// Collect all permissions
+		List<Permission> permissions = PermissionsService.Factory.getInstance().getPermissionsForRole(ownerRole);
+		permissions.addAll(PermissionsService.Factory.getInstance().getPermissionsForRole(contributorRole));
+		permissions.addAll(PermissionsService.Factory.getInstance().getPermissionsForRole(viewerRole));
+
+		// Revoke all permissions on this database
+		for (Permission permission : permissions){
+			if (permission.getPermission().equals(Permissions.DATABASE_VIEW(database.getLogicalDatabaseId()))){
+				PermissionsService.Factory.getInstance().deletePermission(permission);
+			}
+			if (permission.getPermission().equals(Permissions.DATABASE_MODIFY(database.getLogicalDatabaseId()))){
+				PermissionsService.Factory.getInstance().deletePermission(permission);
+			}
+			if (permission.getPermission().equals(Permissions.DATABASE_DELETE(database.getLogicalDatabaseId()))){
+				PermissionsService.Factory.getInstance().deletePermission(permission);
+			}
+		}
 	}
 }
