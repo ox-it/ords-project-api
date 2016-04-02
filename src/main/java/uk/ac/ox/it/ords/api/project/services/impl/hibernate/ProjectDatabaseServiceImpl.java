@@ -225,8 +225,16 @@ public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService i
 		
 		Permission ownerPermission = new Permission();
 		ownerPermission.setRole(ownerRole);
-		ownerPermission.setPermission(Permissions.DATABASE_VIEW(database.getLogicalDatabaseId()));
+		ownerPermission.setPermission(Permissions.DATABASE_MODIFY(database.getLogicalDatabaseId()));
 		PermissionsService.Factory.getInstance().createPermission(ownerPermission);
+		Permission ownerPermission2 = new Permission();
+		ownerPermission2.setRole(ownerRole);
+		ownerPermission2.setPermission(Permissions.DATABASE_DELETE(database.getLogicalDatabaseId()));
+		PermissionsService.Factory.getInstance().createPermission(ownerPermission2);
+		Permission ownerPermission3 = new Permission();
+		ownerPermission3.setRole(ownerRole);
+		ownerPermission3.setPermission(Permissions.DATABASE_VIEW(database.getLogicalDatabaseId()));
+		PermissionsService.Factory.getInstance().createPermission(ownerPermission3);
 
 		Permission contributorPermission = new Permission();
 		contributorPermission.setRole(contributorRole);
@@ -235,7 +243,7 @@ public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService i
 
 		Permission viewerPermission = new Permission();
 		viewerPermission.setRole(viewerRole);
-		viewerPermission.setPermission(Permissions.DATABASE_DELETE(database.getLogicalDatabaseId()));
+		viewerPermission.setPermission(Permissions.DATABASE_VIEW(database.getLogicalDatabaseId()));
 		PermissionsService.Factory.getInstance().createPermission(viewerPermission);
 	}
 	
