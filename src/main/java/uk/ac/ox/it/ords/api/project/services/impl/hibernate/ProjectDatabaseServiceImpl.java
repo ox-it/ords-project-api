@@ -24,11 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.ox.it.ords.api.project.model.Database;
+import uk.ac.ox.it.ords.api.project.model.DatabaseVersion;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
+import uk.ac.ox.it.ords.api.project.services.DatabaseVersionService;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectDatabaseService;
 import uk.ac.ox.it.ords.security.model.Permission;
 import uk.ac.ox.it.ords.security.permissions.Permissions;
+import uk.ac.ox.it.ords.security.services.ODBCService;
 import uk.ac.ox.it.ords.security.services.PermissionsService;
 
 public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService implements ProjectDatabaseService {
@@ -210,8 +213,34 @@ public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService i
 				PermissionsService.Factory.getInstance().deletePermission(permission);
 			}
 		}
+		
+		// Revoke all previously created ODBC roles for this database
+		removeODBCroles(DatabaseVersionService.Factory.getInstance().getDatabaseVersions(database.getLogicalDatabaseId()));
 	}
 	
+	/**
+	 * Revokes and drops all ODBC roles for the specified databases
+	 * @param databaseVersions
+	 * @throws Exception
+	 */
+	private void removeODBCroles(List<DatabaseVersion> databaseVersions) throws Exception {
+		for (DatabaseVersion databaseVersion : databaseVersions ){
+			List<String> roles = ODBCService.Factory.getInstance().getAllODBCRolesForDatabase(databaseVersion.getDatabaseServer(), databaseVersion.getDbConsumedName());
+			for (String role : roles){
+				try {
+					ODBCService.Factory.getInstance().removeRole(role, databaseVersion.getDatabaseServer(), databaseVersion.getDbConsumedName()+"_staging");
+				} catch (Exception e) {
+					log.warn("problem dropping ODBC role");
+				}
+				try {
+					ODBCService.Factory.getInstance().removeRole(role, databaseVersion.getDatabaseServer(), databaseVersion.getDbConsumedName());
+				} catch (Exception e) {
+					log.warn("problem dropping ODBC role");
+				}
+			}			
+		}
+	}
+		
 	/**
 	 * Create initial permissions for a new database
 	 * @param database
