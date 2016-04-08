@@ -119,6 +119,10 @@ public class ProjectRole {
 		
 		ProjectRoleService.Factory.getInstance().updateProjectRole(userRole, projectId);
 		
+		//
+		// TODO When we change a role, we have to drop the existing ODBC role associated with it
+		//
+		
 		return Response.ok().build();
 	}
 	
