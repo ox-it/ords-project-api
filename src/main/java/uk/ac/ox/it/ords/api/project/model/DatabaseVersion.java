@@ -69,7 +69,9 @@ public class DatabaseVersion implements Cloneable {
     private boolean dbConsumed;
     @Column(name = "dbconsumedname", unique = true)
     private String dbConsumedName;
-
+    
+    private String databaseServer;
+    
     @NotNull
     private String uuid;
 
@@ -179,20 +181,7 @@ public class DatabaseVersion implements Cloneable {
     }
 
     public String getDbConsumedName() {
-        /*
-         * FIXME
-         * A getter should not alter the data - needs to be sorted out
-         */
-        if (dbConsumedName == null) {
-            String name = (getEntityType().toString() + "_" + getPhysicalDatabaseId() + "_" + getLogicalDatabaseId()).toLowerCase();
-
-            setDbConsumedName(name);
-        }
-        return dbConsumedName;
-    }
-
-    public void setDbConsumedName(String dbConsumedName) {
-        this.dbConsumedName = dbConsumedName;
+        return (getEntityType().toString() + "_" + getPhysicalDatabaseId() + "_" + getLogicalDatabaseId()).toLowerCase();
     }
 
     public String getUploadedHost() {
@@ -202,5 +191,13 @@ public class DatabaseVersion implements Cloneable {
     public void setUploadedHost(String uploadedHost) {
         this.uploadedHost = uploadedHost;
     }
+
+	public String getDatabaseServer() {
+		return databaseServer;
+	}
+
+	public void setDatabaseServer(String databaseServer) {
+		this.databaseServer = databaseServer;
+	}
     
 }
