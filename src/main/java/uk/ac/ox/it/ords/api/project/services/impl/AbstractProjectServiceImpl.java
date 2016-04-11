@@ -40,6 +40,9 @@ public abstract class AbstractProjectServiceImpl implements ProjectService{
 	 */
 	protected List<Project> filterProjectsForVisible(List<Project> projects){	
 		
+//
+//      This is a more elegant solution, but requires Java 8.
+//
 //		List<Project > visibleProjects = projects.stream()
 //				.filter(p -> 
 //						   !p.isPrivateProject() 
