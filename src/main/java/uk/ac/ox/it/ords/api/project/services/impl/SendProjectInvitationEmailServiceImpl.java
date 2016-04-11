@@ -38,8 +38,6 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 
 	public static final String ORDS_MAIL_ACCEPTED_SUBJECT = "Message from ORDS";
 	public static final String ORDS_MAIL_ACCEPTED_MESSAGE = "The user with email address %s you invited to your project (%s) has now joined ORDS and is a member of your project with role %s";
-
-
 	
 	public SendProjectInvitationEmailServiceImpl(){
 		props = ConfigurationConverter.getProperties(MetaConfiguration.getConfiguration());	
@@ -47,12 +45,15 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 	
 	/**
 	 * Construct the service using the given properties; used for testing
-	 * @param props
+	 * @param props the properties to set
 	 */
 	public SendProjectInvitationEmailServiceImpl(Properties props){
 		this.props = props;
 	}
 	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.SendProjectInvitationEmailService#sendProjectInvitation(uk.ac.ox.it.ords.api.project.model.Invitation)
+	 */
 	@Override
 	public void sendProjectInvitation(Invitation invite) throws Exception {
 		
@@ -71,6 +72,9 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 		}	
 	}
 	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.SendProjectInvitationEmailService#sendProjectInvitationAcceptance(uk.ac.ox.it.ords.api.project.model.Project, uk.ac.ox.it.ords.api.project.model.Invitation)
+	 */
 	@Override
 	public void sendProjectInvitationAcceptance(Project project, Invitation invite)
 			throws Exception {
@@ -91,8 +95,8 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 
 	/**
 	 * Generate the invitation URL the user should use to click through.
-	 * @param user
-	 * @return
+	 * @param invite the invite to generate a URL for
+	 * @return the generated invitation URL
 	 */
 	public String getInvitationUrl(Invitation invite){
 		
@@ -110,9 +114,10 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 	}
 
 	/**
-	 * Generates the message body
-	 * @param invite
-	 * @return
+	 * Generates the message body for an Accepted message
+	 * @param project the project
+	 * @param invite the invitation
+	 * @return the message body for the invitation
 	 */
 	public String createAcceptedMessage(Project project, Invitation invite){
 		
@@ -136,9 +141,9 @@ public class SendProjectInvitationEmailServiceImpl extends SendMailTLS
 	}
 	
 	/**
-	 * Generates the message body
-	 * @param invite
-	 * @return
+	 * Generates the message body for an Invitation message
+	 * @param invite the invitation
+	 * @return the message body
 	 */
 	public String createInvitationMessage(Invitation invite){
 		

@@ -25,8 +25,8 @@ public interface DatabaseVersionService {
 	
 	/**
 	 * Obtain the database versions associated with a logical Database
-	 * @param logicalDatabaseId
-	 * @return
+	 * @param logicalDatabaseId the ID of the logical database
+	 * @return List of DatabaseVersion instances for this logical database
 	 */
 	public List<DatabaseVersion> getDatabaseVersions(int logicalDatabaseId);
 	

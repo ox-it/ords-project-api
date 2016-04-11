@@ -47,8 +47,9 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 		setSessionFactory (HibernateUtils.getSessionFactory());
 	}
 	
-	
-
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#updateProjectRole(uk.ac.ox.it.ords.security.model.UserRole, int)
+	 */
 	@Override
 	public void updateProjectRole(UserRole userRole, int projectId) throws Exception {
 		validate(userRole);
@@ -71,6 +72,10 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#createInitialPermissions(int)
+	 */
+	@Override
 	public void createInitialPermissions(int projectId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		
@@ -100,6 +105,10 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#deletePermissions(int)
+	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public void deletePermissions(int projectId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -142,6 +151,11 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 
 	}
 
+	/**
+	 * Delete permissions for a role
+	 * @param session the current Hibernate session
+	 * @param role the role
+	 */
 	@SuppressWarnings("unchecked")
 	private void deletePermissionsForRole(Session session, UserRole role){
 		List<Permission> permissions = session.createCriteria(Permission.class)
@@ -161,8 +175,8 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	 *   contributor_{projectId}
 	 *   viewer_{projectId}
 	 *   
-	 * @param projectId
-	 * @throws Exception 
+	 * @param projectId the project
+	 * @throws Exception if there is a problem creating permissions
 	 */
 	private void createPermissionsForProject(int projectId) throws Exception{
 		//
@@ -191,9 +205,10 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	}
 
 	/**
-	 * @param role
-	 * @param permissionString
-	 * @throws Exception
+	 * Creates a permission
+	 * @param role the role
+	 * @param permissionString the permission
+	 * @throws Exception if there is a problem saving the permission
 	 */
 	protected void createPermission(String role, String permissionString) throws Exception{
 		Session session = this.sessionFactory.getCurrentSession();
@@ -216,6 +231,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#addUserRoleToProject(int, uk.ac.ox.it.ords.security.model.UserRole)
 	 */
+	@Override
 	public UserRole addUserRoleToProject(int projectId, UserRole userRole) throws ValidationException, Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -240,6 +256,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#removeUserFromRoleInProject(int, int)
 	 */
+	@Override
 	public void removeUserFromRoleInProject(int projectId, int roleId)
 			throws ValidationException, Exception {
 		//
@@ -257,9 +274,10 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	}
 	
 	/**
-	 * @param userRole
-	 * @param projectId
-	 * @throws Exception
+	 * Removes a user role
+	 * @param userRole the user role to remove
+	 * @param projectId the project
+	 * @throws Exception if there's a problem removing the user role
 	 */
 	protected void removeUserRole(UserRole userRole, int projectId) throws Exception{
 		Session session = this.sessionFactory.getCurrentSession();
@@ -280,6 +298,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getUserRole(int)
 	 */
+	@Override
 	public UserRole getUserRole(int roleId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
@@ -298,6 +317,7 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getUserRolesForProject(int)
 	 */
+	@Override
 	public List<UserRole> getUserRolesForProject(int projectId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		

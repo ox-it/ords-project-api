@@ -24,10 +24,10 @@ import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.security.model.UserRole;
 
 public abstract class AbstractProjectRoleService implements ProjectRoleService {
-	
-	
-	
-	
+
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getProjectMembers(int)
+	 */
 	@Override
 	public List<Member> getProjectMembers(int projectId) throws Exception {
 		List<UserRole> userRoles = getUserRolesForProject(projectId);
@@ -47,8 +47,9 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 		return role.split("_")[0];
 	}
 	
-	
-
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectRoleService#getPrivateUserRole(java.lang.String, int)
+	 */
 	@Override
 	public String getPrivateUserRole(String role, int projectId) {
 		if (role.contains("_")) return role;
@@ -56,9 +57,10 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 	}
 
 	/**
-	 * @param userRole
-	 * @return
-	 * @throws ValidationException
+	 * Validates a user role
+	 * @param userRole the user role to validate
+	 * @return true if the role is valid, otherwise false
+	 * @throws ValidationException if the role cannot be validated
 	 */
 	public boolean validate(UserRole userRole) throws ValidationException{
 		if (userRole == null) throw new ValidationException("Invalid role");
@@ -69,8 +71,9 @@ public abstract class AbstractProjectRoleService implements ProjectRoleService {
 	}
 
 	/**
-	 * @param role
-	 * @return
+	 * Validates a role matches the allowed role enum (e.g. Contributor, Viewer etc...)
+	 * @param role the role to validate
+	 * @return true if the role is valid
 	 */
 	public boolean isValidRole(String role){
 		for (ProjectRole projectRole : ProjectRole.values()){

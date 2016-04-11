@@ -35,7 +35,7 @@ public abstract class AbstractProjectServiceImpl implements ProjectService{
 	/**
 	 * Filter a list of projects to only include those the current user is permitted
 	 * to see.
-	 * @param projects
+	 * @param projects the projects to filter
 	 * @return the filtered list of projects
 	 */
 	protected List<Project> filterProjectsForVisible(List<Project> projects){	
@@ -64,7 +64,7 @@ public abstract class AbstractProjectServiceImpl implements ProjectService{
 	 * Configures the project with internal system-set properties; this is called once on 
 	 * project creation.
 	 * TODO use ServerDetailsService to populate
-	 * @param project
+	 * @param project the project to configure
 	 */
 	public void configureProject(Project project){
 		

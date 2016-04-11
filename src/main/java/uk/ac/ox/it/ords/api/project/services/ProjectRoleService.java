@@ -26,7 +26,7 @@ public interface ProjectRoleService {
 	
 	/**
 	 * Validates the given role string as matching a role supported by ORDS
-	 * @param role
+	 * @param role the role to validate
 	 * @return true if the role is valid, otherwise false
 	 */
 	public boolean isValidRole(String role);
@@ -34,7 +34,7 @@ public interface ProjectRoleService {
 	/**
 	 * Return the public representation of a role in a project, rather than
 	 * the internal role identity. For example, returns "Owner" rather than "owner_27".
-	 * @param role
+	 * @param role the role to get
 	 * @return the public role name
 	 */
 	public String getPublicUserRole(String role);
@@ -42,42 +42,47 @@ public interface ProjectRoleService {
 	/**
 	 * Return the private representation of a role in a project, rather than
 	 * the extertnal role identity. For example, returns "owner_27" rather than "owner".
-	 * @param role
-	 * @param projectId the project id
+	 * @param role the role to get
+	 * @param projectId the id of the project
 	 * @return the private role name
 	 */
 	public String getPrivateUserRole(String role, int projectId);
 	
 	/**
 	 * Update a role
-	 * @param userRole
+	 * @param userRole the role to update
+	 * @param projectId the project to update the role for
+	 * @throws Exception if there is a problem updating the role
 	 */
 	public void updateProjectRole(UserRole userRole, int projectId) throws Exception;
 	
 	/**
 	 * Gets the project owner, if any
+	 * @param projectId the id of the project
+	 * @return the project owner
+	 * @throws Exception if there is a problem obtaining the project owner
 	 */
 	public UserRole getProjectOwner(int projectId) throws Exception;
 	
 	/**
 	 * Create the Owner role and their permissions; called once when a new project is created
-	 * @param projectId
-	 * @throws Exception
+	 * @param projectId the project to create permissions for
+	 * @throws Exception if there was a problem creating initial permissions
 	 */
 	public void createInitialPermissions(int projectId) throws Exception;
 	
 	/**
 	 * Delete all the permissions and roles associated with a project; called once when a project is deleted
-	 * @param projectId
-	 * @throws Exception
+	 * @param projectId the project to delete permissions for
+	 * @throws Exception if there was a problem deleting permissions
 	 */
 	public void deletePermissions(int projectId) throws Exception;
 	
 	/**
 	 * Return all the UserRoles that match the pattern of the project
-	 * @param projectId
+	 * @param projectId the id of the project 
 	 * @return a List of UserRole objects
-	 * @throws Exception
+	 * @throws Exception if there was a problem obtaining user roles for this project
 	 */
 	public List<UserRole> getUserRolesForProject(int projectId) throws Exception;
 	
@@ -85,34 +90,34 @@ public interface ProjectRoleService {
 	 * Returns the UserRoles that match the pattern of the project, but 
 	 * structured as Member object (outward-facing) rather than their
 	 * internal UserRole representations.
-	 * @param projectId
+	 * @param projectId the id of the project
 	 * @return a List of Members
-	 * @throws Exception
+	 * @throws Exception if there was a problem obtaining the project members
 	 */
 	public List<Member> getProjectMembers(int projectId) throws Exception;
 	
 	/**
 	 * Return the specified UserRole instance
-	 * @param roleId 
+	 * @param roleId the role to obtain
 	 * @return the UserRole specified, or null if there is no match
-	 * @throws Exception
+	 * @throws Exception if there was a problem obtaining the user role
 	 */
 	public UserRole getUserRole(int roleId) throws Exception;
 	
 	/**
 	 * Create the UserRole 
-	 * @param projectid
-	 * @param userRole
+	 * @param projectid the id of the project
+	 * @param userRole the user role to create
 	 * @return the UserRole that has been persisted
-	 * @throws Exception
+	 * @throws Exception if there was a problem creating this role
 	 */
 	public UserRole addUserRoleToProject(int projectid, UserRole userRole) throws Exception;
 	
 	/**
 	 * Remove the UserRole
-	 * @param projectid
-	 * @param roleId
-	 * @throws Exception
+	 * @param projectid the id of the project
+	 * @param roleId the id of the role
+	 * @throws Exception if there was a problem removing this role
 	 */
 	public void removeUserFromRoleInProject(int projectid, int roleId) throws Exception;	
 

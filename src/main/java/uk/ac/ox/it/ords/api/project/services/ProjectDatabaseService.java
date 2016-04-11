@@ -28,69 +28,69 @@ public interface ProjectDatabaseService {
 	
 	/**
 	 * Get a logical Database by its ID
-	 * @param id
-	 * @return
-	 * @throws Exception
+	 * @param id the id of the logical database
+	 * @return the database, or null if no database exists with this id
+	 * @throws Exception if there is a problem obtaining the database
 	 */
 	public Database getDatabase(int id) throws Exception;
 	
 	/**
 	 * Get all the logical Databases for the specified project
-	 * @param projectId
-	 * @return
-	 * @throws Exception
+	 * @param projectId the id of the project
+	 * @return List of Database instances for this project
+	 * @throws Exception if there is a problem obtanining the databases
 	 */
 	public List<Database> getDatabasesForProject(int projectId) throws Exception;
 	
 	/**
 	 * Create a logical Database
-	 * @param db
-	 * @return
-	 * @throws Exception
+	 * @param db the database to create
+	 * @return the created database
+	 * @throws Exception if there was a problem creating the database
 	 */
 	public Database addDatabase(Database db)  throws Exception;
 	
 	/**
 	 * Update a logical Database
-	 * @param db
-	 * @return
-	 * @throws Exception
+	 * @param db the database to update
+	 * @return the updated database
+	 * @throws Exception if there was a problem updating the database
 	 */
 	public Database updateDatabase(Database db)  throws Exception;
 	
 	/**
 	 * Delete a logical Database
-	 * @param databaseId
-	 * @throws Exception
+	 * @param databaseId the database to delete
+	 * @throws Exception if there was a problem deleting the datbase
 	 */
 	public void removeDatabase(int databaseId) throws Exception;
 	
 	
 	/**
 	 * Enable ODBC for a database
-	 * @param projectId
-	 * @throws Exception
+	 * @param database the database to enable ODBC access for
+	 * @throws Exception if there was a problem enabling ODBC access
 	 */
 	public void enableODBC(Database database) throws Exception;	
 	
 	/**
 	 * Disable ODBC for a database
-	 * @param projectId
-	 * @throws Exception
+	 * @param database the database to disable ODBC access for
+	 * @throws Exception if there was a problem disabling ODBC access
 	 */
 	public void disableODBC(Database database) throws Exception;	
 	
 	/**
 	 * Enable ODBC for all databases in the specified project
-	 * @param projectId
-	 * @throws Exception
+	 * @param projectId the project to enable ODBC for
+	 * @throws Exception if there was a problem enabling ODBC access
 	 */
 	public void enableODBC(int projectId) throws Exception;
 	
 	/**
 	 * Disable ODBC connections for all databases in the specified project
-	 * @param projectId
-	 * @throws Exception
+	 * @param projectId the project to disable ODBC access for
+	 * @throws Exception if there was a problem disabling ODBC access
 	 */
 	public void disableODBC(int projectId) throws Exception;
 	

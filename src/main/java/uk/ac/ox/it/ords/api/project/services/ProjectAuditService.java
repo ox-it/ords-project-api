@@ -25,7 +25,7 @@ public interface ProjectAuditService {
     /**
      * Create audit message that the user is not authorised to perform a specific action
      * @param request the action that is not authorised
-     * @param projectIdString a string representation of the project id
+     * @param projectId the project id
      */
     public void createNotAuthRecord(String request, int projectId);
 	
@@ -63,23 +63,21 @@ public interface ProjectAuditService {
      */
     /**
      * Create audit message that an users role within a project has been updated 
-     * @param message a message detailing the operation
+     * @param userRole the user role
      * @param projectId the id of the project
      */
     public void updateProjectUser(UserRole userRole, int projectId);
     
     /**
      * Create audit message that an users role within a project has been removed 
-     * @param message a message detailing the operation
-     * @param userId the id of the user who performed the action
+     * @param userRole the role that was removed
      * @param projectId the id of the project
      */
     public void deleteProjectRole(UserRole userRole, int projectId);
     
     /**
      * Create audit message that an users role within a project has been created 
-     * @param message a message detailing the operation
-     * @param userId the id of the user who performed the action
+     * @param userRole the role that was created
      * @param projectId the id of the project
      */
     public void createProjectUser(UserRole userRole, int projectId);

@@ -32,9 +32,9 @@ ServerConfigurationService {
 
 	/**
 	 * Check which server is suitable and return it.
-	 * @param serverConfiguration
-	 * @return
-	 * @throws Exception
+	 * @param serverConfiguration the cconfiguration to check
+	 * @return the name of the available server
+	 * @throws Exception if no servers can be found
 	 */
 	protected String getAvailableDbServer(XMLConfiguration serverConfiguration)  throws Exception {
 
@@ -91,6 +91,9 @@ ServerConfigurationService {
 		return server;
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ServerConfigurationService#getAvailableDbServer()
+	 */
 	@Override
 	public String getAvailableDbServer() throws Exception {
 
