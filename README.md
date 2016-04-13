@@ -2,6 +2,8 @@
 
 The API for the Online Research Database Service (ORDS) project interface
 
+![build status image](https://travis-ci.org/ox-it/ords-project-api.svg?branch=master) [![Download](https://api.bintray.com/packages/scottbw/ords/ords-project-api/images/download.svg) ](https://bintray.com/scottbw/ords/ords-project-api/_latestVersion)
+
 ## REST/JSON API
 
 When the service is deployed, go to /api/1.0/project/swagger.json for REST documentation.
