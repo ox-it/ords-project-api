@@ -76,7 +76,7 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		UserRole userRole = new UserRole();
 		userRole.setPrincipalName("bob");
 		userRole.setRole("viewer");
-		//service.addUserRoleToProject(1, userRole);	
+		service.addUserRoleToProject(1, userRole);	
 		
 		//
 		// Set up the database
