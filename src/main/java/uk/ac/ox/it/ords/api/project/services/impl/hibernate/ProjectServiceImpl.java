@@ -20,6 +20,7 @@ import java.util.List;
 //import java.util.stream.Collectors;
 
 
+
 import org.apache.shiro.SecurityUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -35,8 +36,8 @@ import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
-import uk.ac.ox.it.ords.api.project.services.ServerConfigurationService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectServiceImpl;
+import uk.ac.ox.it.ords.security.services.ServerConfigurationService;
 
 /**
  * Hibernate implementation of the ProjectService
@@ -85,7 +86,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		//
 		// Allocate to a server
 		//
-		String server = ServerConfigurationService.Factory.getInstance().getAvailableDbServer();
+		String server = ServerConfigurationService.Factory.getInstance().getDatabaseServer().getHost();
 		if (server == null){
 			throw new Exception("No servers available");
 		}
