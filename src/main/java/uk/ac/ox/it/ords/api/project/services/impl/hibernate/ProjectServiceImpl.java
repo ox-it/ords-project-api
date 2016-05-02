@@ -342,23 +342,4 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		return visibleProjects;
 	}
 
-	@Override
-	public int getNumberOfProjectsOnServer(String server) {
-		Session session = this.sessionFactory.getCurrentSession();
-		int projects = 0;
-		try {
-			session.beginTransaction();
-			projects = session.createCriteria(Project.class)
-					.add(Restrictions.eq("dbServerAddress", server))
-					.list().size();
-			session.getTransaction().commit();
-		} catch (Exception e) {
-			log.error("Error getting project list", e);
-			session.getTransaction().rollback();
-			throw e;
-		} finally {
-			  HibernateUtils.closeSession();
-		}
-		return projects;
-	}
 }

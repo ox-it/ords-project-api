@@ -90,13 +90,6 @@ public interface ProjectService {
 	public Project updateProject(Project project) throws Exception;
 	
 	/**
-	 * Return the number of projects using the specified database server
-	 * @param server the server to search
-	 * @return the number of projects on the server.
-	 */
-	public int getNumberOfProjectsOnServer(String server);
-	
-	/**
 	 * Factory for obtaining implementations
 	 */
     public static class Factory {
