@@ -153,12 +153,55 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#getProjects()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Project> getProjects() {
+
+		List<Project> projects = getProjectList();
+		//
+		// Filter for projects where the current user has a role
+		//
+		List<Project> myProjects = new ArrayList<Project>();
+		for (Project project : projects){
+			if (
+					SecurityUtils.getSubject().hasRole("owner_"+project.getProjectId())
+					||  SecurityUtils.getSubject().hasRole("contributor_"+project.getProjectId())
+					||  SecurityUtils.getSubject().hasRole("viewer_"+project.getProjectId())		
+				){
+				myProjects.add(project);
+			}
+				
+		}
+		
+		return myProjects;
+	}
+	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectService#getProjects()
+	 */
+	@Override
+	public List<Project> getOwnProjects() {
+
+		List<Project> projects = getProjectList();
+		//
+		// Filter for projects where the current user has a role
+		//
+		List<Project> myProjects = new ArrayList<Project>();
+		for (Project project : projects){
+			if (
+					SecurityUtils.getSubject().hasRole("owner_"+project.getProjectId())		
+				){
+				myProjects.add(project);
+			}
+				
+		}
+		
+		return myProjects;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<Project> getProjectList(){
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Project> projects = null;
-		List<Project> myProjects = null;
 		
 		//
 		// Obtain projects
@@ -175,23 +218,7 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		} finally {
 			  HibernateUtils.closeSession();
 		}
-		
-		//
-		// Filter for projects where the current user has a role
-		//
-		myProjects = new ArrayList<Project>();
-		for (Project project : projects){
-			if (
-					SecurityUtils.getSubject().hasRole("owner_"+project.getProjectId())
-					||  SecurityUtils.getSubject().hasRole("contributor_"+project.getProjectId())
-					||  SecurityUtils.getSubject().hasRole("viewer_"+project.getProjectId())		
-				){
-				myProjects.add(project);
-			}
-				
-		}
-		
-		return myProjects;
+		return projects;
 	}
 
 	/* (non-Javadoc)

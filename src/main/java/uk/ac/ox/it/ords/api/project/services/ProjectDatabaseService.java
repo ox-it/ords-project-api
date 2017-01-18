@@ -25,6 +25,15 @@ import uk.ac.ox.it.ords.api.project.services.impl.hibernate.ProjectDatabaseServi
 public interface ProjectDatabaseService {
 	
 	public void validate(Database database) throws ValidationException;
+
+	/**
+	 * Get a logical Database by its ID and project id
+	 * @param id the id of the logical database
+	 * @param projectId the id of the project
+	 * @return the database, or null if no database exists with this id
+	 * @throws Exception if there is a problem obtaining the database
+	 */
+	public Database getDatabase(int id, int projectId) throws Exception;
 	
 	/**
 	 * Get a logical Database by its ID

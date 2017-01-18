@@ -133,7 +133,7 @@ public class ProjectInvitationsTest extends AbstractResourceTest {
 
 		loginUsingSSO("pingu", "pingu");
 		
-		// Create project
+		// Create another project
 		WebClient client = getClient();
 		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();

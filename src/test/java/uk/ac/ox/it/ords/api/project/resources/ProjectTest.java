@@ -159,6 +159,34 @@ public class ProjectTest extends AbstractResourceTest {
 	}
 	
 	@Test
+	public void createTooManyProjects() throws IOException {
+		
+		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
+		project.setName("Test Project N1");
+		project.setDescription("createTooManyProjects");
+		project.setPrivateProject(true);
+		
+		loginUsingSSO("pingo", "pingo");
+		Response response = getClient().path("/").post(project);
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
+		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("Test Project N1", project.getName());
+		int id = project.getProjectId();
+		logout();
+		
+		project.setName("Test Project N2");
+		loginUsingSSO("pingo", "pingo");
+		assertEquals(402, getClient().path("/").post(project).getStatus());
+		logout();
+		
+		// clean up
+		loginUsingSSO("pingo", "pingo");
+		assertEquals(200, getClient().path("/"+id).delete().getStatus());
+		logout();
+	}
+	
+	@Test
 	public void updateFullProject(){
 		//
 		// Full project
@@ -357,7 +385,7 @@ public class ProjectTest extends AbstractResourceTest {
 		//
 		// Now lets see what Admin can see if they ask for the list
 		// of all projects - they should see all 6, including the
-		// private one and 3 deleted ones
+		// private one and 4 deleted ones
 		//
 		loginUsingSSO("admin", "test");
 		client = getClient();
@@ -367,7 +395,7 @@ public class ProjectTest extends AbstractResourceTest {
 		projects = response.readEntity(
 						new GenericType<List<uk.ac.ox.it.ords.api.project.model.Project>>() {}
 						);
-		assertEquals(6, projects.size());
+		assertEquals(7, projects.size());
 		
 		//
 		// Anonymous user asking for the FULL project list sees the same

@@ -40,6 +40,12 @@ public interface ProjectService {
 	public List<Project> getProjects();
 	
 	/**
+	 * Get the projects owned by the current user
+	 * @return List of Project instances owned by the current user
+	 */
+	public List<Project> getOwnProjects();
+	
+	/**
      * Find all projects that meet the criteria. Criteria are searched for in the project abstract.
      *
      * @param searchTerms a comma separated list of search terms or null, meaning get all projects

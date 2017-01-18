@@ -105,14 +105,14 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		WebClient client = getClient();
 		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
-		project.setName("Test Project I");
-		project.setDescription("deleteDatabaseFromDeletedProject");
+		project.setName("Test Project IA");
+		project.setDescription("addAndModifyDatabase");
 		Response response = client.post(project);
 		assertEquals(201, response.getStatus());
 		String path = response.getLocation().getPath();
 		response = getClient().path(path).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
-		assertEquals("Test Project I", project.getName());
+		assertEquals("Test Project IA", project.getName());
 		int id = project.getProjectId();
 		
 		//
@@ -155,14 +155,14 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		WebClient client = getClient();
 		client.path("/");
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
-		project.setName("Test Project I");
-		project.setDescription("deleteDatabaseFromDeletedProject");
+		project.setName("Test Project IX");
+		project.setDescription("update with errors");
 		Response response = client.post(project);
 		assertEquals(201, response.getStatus());
 		String path = response.getLocation().getPath();
 		response = getClient().path(path).get();
 		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
-		assertEquals("Test Project I", project.getName());
+		assertEquals("Test Project IX", project.getName());
 		int id = project.getProjectId();
 		
 		// Database does not exist
@@ -176,7 +176,7 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		Database projectDatabase = new Database();
 		projectDatabase.setDatabaseProjectId(id);
 		projectDatabase.setDatabaseType("MAIN");
-		projectDatabase.setDbName("test");
+		projectDatabase.setDbName("test - update with errors");
 		projectDatabase.setDbDescription("test");
 		response = client.post(projectDatabase);
 		assertEquals(201, response.getStatus());
@@ -319,8 +319,8 @@ public class ProjectDatabaseTest extends AbstractResourceTest {
 		//
 		// OK, now lets do some deleting using the wrong projects
 		//
-		assertEquals(400, getClient().path("/" + id1 + "/database/" + databaseId2).delete().getStatus());
-		assertEquals(400, getClient().path("/" + id2 + "/database/" + databaseId1).delete().getStatus());		
+		assertEquals(404, getClient().path("/" + id1 + "/database/" + databaseId2).delete().getStatus());
+		assertEquals(404, getClient().path("/" + id2 + "/database/" + databaseId1).delete().getStatus());		
 	}
 	
 	@Test

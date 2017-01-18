@@ -53,6 +53,7 @@ import uk.ac.ox.it.ords.api.project.services.DatabaseVersionService;
 import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.security.services.RestrictionsService;
 
 @Api(value="Project Database")
 @CrossOriginResourceSharing(allowAllOrigins=true)
@@ -101,7 +102,7 @@ public class ProjectDatabase {
 		
 		Database existing;
 		
-		existing = ProjectDatabaseService.Factory.getInstance().getDatabase(db);
+		existing = ProjectDatabaseService.Factory.getInstance().getDatabase(db, id);
 
 		if (existing == null){
 			return Response.status(404).build();
@@ -170,7 +171,7 @@ public class ProjectDatabase {
 		
 		Database database;
 		
-		database = ProjectDatabaseService.Factory.getInstance().getDatabase(db);
+		database = ProjectDatabaseService.Factory.getInstance().getDatabase(db,id);
 
 		if (database == null){
 			return Response.status(404).build();
@@ -276,6 +277,14 @@ public class ProjectDatabase {
 			return Response.status(400).build();
 		}
 		
+		//
+		// Check if the user can add more databases to this project
+		//
+		int numberOfDatabases = ProjectDatabaseService.Factory.getInstance().getDatabasesForProject(project.getProjectId()).size();
+		if (numberOfDatabases >= RestrictionsService.Factory.getInstance().getMaximumDatabasesPerProject()){
+			return Response.status(402).build();
+		}
+		
 		database = ProjectDatabaseService.Factory.getInstance().addDatabase(database);
 		
 		//
@@ -330,7 +339,7 @@ public class ProjectDatabase {
 		
 		Database database = null; 
 		
-		database = ProjectDatabaseService.Factory.getInstance().getDatabase(db);
+		database = ProjectDatabaseService.Factory.getInstance().getDatabase(db,id);
 		
 		if (database == null){
 			return Response.status(404).build();

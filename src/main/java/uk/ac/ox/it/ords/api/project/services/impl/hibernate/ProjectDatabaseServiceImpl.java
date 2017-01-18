@@ -47,6 +47,34 @@ public class ProjectDatabaseServiceImpl extends AbstractProjectDatabaseService i
 	public ProjectDatabaseServiceImpl() {
 		setSessionFactory (HibernateUtils.getSessionFactory());
 	}
+
+	
+	/* (non-Javadoc)
+	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#getDatabaseForProject(int)
+	 */
+	@Override
+	public Database getDatabase(int id, int projectId) throws Exception {
+		
+		Database projectDatabase = null;
+
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+			projectDatabase = (Database) session.createCriteria(Database.class)
+					.add(Restrictions.eq("databaseProjectId", projectId))
+					.add(Restrictions.eq("logicalDatabaseId", id))
+					.uniqueResult();
+			session.getTransaction().commit();
+
+		} catch (Exception e) {
+			log.debug(e.getMessage());
+			session.getTransaction().rollback();
+			throw e;
+		} finally {
+			  HibernateUtils.closeSession();
+		}
+		return projectDatabase;
+	}
 	
 	/* (non-Javadoc)
 	 * @see uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService#getDatabaseForProject(int)

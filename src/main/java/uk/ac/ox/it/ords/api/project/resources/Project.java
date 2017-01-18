@@ -56,6 +56,7 @@ import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissions;
 import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectDatabaseService;
 import uk.ac.ox.it.ords.api.project.services.ProjectService;
+import uk.ac.ox.it.ords.security.services.RestrictionsService;
 
 @Api(value="Project")
 @CrossOriginResourceSharing(allowAllOrigins=true)
@@ -111,7 +112,7 @@ public class Project {
 				
 			} else {
 				
-				if (q != null){
+				if (q != null && !q.trim().isEmpty()){
 					
 					//
 					// Search projects. Only visible projects are included.
@@ -347,6 +348,14 @@ public class Project {
 
 		if (project == null){
 			return Response.status(400).build();
+		}
+		
+		//
+		// Check user is allowed to create more projects with their current role
+		//
+		int currentProjects = ProjectService.Factory.getInstance().getOwnProjects().size();
+		if (currentProjects >= RestrictionsService.Factory.getInstance().getMaximumNumberOfLiveProjects()){
+			return Response.status(402).build();
 		}
 		
 		//

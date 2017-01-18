@@ -24,6 +24,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +53,13 @@ public class ProjectRoleTest extends AbstractResourceTest {
 			assertEquals("Test Project B", project.getName());
 			this.projectId = project.getProjectId();
 			logout();
+	}
+	
+	@After
+	public void tearDown(){
+		loginUsingSSO("pingu", "pingu");
+		WebClient client = getClient();
+		client.path("/"+this.projectId).delete();
 	}
 	
 	//
@@ -92,8 +100,13 @@ public class ProjectRoleTest extends AbstractResourceTest {
 	//
 	@Test
 	public void publicRole(){
-		
+
 		loginUsingSSO("pingu", "pingu");
+		
+		// delete the usual test project
+		getClient().path("/"+this.projectId).delete();
+		
+		// create public project instead
 		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
 		project.setName("publicRole");
 		project.setDescription("publicRole");
@@ -112,6 +125,9 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		
 		loginUsingSSO("pingu", "pingu");
 		assertEquals(200, getClient().path(rolePath).delete().getStatus());
+
+		// clean up
+		getClient().path(projectPath).delete();
 
 		
 	}
@@ -564,29 +580,45 @@ public class ProjectRoleTest extends AbstractResourceTest {
 	
 	@Test
 	public void unrelatedRoles(){
+
+		loginUsingSSO("pingu", "pingu");
+
+		//
+		// Create Project 1 - Pingu is owner
+		//
+		WebClient client = getClient();
+		client.path("/");
+		uk.ac.ox.it.ords.api.project.model.Project project1 = new uk.ac.ox.it.ords.api.project.model.Project();
+		project1.setName("unrelatedRoles1");
+		project1.setDescription("unrelatedRoles1");
+		project1.setPrivateProject(true);
+		Response response = client.post(project1);
+		assertEquals(201, response.getStatus());
+		response = getClient().path(response.getLocation().getPath()).get();
+		project1 = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("unrelatedRoles1", project1.getName());
+		int project1Id = project1.getProjectId();
 		
 		//
 		// Create Project 2 - Pingu is owner
 		//
-		loginUsingSSO("pingu", "pingu");
-		WebClient client = getClient();
 		client.path("/");
-		uk.ac.ox.it.ords.api.project.model.Project project = new uk.ac.ox.it.ords.api.project.model.Project();
-		project.setName("unrelatedRoles");
-		project.setDescription("unrelatedRoles");
-		project.setPrivateProject(true);
-		Response response = client.post(project);
+		uk.ac.ox.it.ords.api.project.model.Project project2 = new uk.ac.ox.it.ords.api.project.model.Project();
+		project2.setName("unrelatedRoles2");
+		project2.setDescription("unrelatedRoles2");
+		project2.setPrivateProject(true);
+		response = client.post(project2);
 		assertEquals(201, response.getStatus());
 		response = getClient().path(response.getLocation().getPath()).get();
-		project = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
-		assertEquals("unrelatedRoles", project.getName());
-		int project2 = project.getProjectId();
+		project2 = response.readEntity(uk.ac.ox.it.ords.api.project.model.Project.class);
+		assertEquals("unrelatedRoles2", project2.getName());
+		int project2Id = project2.getProjectId();
 		
 		//
 		// Pingu adds Pinga to Project 1
 		//
 		client = getClient();
-		client.path("/"+projectId+"/role");
+		client.path("/"+project1Id+"/role");
 		UserRole role = new UserRole();
 		role.setPrincipalName("pinga");
 		role.setRole("viewer");;
@@ -600,7 +632,7 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		// Pingu adds Pinga to Project 2
 		//
 		client = getClient();
-		client.path("/"+project2+"/role");
+		client.path("/"+project2Id+"/role");
 		role = new UserRole();
 		role.setPrincipalName("pinga");
 		role.setRole("viewer");;
@@ -641,10 +673,14 @@ public class ProjectRoleTest extends AbstractResourceTest {
 		assertEquals(200, response.getStatus());
 		
 		//
-		// Finally we'll delete the project
+		// Finally we'll delete the projects
 		//
 		client = getClient();
-		client.path("/"+project2);
+		client.path("/"+project2Id);
+		response = client.delete();
+		assertEquals(200, response.getStatus());
+		client = getClient();
+		client.path("/"+project1Id);
 		response = client.delete();
 		assertEquals(200, response.getStatus());
 		
