@@ -28,8 +28,10 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.Factory;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -173,7 +175,11 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		User phil = new User();
 		phil.setEmail("phil@mailinator.com");
 		phil.setPrincipalName("philster");
-		session.save(phil);
+		phil.setUserId(1);
+		List<User> users = session.createCriteria(User.class).add(Restrictions.eq("principalName", "philster")).list();
+		if (users.isEmpty()){
+			session.save(phil);
+		}
 		
 		UserRole philRole = new UserRole();
 		philRole.setPrincipalName("philster");

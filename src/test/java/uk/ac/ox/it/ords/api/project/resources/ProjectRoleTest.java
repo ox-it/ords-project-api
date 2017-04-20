@@ -524,16 +524,27 @@ public class ProjectRoleTest extends AbstractResourceTest {
 	
 	@Test
 	public void addRoleWithEmail(){
+		
+		//
+		// This is a private project so Phil can't see it
+		//
+		loginUsingSSO("philster", "test");
+		WebClient client = getClient();
+		client.path("/"+projectId);
+		Response response = client.get();
+		assertEquals(403, response.getStatus());
+		logout();
+		
 		//
 		// Add Phil as a viewer
 		//
 		loginUsingSSO("pingu", "test");
-		WebClient client = getClient();
+		client = getClient();
 		client.path("/"+projectId+"/role");
 		UserRole role = new UserRole();
 		role.setPrincipalName("phil@mailinator.com");
 		role.setRole("viewer");
-		Response response = client.post(role);
+		response = client.post(role);
 		assertEquals(201, response.getStatus());
 		URI roleURI = response.getLocation();
 		logout();	
