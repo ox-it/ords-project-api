@@ -36,6 +36,7 @@ import org.junit.BeforeClass;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import uk.ac.ox.it.ords.api.project.model.User;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.server.UnrecognizedPropertyExceptionMapper;
 import uk.ac.ox.it.ords.api.project.server.ValidationExceptionMapper;
@@ -168,6 +169,16 @@ public class AbstractResourceTest extends AbstractShiroTest {
 		anonymous.setPrincipalName("anonymous");
 		anonymous.setRole("anonymous");
 		session.save(anonymous);
+		
+		User phil = new User();
+		phil.setEmail("phil@mailinator.com");
+		phil.setPrincipalName("philster");
+		session.save(phil);
+		
+		UserRole philRole = new UserRole();
+		philRole.setPrincipalName("philster");
+		philRole.setRole("user");
+		session.save(philRole);
 		
 		//
 		// Commit our changes

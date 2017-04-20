@@ -25,10 +25,12 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ox.it.ords.api.project.model.User;
 import uk.ac.ox.it.ords.api.project.permissions.ProjectPermissionSets;
 import uk.ac.ox.it.ords.api.project.server.ValidationException;
 import uk.ac.ox.it.ords.api.project.services.ProjectAuditService;
 import uk.ac.ox.it.ords.api.project.services.ProjectRoleService;
+import uk.ac.ox.it.ords.api.project.services.UserService;
 import uk.ac.ox.it.ords.api.project.services.impl.AbstractProjectRoleService;
 import uk.ac.ox.it.ords.security.model.Permission;
 import uk.ac.ox.it.ords.security.model.UserRole;
@@ -233,6 +235,20 @@ public class ProjectRoleServiceImpl extends AbstractProjectRoleService implement
 	 */
 	@Override
 	public UserRole addUserRoleToProject(int projectId, UserRole userRole) throws ValidationException, Exception {
+		
+		
+		//
+		// We may sometimes have user roles created with an email address instead of principal name; in this
+		// case we have to look up the principal name directly.
+		//
+		User user = UserService.Factory.getInstance().getUserByPrincipalName(userRole.getPrincipalName());
+		if (user == null){
+			user = UserService.Factory.getInstance().getUserByEmailAddress(userRole.getPrincipalName());
+			if (user != null){
+				userRole.setPrincipalName(user.getPrincipalName());
+			}
+		}
+		
 		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();

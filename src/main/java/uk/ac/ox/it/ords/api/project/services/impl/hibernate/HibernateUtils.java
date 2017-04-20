@@ -53,6 +53,7 @@ public class HibernateUtils
 		configuration.addAnnotatedClass(Permission.class);
 		configuration.addAnnotatedClass(Audit.class);
 		configuration.addAnnotatedClass(UserRole.class);
+		configuration.addAnnotatedClass(User.class);
 	}
 	protected static void init()
 	{
