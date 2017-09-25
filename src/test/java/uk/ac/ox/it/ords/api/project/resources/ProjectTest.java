@@ -521,7 +521,7 @@ public class ProjectTest extends AbstractResourceTest {
 		assertEquals(200, response.getStatus());
 		ProjectTestModel project = response.readEntity(ProjectTestModel.class);
 
-		assertEquals("localhost", project.getDbServerPublicAddress());
+		assertEquals("test", project.getDbServerPublicAddress());
 		assertEquals("Test Project V", project.getName());
 		assertEquals(true, project.isTrialProject());
 		int id = project.getProjectId();
@@ -624,7 +624,7 @@ public class ProjectTest extends AbstractResourceTest {
 		assertEquals("updateProject - updated", project.getDescription());
 		assertEquals("2000 BC", project.getStartDate());
 		assertEquals("THE END OF THE WORLD", project.getEndDate());
-		assertEquals("localhost", project.getDbServerPublicAddress());
+		assertEquals("test", project.getDbServerPublicAddress());
 		logout();
 		
 		//

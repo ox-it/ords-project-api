@@ -84,9 +84,12 @@ public class ProjectServiceImpl extends AbstractProjectServiceImpl implements Pr
 		if (project == null) throw new Exception("Cannot create project: null");
 		
 		//
-		// Allocate to a server
+		// Allocate to a server. Use a server alias if one is available.
 		//
-		String server = ServerConfigurationService.Factory.getInstance().getDatabaseServer().getHost();
+		String server = ServerConfigurationService.Factory.getInstance().getDatabaseServer().getAlias();
+		if (server == null){
+			server = ServerConfigurationService.Factory.getInstance().getDatabaseServer().getHost();
+		}
 		if (server == null){
 			throw new Exception("No servers available");
 		}
